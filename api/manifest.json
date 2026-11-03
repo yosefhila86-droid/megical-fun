@@ -1,8 +1,8 @@
 {
   "id": "./",
-  "name": "Color by Magic",
-  "short_name": "Color Magic",
-  "description": "Turn pictures into coloring pages and fill them with color.",
+  "name": "Megical Fun",
+  "short_name": "Megical Fun",
+  "description": "Play 13 child-friendly mini games, color pictures, and draw.",
   "lang": "en",
   "start_url": "./",
   "scope": "./",
