@@ -17,7 +17,8 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:32px;heigh
 input[type=range]::-moz-range-thumb{width:24px;height:24px;border-radius:50%;background:#fff;border:4px solid #3b2a66}
 input[type=color]{height:46px;padding:2px;border-radius:12px}
 .screen{display:none;flex:1;overflow-y:auto;padding:14px}.screen.on{display:block}
-header{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:#7c4dff;color:#fff;font-weight:800}
+#welcome.screen.on{display:flex;flex-direction:column;justify-content:center}
+header{display:flex;justify-content:space-between;align-items:center;padding:calc(10px + env(safe-area-inset-top)) 14px 10px;background:#7c4dff;color:#fff;font-weight:800}
 header select{width:auto;max-width:105px;margin:0;padding:7px;border:0}
 nav{display:flex;background:#fff;border-top:2px solid #ece6ff;padding-bottom:env(safe-area-inset-bottom)}
 nav button{flex:1;background:none;color:#3b2a66;border-radius:0;font-size:13px}
@@ -68,18 +69,35 @@ video{width:100%;max-width:420px;border-radius:16px;background:#222;display:bloc
 .game-menu{max-width:560px;margin:0 auto}
 .game-card{min-height:130px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:6px}
 .game-card .e{font-size:42px}
-.game-board{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;width:min(78vw,320px);aspect-ratio:1;margin:14px auto}
-.puzzle-piece{border-radius:8px;padding:0;min-width:0;background-repeat:no-repeat;background-size:300% 300%;box-shadow:0 2px 6px #0002}
-.puzzle-piece.empty{background:#ece6ff;box-shadow:inset 0 0 0 2px #d9ccff}
+.escape-room{max-width:520px;margin:12px auto;padding:16px;background:linear-gradient(145deg,#fffdf7,#f5edff);border:2px solid #ded0ff;border-radius:24px;box-shadow:0 8px 20px #36205a20}
+.escape-scene{position:relative;isolation:isolate;overflow:hidden;max-width:520px;min-height:180px;aspect-ratio:2.4/1;margin:12px auto;border:5px solid #fff;border-radius:22px;background:linear-gradient(to bottom,#c4e7ff 0 70%,#b9815c 70% 74%,#e8c89c 74%);box-shadow:0 4px 12px #36205a26}
+.escape-scene:after{content:"";position:absolute;z-index:-1;inset:auto 0 0;height:27%;background:repeating-linear-gradient(90deg,transparent 0 49px,#bd9970 50px,#bd9970 52px,transparent 53px)}
+.scene-window{position:absolute;top:10%;left:37%;width:23%;height:43%;display:grid;place-items:center;border:6px solid #fff4d6;border-radius:48% 48% 8px 8px;background:linear-gradient(#8bd7ff 0 58%,#b7edbd 59%);font-size:clamp(22px,6vw,36px);box-shadow:0 3px 7px #44315b35}
+.scene-shelf{position:absolute;left:5%;top:19%;width:23%;height:57%;display:flex;align-items:flex-end;justify-content:space-evenly;padding:4px 2px 7px;border:5px solid #9a5d44;border-bottom-width:8px;border-radius:8px 8px 4px 4px;background:repeating-linear-gradient(to bottom,transparent 0 39%,#9a5d44 40% 46%,transparent 47% 50%);font-size:clamp(14px,4vw,25px)}
+.scene-door{position:absolute;right:6%;bottom:0;width:19%;height:78%;display:grid;place-items:center;border:5px solid #8e583d;border-bottom:0;border-radius:48% 48% 0 0;background:linear-gradient(90deg,#d99a62,#f0bd7d 48%,#d99a62);box-shadow:inset 0 0 0 5px #f7d8a6;color:#633f3a;font-size:clamp(20px,5vw,32px)}
+.scene-door:after{content:"";position:absolute;right:14%;top:53%;width:9px;height:9px;border-radius:50%;background:#ffd45e;box-shadow:0 0 0 3px #a76b43}
+.scene-desk{position:absolute;left:31%;bottom:7%;width:42%;height:24%;display:flex;align-items:center;justify-content:center;gap:clamp(5px,2vw,14px);border:4px solid #9a5d44;border-radius:8px;background:linear-gradient(#c98553 0 35%,#9a5d44 36% 49%,transparent 50%);font-size:clamp(18px,5vw,30px);filter:drop-shadow(0 3px 2px #51362655)}
+.escape-progress{display:flex;justify-content:center;gap:8px;margin:10px auto}
+.escape-progress span{width:30px;height:30px;border-radius:50%;background:#e8ddff;color:#6a55a5;font-weight:800;line-height:30px}
+.escape-progress span.done{background:#00b894;color:#fff;box-shadow:0 2px 6px #00b89455}
+.escape-riddle{margin:14px auto;padding:18px;background:#fff;border:2px solid #d8c8ff;border-radius:18px;text-align:start;line-height:1.6;box-shadow:inset 0 2px 8px #36205a0a}
+.escape-explanation{display:block;margin:8px auto;padding:10px;background:#fff;border-radius:12px;font-weight:500;line-height:1.5}
+.game-board{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));gap:4px;width:min(78vw,320px);aspect-ratio:1;margin:14px auto}
+.puzzle-piece{position:relative;overflow:hidden;border-radius:8px;padding:0;min-width:0;background:#fff;box-shadow:0 2px 6px #0002}
+.puzzle-piece::before{content:"";position:absolute;inset:0;background-image:var(--puzzle-image);background-repeat:no-repeat;background-size:300% auto;background-position:var(--puzzle-position);filter:grayscale(1)}
+.puzzle-piece.selected{outline:4px solid #7c4dff;outline-offset:-4px}
+#puzzleStatus.puzzle-success{max-width:320px;margin:12px auto;padding:12px;background:#d8fff2;border:2px solid #00b894;border-radius:16px;font-weight:800}
 .game-image{width:min(58vw,220px);height:min(58vw,220px);object-fit:contain;background:#fff;border-radius:16px;box-shadow:0 3px 10px #0002;margin:8px auto}
 .answer-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;max-width:420px;margin:14px auto}
 .answer-grid button{min-height:54px}
 .quiz-swatch{width:120px;height:120px;border:6px solid white;border-radius:24px;margin:18px auto;box-shadow:0 3px 10px #0003}
-.difference-boards{display:grid;grid-template-columns:1fr 1fr;gap:8px;max-width:440px;margin:16px auto}
-.difference-board{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;padding:6px;background:#fff;border-radius:16px}
-.difference-cell{aspect-ratio:1;padding:2px;background:#fff7e6;color:#3b2a66;font-size:clamp(20px,7vw,34px);border:2px solid transparent;border-radius:8px;overflow:hidden}
-.difference-cell img{display:block;width:100%;height:100%;object-fit:contain}
+.difference-boards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;max-width:640px;margin:16px auto}
+.difference-board{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;padding:6px;background:#fff;border-radius:16px}
+.difference-cell{aspect-ratio:1;padding:0;background:#fff7e6;color:#3b2a66;font-size:clamp(28px,6vw,48px);border:2px solid transparent;border-radius:8px;overflow:hidden}
+.difference-cell img{display:block;width:100%;height:100%;object-fit:contain;transform:scale(1.2)}
 .difference-cell.found{border-color:#00b894;background:#d8fff2}
+#differenceStatus.difference-success{max-width:320px;margin:12px auto;padding:12px;background:#d8fff2;border:2px solid #00b894;border-radius:16px;font-weight:800}
+@media(max-width:600px){.difference-boards{grid-template-columns:1fr;max-width:440px}.difference-board{grid-template-columns:repeat(4,1fr);gap:6px}.difference-cell{border-radius:12px}}
 .draw-canvas{display:block;width:100%;max-width:560px;height:auto;aspect-ratio:4/3;margin:10px auto;background:#fff;border-radius:16px;box-shadow:0 3px 10px #0003;touch-action:none}
 .draw-tools{display:flex;gap:8px;justify-content:center;align-items:center;flex-wrap:wrap}
 .draw-tools input[type=color]{width:56px;margin:0}
@@ -92,9 +110,6 @@ video{width:100%;max-width:420px;border-radius:16px;background:#222;display:bloc
 .trace-canvas{display:block;width:min(78vw,320px);height:auto;aspect-ratio:1;margin:12px auto;background:#fff;border:3px dashed #d9ccff;border-radius:20px;touch-action:none}
 .learning-tools{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin:8px auto}
 .learning-hint{min-height:24px;color:#6a55a5;font-weight:700}
-.sticker-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(82px,1fr));gap:8px;margin:12px 0}
-.sticker{background:#fff3c4;border-radius:14px;padding:8px;font-size:26px}
-.sticker small{display:block;font-size:11px;line-height:1.2}
 .parent-section{background:#f8f5ff;border-radius:16px;padding:12px;margin:12px 0;text-align:start}
 .parent-section h4{margin:4px 0 8px}
 .parent-section p{margin:6px 0}
@@ -123,11 +138,8 @@ video{width:100%;max-width:420px;border-radius:16px;background:#222;display:bloc
 
 <header id="top" style="display:none"><span id="hName"></span><span id="hStars"></span><select id="language" onchange="setLanguage(this.value)" aria-label="Language" data-i18n-aria="language"><option value="en">EN</option><option value="he">עברית</option><option value="ru">РУ</option></select><button id="sndBtn" onclick="toggleMusic()" aria-label="Music on or off" data-i18n-aria="musicToggle" style="padding:4px 12px;font-size:20px;background:rgba(255,255,255,.22);border-radius:14px">🔊</button></header>
 
-<div id="home" class="screen"><h2 data-i18n="miniGames">🎮 Mini Games</h2><p data-i18n="chooseGame">Choose a game to play!</p><div class="grid" id="catGrid"></div></div>
-
 <div id="games" class="screen">
   <div class="game-menu">
-    <button class="ghost" onclick="go('home')">← <span data-i18n="home">Home</span></button>
     <h2 data-i18n="miniGames">🎮 Mini Games</h2>
     <p data-i18n="chooseGame">Choose a game to play!</p>
     <div class="grid" id="miniGameGrid"></div>
@@ -174,6 +186,7 @@ video{width:100%;max-width:420px;border-radius:16px;background:#222;display:bloc
   <label><span data-i18n="cameraGallery" style="display:inline-block;padding:12px 16px;border-radius:16px;font-weight:700;cursor:pointer;background:#ece6ff;margin:6px 3px">🖼️ Gallery</span>
   <input type="file" id="file" accept="image/*" hidden></label>
   <input type="file" id="fileCam" accept="image/*" capture="environment" hidden>
+  <button id="cameraSettings" class="ghost" type="button" onclick="openCameraSettings()" data-i18n="cameraPermissionSettings" hidden>Open app settings</button>
   <div class="err" id="camErr"></div>
 </div>
 
@@ -186,13 +199,11 @@ video{width:100%;max-width:420px;border-radius:16px;background:#222;display:bloc
   <h3 data-i18n="language">Language</h3><select id="profileLanguage" onchange="setLanguage(this.value)" aria-label="Language" data-i18n-aria="language"><option value="en">English</option><option value="he">עברית</option><option value="ru">Русский</option></select>
   <p class="vol-row">🔈 <input type="range" id="vol" min="0" max="100" oninput="setVol(this.value)" aria-label="Volume" data-i18n-aria="volume"> 🔊</p>
   <h3 data-i18n="gallery">My Gallery</h3><div class="gal" id="gal"></div>
-  <h3 data-i18n="stickerBook">Sticker book</h3><div id="stickerBook" class="sticker-grid"></div>
   <p><button class="ghost" onclick="requestParentDashboard()" data-i18n="parentDashboard">👪 Parent dashboard</button></p>
   <p><button class="ghost" onclick="logout()" data-i18n="logout">Log out</button></p>
 </div>
 
 <nav id="nav" style="display:none">
-  <button data-g="home" onclick="go('home')">🏠<br><span data-i18n="home">Home</span></button>
   <button data-g="games" onclick="go('games')">🎮<br><span data-i18n="games">Games</span></button>
   <button data-g="camera" onclick="go('camera')">📸<br><span data-i18n="camera">Camera</span></button>
   <button data-g="profile" onclick="go('profile')">👤<br><span data-i18n="profile">Profile</span></button>
@@ -207,9 +218,9 @@ video{width:100%;max-width:420px;border-radius:16px;background:#222;display:bloc
 
 <div class="modal" id="parentM"><div class="box">
   <div style="font-size:40px">👪</div><h3 data-i18n="parentDashboard">Parent dashboard</h3>
-  <section class="parent-section"><h4 data-i18n="progressSummary">Progress and stickers</h4><div id="parentProgress"></div><div id="parentStickerBook" class="sticker-grid"></div></section>
   <section class="parent-section"><h4 data-i18n="timeLimitTitle">Daily play-time limit</h4><p id="parentUsage"></p><label for="dailyLimit" data-i18n="dailyLimitLabel">Daily limit</label><select id="dailyLimit" onchange="saveDailyLimit(this.value)" style="width:100%;margin-top:8px"><option value="0" data-i18n="unlimited">No limit</option><option value="15" data-i18n="limit15">15 minutes</option><option value="30" data-i18n="limit30">30 minutes</option><option value="45" data-i18n="limit45">45 minutes</option><option value="60" data-i18n="limit60">60 minutes</option><option value="90" data-i18n="limit90">90 minutes</option><option value="120" data-i18n="limit120">120 minutes</option></select></section>
   <section class="parent-section"><h4 data-i18n="purchaseManagement">Purchase management</h4><p id="parentPurchases"></p><button class="alt" onclick="openParentPurchaseOptions()" data-i18n="viewPurchaseOptions">View purchase options</button></section>
+  <p><a id="parentPrivacyLink" href="./privacy.html?lang=en" data-i18n="privacyPolicyLink">Privacy policy</a></p>
   <button class="ghost" onclick="closeParentDashboard()" data-i18n="close">✖ Close</button>
 </div></div>
 
@@ -228,7 +239,7 @@ video{width:100%;max-width:420px;border-radius:16px;background:#222;display:bloc
   <div style="font-size:48px">👑</div><h3 data-i18n="parentsOnly">Parents only</h3>
   <p id="shopText"></p>
   <button class="alt" onclick="purchaseUnavailable()" data-i18n="purchase">Purchase</button>
-  <button class="ghost" onclick="purchaseAllUnavailable()" data-i18n="unlockAll">Unlock all games — $29.99</button>
+  <button class="ghost" onclick="purchaseAllUnavailable()" data-i18n="unlockAll">Subscribe to all games — $14.90/month</button>
   <p data-i18n="paymentPending">Payments are not set up yet. No charge will be made.</p>
   <button class="ghost" onclick="closeM('vipM')" data-i18n="cancel">Cancel</button>
 </div></div>
@@ -279,22 +290,128 @@ Object.assign(TEXT.ru,{scienceQuestion:'Вопрос {n} из {total}',scienceCo
 Object.assign(TEXT.en,{learningQuestion:'Question {n} of {total}',learningComplete:'You completed all 10 questions in this activity!'});
 Object.assign(TEXT.he,{learningQuestion:'שאלה {n} מתוך {total}',learningComplete:'השלמתם את כל 10 השאלות בפעילות!'});
 Object.assign(TEXT.ru,{learningQuestion:'Вопрос {n} из {total}',learningComplete:'Ты выполнил все 10 заданий в этом занятии!'});
-Object.assign(TEXT.en,{miniGames:'🎮 12 Mini Games',freeDrawButton:'✏️ Free Drawing'});
-Object.assign(TEXT.he,{miniGames:'🎮 12 משחקי מיני',freeDrawButton:'✏️ ציור חופשי'});
-Object.assign(TEXT.ru,{miniGames:'🎮 12 мини-игр',freeDrawButton:'✏️ Свободное рисование'});
-Object.assign(TEXT.en,{unlockAll:'Unlock all 12 games — $29.99',shopGame:'Unlock {game} for $2.99, or unlock all 12 games for $29.99.'});
-Object.assign(TEXT.he,{unlockAll:'פתיחת כל 12 המשחקים — $29.99',shopGame:'פתיחת {game} ב־$2.99, או פתיחת כל 12 המשחקים ב־$29.99.'});
-Object.assign(TEXT.ru,{unlockAll:'Открыть все 12 игр — $29.99',shopGame:'Открыть игру «{game}» за $2.99 или все 12 игр за $29.99.'});
+Object.assign(TEXT.en,{miniGames:'🎮 13 Mini Games',freeDrawButton:'✏️ Free Drawing',escapeRooms:'Escape Rooms',escapePrompt:'Solve each riddle to unlock the exit!',escapeRoomProgress:'Riddle {n} of 5 — {room}',escapeRoomCleared:'Riddle solved! The way out is getting closer.',escapeComplete:'You solved all five riddles and escaped!',escapeNextRoom:'Next riddle',starEarned:'⭐ Star earned!',escapeRoomNames:['The Three Switches','The Sheep Puzzle','The Number Pattern','Three Generations','The Clock']});
+Object.assign(TEXT.he,{miniGames:'🎮 13 משחקי מיני',freeDrawButton:'✏️ ציור חופשי',escapeRooms:'משחק בריחה',escapePrompt:'פתרו כל חידה כדי לפתוח את היציאה!',escapeRoomProgress:'חידה {n} מתוך 5 — {room}',escapeRoomCleared:'פתרתם את החידה! אתם מתקרבים ליציאה.',escapeComplete:'פתרתם את כל חמש החידות וברחתם!',escapeNextRoom:'לחידה הבאה',starEarned:'⭐ קיבלתם כוכב!',escapeRoomNames:['שלושת המתגים','חידת הכבשים','סדרת המספרים','שלושה דורות','השעון']});
+Object.assign(TEXT.ru,{miniGames:'🎮 13 мини-игр',freeDrawButton:'✏️ Свободное рисование',escapeRooms:'Комнаты-квесты',escapePrompt:'Реши каждую загадку, чтобы открыть выход!',escapeRoomProgress:'Загадка {n} из 5 — {room}',escapeRoomCleared:'Загадка решена! Выход уже ближе.',escapeComplete:'Ты решил все пять загадок и выбрался!',escapeNextRoom:'Следующая загадка',starEarned:'⭐ Звезда получена!',escapeRoomNames:['Три выключателя','Задача про овец','Числовая последовательность','Три поколения','Часы']});
+Object.assign(TEXT.en,{escapeRoomNames:['Supply Count','Sequence Lock','Storage Room','Departure Gate','Code Lock']});
+Object.assign(TEXT.he,{escapeRoomNames:['ספירת ציוד','מנעול הסדרה','מחסן','שער היציאה','מנעול הקוד']});
+Object.assign(TEXT.ru,{escapeRoomNames:['Подсчёт запасов','Числовой замок','Склад','Ворота отправления','Кодовый замок']});
+const ESCAPE_RIDDLE_BANK={
+ en:[
+  [['What must you break before you can use it?','An egg','An egg has to be cracked before it can be cooked.'],['What is always behind you but can never be in front of you?','The past','The past has already happened, so it is always behind you.'],['What has pages and a spine but cannot stand or speak?','A book','A book has pages and a spine, but it is not alive.'],['What can travel around the world while staying in one corner?','A postage stamp','A stamp stays in the corner of an envelope while the envelope travels.'],['What gets wetter the more it dries?','A towel','A towel absorbs the water it is drying.']],
+  [['A dinosaur left a trail in soft mud. What remains after the dinosaur is gone?','A footprint','The foot presses its shape into the mud.'],['What do paleontologists uncover that is not a living dinosaur?','A fossil','A fossil is the preserved remains or trace of ancient life.'],['The more rock explorers remove, the larger this becomes. What is it?','A hole','Removing more material makes the hole larger.'],['A museum visitor hears their own shout return from the hall. What did they hear?','An echo','An echo is sound reflected back from a surface.'],['A fossil is older than every person alive, but what does a person gain every year?','Age','A person becomes one year older each year.']],
+  [['A lamp sends me across the room, but I have no weight and take no room. What am I?','Light','Light can spread through a room without taking up space.'],['I follow you in sunshine but disappear in darkness. What am I?','A shadow','A shadow forms when your body blocks light.'],['I change shape in the night sky, but I am always the same object. What am I?','The moon','The moon appears to change shape as we see different parts lit by the sun.'],['You can plan for me, but you can never see me arrive before I become now. What am I?','The future','The future has not happened yet.'],['I show your face perfectly, but I never keep your picture. What am I?','A reflection','A reflection appears on a surface but is not a stored image.']],
+  [['I have many holes, yet I can hold water. What am I?','A sponge','A sponge absorbs and holds water in its tiny spaces.'],['I travel together in a group, but I am not a classroom. What are we?','A school of fish','A group of fish is called a school.'],['I protect a sea animal, and sometimes the sea leaves me empty on the shore. What am I?','A shell','A shell protects some sea animals and may be left behind.'],['I rise and fall along the shore because the moon pulls on the sea. What am I?','The tide','The moon’s gravity causes the tides to rise and fall.'],['I move through the sea, but I am not a fish and have no engine. What am I?','A current','A current is moving water in the ocean.']],
+  [['I can be sliced, shared, and topped with candles, but I am not a present. What am I?','A cake','Cake is served in slices and often has candles at celebrations.'],['I am sweet, have a stick, and slowly disappear when you lick me. What am I?','A lollipop','A lollipop is candy on a stick that dissolves as it is eaten.'],['I am a sweet treat with a wrapper, but I am not a letter. What am I?','A candy','Candy is often wrapped before it is eaten.'],['I start as a bean and can become a bar. What am I?','Chocolate','Chocolate is made from cacao beans and can be formed into bars.'],['I am cold, sweet, and melt if you leave me in the sun. What am I?','Ice cream','Ice cream melts as it warms.']],
+  [['I show roads and islands, but no real cars or waves move on me. What am I?','A map','A map represents places without containing the real places.'],['I have a head and a tail but no body, and I can buy something. What am I?','A coin','A coin has heads and tails sides and is used as money.'],['I am hidden, and finding me may make a pirate rich. What am I?','Treasure','Buried treasure is the prize pirates search for in stories.'],['If you tell me to someone else, I am no longer secret. What am I?','A secret','A secret stops being secret when it is shared.'],['Pirates mark the spot with this letter, though it is not the treasure itself. What is it?','The letter X','Treasure maps often mark the location with an X.']],
+  [['I have keys but open no doors. I have a space but no room. What am I?','A keyboard','A keyboard has keys and a space bar, but no doors or rooms.'],['I store power, but I am not a power station. What am I?','A battery','A battery stores energy for a device.'],['I have a face and hands but no arms, and I tell you when to leave. What am I?','A clock','A clock face and hands show the time.'],['I answer questions when you type, but I do not understand like a person. What am I?','A computer','A computer processes typed instructions and information.'],['I can be secret, made of symbols, and needed to open a device. What am I?','A password','A password is a secret code used to unlock an account or device.']],
+  [['I begin as a tiny thing in soil and can grow into a tall tree. What am I?','A seed','A seed can sprout and grow into a plant.'],['I have petals and grow toward the sun, but I am not a star. What am I?','A flower','Flowers are plants that often grow toward sunlight.'],['I wear a spotted cap and grow after rain, but I am not a hat. What am I?','A mushroom','Mushrooms often appear in damp places after rain.'],['I grow underground and hold a plant in place. What am I?','A root','Roots anchor plants and take in water.'],['I fall from clouds and help the garden grow, but I am not a gardener. What am I?','Rain','Rain provides water that helps plants grow.']],
+  [['You can catch me, but you cannot throw me. What am I?','A cold','You can catch a cold, but you cannot throw one.'],['I leave your mouth on a chilly day and disappear in the air. What am I?','Your breath','Warm breath becomes visible in very cold air.'],['I fall from clouds in winter, but I never get hurt. What am I?','Snow','Snowflakes fall gently from clouds.'],['I am solid water and can melt without getting warmer than a room. What am I?','Ice','Ice is frozen water and melts as it warms.'],['I tell you how cold the air is using a number. What am I?','A thermometer','A thermometer measures temperature.']],
+  [['I am tall when I am young and short when I am old. What am I?','A candle','A candle gets shorter as it burns.'],['I can warm a cave, but I can also burn it. What am I?','Fire','Fire gives heat but can spread and cause damage.'],['I rise from a fire and fade into the air. What am I?','Smoke','Smoke is made of tiny particles and gases rising from a fire.'],['I cover a dragon and can be counted, but I am not a coin. What am I?','Scales','Many reptiles, including storybook dragons, have scales.'],['I am inside a shell and may become a dragon in a story. What am I?','An egg','In many stories a baby dragon hatches from an egg.']],
+  [['I go up every year but never come back down. What am I?','Your age','Your age increases as years pass.'],['I have twelve pages or boxes for months, but I am not a book of stories. What am I?','A calendar','A calendar shows the days and months of a year.'],['I come after today but before the day after tomorrow. What am I?','Tomorrow','Tomorrow is the day immediately after today.'],['I have hands and a face, but cannot smile or wave. What am I?','A clock','A clock has a face and hands that show time.'],['You can spend me but cannot save me in a box. What am I?','Time','Time passes whether or not we notice it.']],
+  [['A ball and a bat cost $1.10 together. The bat costs $1 more than the ball. What does the ball cost?','$0.05','If the ball costs 5 cents, the bat costs $1.05, making $1.10 total.'],['Five machines make five toys in five minutes. How long do 100 identical machines take to make 100 toys?','Five minutes','Each machine makes one toy in five minutes, so 100 machines make 100 in parallel.'],['A pond’s lily pads double in area every day. It is fully covered on day 48. When was it half covered?','Day 47','If it doubles each day, it was half covered one day before it was full.'],['A farmer has 3 apples. You take 2. How many apples do you have?','Two','You took two apples, so you have the two you took.'],['A family has two parents and three daughters. Each daughter has one brother. How many children are there?','Four','The three daughters share the same one brother, so there are four children.']]
+ ],
+ he:[
+  [['מה צריך לשבור כדי להשתמש בו?','ביצה','צריך לשבור את קליפת הביצה לפני שאפשר לבשל אותה.'],['מה תמיד נמצא מאחוריכם, אבל לעולם לא יהיה לפניכם?','העבר','העבר כבר קרה, ולכן הוא תמיד מאחורינו.'],['יש לי דפים וגב, אבל איני יכול לעמוד או לדבר. מה אני?','ספר','לספר יש דפים וגב, אבל הוא אינו יצור חי.'],['מה יכול להקיף את העולם ולהישאר בפינה אחת?','בול דואר','הבול נשאר בפינת המעטפה בזמן שהמעטפה מטיילת בעולם.'],['מה נעשה רטוב יותר ככל שהוא מייבש יותר?','מגבת','המגבת סופגת את המים שאותם היא מייבשת.']],
+  [['דינוזאור השאיר שביל בבוץ רך. מה נשאר אחרי שהוא נעלם?','טביעת רגל','הרגל משאירה את צורתה בבוץ.'],['מה חוקרי מאובנים מגלים, שאינו דינוזאור חי?','מאובן','מאובן הוא שריד או סימן שהשתמר מיצור קדום.'],['ככל שחוקרים מוציאים יותר סלע, הדבר הזה נעשה גדול יותר. מהו?','חור','כשמוציאים עוד חומר, החור גדל.'],['מבקר במוזיאון צועק ושומע את קולו חוזר מהמסדרון. מה הוא שמע?','הד','הד הוא קול שחוזר אחרי שהוא מוחזר ממשטח.'],['מאובן עתיק מכל אדם חי, אבל מה אדם צובר בכל שנה?','גיל','בכל שנה אדם נעשה מבוגר בשנה אחת.']],
+  [['המנורה מאירה אותי בחדר, אבל אין לי משקל ואני לא תופס מקום. מה אני?','אור','האור מתפשט בחדר בלי לתפוס בו מקום.'],['אני הולך אחריכם בשמש ונעלם בחושך. מה אני?','צל','צל נוצר כשהגוף חוסם את האור.'],['אני משנה צורה בשמי הלילה, אבל נשאר אותו גוף. מה אני?','הירח','הירח נראה בצורות שונות כשהחלקים המוארים שלו משתנים.'],['אפשר לתכנן אותי, אבל אי אפשר לראות אותי לפני שאני מגיע והופך לעכשיו. מה אני?','העתיד','העתיד עדיין לא קרה.'],['אני מראה את פניכם, אבל לא שומר תמונה. מה אני?','השתקפות','השתקפות מופיעה על משטח, אך אינה תמונה שנשמרת.']],
+  [['יש לי הרבה חורים, ובכל זאת אני יכול להחזיק מים. מה אני?','ספוג','ספוג סופג מים ומחזיק אותם בחללים הקטנים שלו.'],['אנחנו נעים יחד בקבוצה, אבל איננו כיתה. מי אנחנו?','להקת דגים','קבוצה של דגים נקראת להקה.'],['אני מגן על חיית ים, ולפעמים הים משאיר אותי ריק על החוף. מה אני?','קונכייה','קונכייה מגינה על בעלי חיים, ולעיתים נשארת ריקה על החוף.'],['אני עולה ויורד ליד החוף בגלל כוח המשיכה של הירח. מה אני?','גאות ושפל','כוח המשיכה של הירח גורם לגאות ולשפל.'],['אני נע בתוך הים, אבל איני דג ואין לי מנוע. מה אני?','זרם','זרם הוא מים שנעים באוקיינוס.']],
+  [['אפשר לפרוס אותי, לחלוק אותי ולקשט אותי בנרות, אבל איני מתנה. מה אני?','עוגה','עוגה מוגשת בפרוסות ולעיתים מקשטים אותה בנרות.'],['אני מתוק, יש לי מקל, ואני נעלם לאט כשמלקקים אותי. מה אני?','סוכרייה על מקל','סוכרייה על מקל היא ממתק שנמס בפה.'],['אני ממתק מתוק שעוטפים, אבל איני מכתב. מה אני?','סוכרייה','סוכריות רבות עטופות לפני שאוכלים אותן.'],['אני מתחיל בתור פולים ויכול להפוך לחפיסה. מה אני?','שוקולד','שוקולד מיוצר מפולי קקאו ונמכר לעיתים כחפיסה.'],['אני קר, מתוק ונמס אם משאירים אותי בשמש. מה אני?','גלידה','גלידה נמסה כשהיא מתחממת.']],
+  [['אני מציג כבישים ואיים, אבל אין בי מכוניות או גלים אמיתיים. מה אני?','מפה','מפה מציגה מקומות, אך אינה מכילה את המקומות עצמם.'],['יש לי ראש וזנב אך אין לי גוף, ואפשר לקנות בי משהו. מה אני?','מטבע','למטבע יש צד של עץ ופלי והוא משמש לתשלום.'],['אני חבוי, ומציאתי עשויה להפוך פיראט לעשיר. מה אני?','אוצר','בסיפורים פיראטים מחפשים אוצר קבור.'],['אם תספרו אותי למישהו, כבר לא אהיה סוד. מה אני?','סוד','כשמשתפים סוד, הוא מפסיק להיות סודי.'],['פיראטים מסמנים איתי את המקום, אבל איני האוצר עצמו. איזו אות אני?','האות X','במפות אוצר מסמנים לעיתים את המקום באות X.']],
+  [['יש לי מקשים, אבל איני פותח דלתות. יש לי מקש רווח, אבל אין לי חדר. מה אני?','מקלדת','במקלדת יש מקשים ומקש רווח, אך אין בה דלתות או חדרים.'],['אני אוגר חשמל, אבל איני תחנת כוח. מה אני?','סוללה','סוללה אוגרת אנרגיה למכשיר.'],['יש לי פנים ומחוגים אבל אין לי זרועות, ואני אומר מתי לצאת. מה אני?','שעון','פני השעון והמחוגים מראים את השעה.'],['אני עונה כשמקלידים בי, אבל איני מבין כמו אדם. מה אני?','מחשב','מחשב מעבד מידע והוראות שמקלידים בו.'],['אני יכול להיות סודי, מורכב מסימנים, ונחוץ כדי לפתוח מכשיר. מה אני?','סיסמה','סיסמה היא קוד סודי לפתיחת חשבון או מכשיר.']],
+  [['אני מתחיל כמשהו קטן באדמה ויכול לגדול לעץ גבוה. מה אני?','זרע','זרע יכול לנבוט ולהפוך לצמח.'],['יש לי עלי כותרת ואני גדלה לכיוון השמש, אבל איני כוכב. מה אני?','פרח','פרחים הם צמחים שלעיתים גדלים לכיוון האור.'],['אני חובש כובע מנוקד וגדל אחרי הגשם, אבל איני אדם. מה אני?','פטרייה','פטריות גדלות לעיתים במקומות לחים אחרי גשם.'],['אני גדל מתחת לאדמה ומחזיק את הצמח במקום. מה אני?','שורש','שורשים מעגנים צמחים וסופגים מים.'],['אני נופל מהעננים ועוזר לגינה לצמוח, אבל איני גנן. מה אני?','גשם','גשם מספק מים שעוזרים לצמחים לגדול.']],
+  [['אפשר להידבק בי, אבל אי אפשר לזרוק אותי. מה אני?','הצטננות','אפשר להידבק בהצטננות, אבל אי אפשר להשליך אותה.'],['אני יוצא מהפה ביום קר ונעלם באוויר. מה אני?','הבל פה','אוויר חם מהנשימה נעשה נראה באוויר קר מאוד.'],['אני נופל מהעננים בחורף, אבל איני נפצע. מה אני?','שלג','פתיתי שלג נופלים בעדינות מהעננים.'],['אני מים במצב מוצק ויכול להינמס בחדר. מה אני?','קרח','קרח הוא מים קפואים שנמסים כשהם מתחממים.'],['אני מציג במספרים כמה קר או חם בחוץ. מה אני?','מדחום','מדחום מודד טמפרטורה.']],
+  [['אני גבוהה כשאני חדשה ונמוכה כשאני ישנה. מה אני?','נר','נר מתקצר כשהוא דולק.'],['אני יכול לחמם מערה, אבל גם לשרוף אותה. מה אני?','אש','אש מחממת, אך עלולה להתפשט ולגרום לשרפה.'],['אני עולה מאש ונעלם באוויר. מה אני?','עשן','עשן מורכב מחלקיקים וגזים שעולים מהאש.'],['אני מכסה דרקון ואפשר לספור אותי, אבל איני מטבע. מה אני?','קשקש','לזוחלים רבים, וגם לדרקונים מסיפורים, יש קשקשים.'],['אני בתוך קליפה ואולי אבקע לדרקון בסיפור. מה אני?','ביצה','בסיפורים רבים דרקון קטן בוקע מביצה.']],
+  [['אני עולה בכל שנה ולעולם לא יורד. מה אני?','הגיל שלכם','הגיל גדל ככל שעוברות השנים.'],['יש לי שנים עשר חלקים לחודשים, אבל איני ספר סיפורים. מה אני?','לוח שנה','לוח שנה מציג את ימי השנה וחודשיה.'],['אני מגיע אחרי היום ולפני מחרתיים. מי אני?','מחר','מחר הוא היום שמגיע מיד אחרי היום.'],['יש לי פנים ומחוגים, אבל איני יכול לחייך או לנופף. מה אני?','שעון','לשעון יש פנים ומחוגים שמציגים את הזמן.'],['אפשר לבזבז אותי, אבל אי אפשר לשמור אותי בקופסה. מה אני?','זמן','הזמן עובר גם כשאיננו שמים לב.']],
+  [['כדור ומחבט עולים יחד 1.10 שקלים. המחבט עולה שקל אחד יותר מהכדור. כמה עולה הכדור?','5 אגורות','אם הכדור עולה 5 אגורות, המחבט עולה 1.05 שקלים וביחד הם 1.10.'],['חמש מכונות מייצרות חמישה צעצועים בחמש דקות. כמה זמן ייקח ל־100 מכונות לייצר 100 צעצועים?','חמש דקות','כל מכונה מייצרת צעצוע בחמש דקות, ולכן 100 מכונות עובדות במקביל.'],['שטח עלי הנופר בבריכה מוכפל בכל יום. ביום ה־48 הבריכה מכוסה כולה. מתי הייתה מכוסה חצי?','ביום ה־47','אם השטח מוכפל בכל יום, יום לפני הכיסוי המלא הוא חצי מהשטח.'],['לאיכר יש 3 תפוחים. לקחתם 2. כמה תפוחים יש לכם?','שניים','לקחתם שני תפוחים, ולכן שניים נמצאים אצלכם.'],['במשפחה שני הורים ושלוש בנות. לכל בת יש אח אחד. כמה ילדים במשפחה?','ארבעה','שלוש הבנות חולקות אח אחד, ולכן יש ארבעה ילדים.']]
+ ],
+ ru:[
+  [['Что нужно разбить, прежде чем использовать?','Яйцо','Перед приготовлением яйцо нужно разбить.'],['Что всегда позади тебя и никогда не окажется впереди?','Прошлое','Прошлое уже случилось, поэтому оно всегда позади.'],['У меня есть страницы и корешок, но я не могу стоять или говорить. Что я?','Книга','У книги есть страницы и корешок, но она не живая.'],['Что путешествует по миру, оставаясь в одном углу?','Почтовая марка','Марка остаётся в углу конверта, пока конверт путешествует.'],['Что становится мокрее, пока сушит?','Полотенце','Полотенце впитывает воду, которую вытирает.']],
+  [['Динозавр прошёл по мягкой грязи. Что осталось, когда он ушёл?','След','Лапа оставляет отпечаток в грязи.'],['Что находят палеонтологи, хотя это уже не живой динозавр?','Окаменелость','Окаменелость — сохранившийся остаток или след древней жизни.'],['Чем больше породы убирают исследователи, тем больше становится это. Что это?','Яма','Когда убирают больше материала, яма становится больше.'],['Посетитель музея кричит и слышит, как звук возвращается. Что он услышал?','Эхо','Эхо — это звук, отражённый от поверхности.'],['Окаменелость старше всех ныне живущих людей. Что человек получает каждый год?','Возраст','С каждым годом человек становится на год старше.']],
+  [['Лампа посылает меня через комнату, но у меня нет веса и я не занимаю места. Что я?','Свет','Свет распространяется по комнате, не занимая места.'],['Я следую за тобой на солнце и исчезаю в темноте. Что я?','Тень','Тень появляется, когда тело закрывает свет.'],['Я меняю форму на ночном небе, но остаюсь тем же небесным телом. Что я?','Луна','Луна кажется разной формы, когда видна разная освещённая часть.'],['Меня можно планировать, но нельзя увидеть до того, как я стану настоящим. Что я?','Будущее','Будущее ещё не наступило.'],['Я показываю твоё лицо, но не сохраняю его изображение. Что я?','Отражение','Отражение появляется на поверхности, но не является сохранённой фотографией.']],
+  [['Во мне много дыр, но я могу удерживать воду. Что я?','Губка','Губка впитывает воду и удерживает её в мелких порах.'],['Мы двигаемся вместе группой, но мы не школьный класс. Кто мы?','Косяк рыб','Группу рыб называют косяком.'],['Я защищаю морское животное, а иногда море оставляет меня пустой на берегу. Что я?','Раковина','Раковина защищает некоторых морских животных и иногда остаётся пустой.'],['Я поднимаюсь и опускаюсь у берега из-за притяжения Луны. Что я?','Прилив и отлив','Притяжение Луны вызывает приливы и отливы.'],['Я двигаюсь в море, но я не рыба и у меня нет двигателя. Что я?','Течение','Течение — это движущаяся вода в океане.']],
+  [['Меня режут, делят и украшают свечами, но я не подарок. Что я?','Торт','Торт подают кусочками и часто украшают свечами.'],['Я сладкая, у меня есть палочка, и я постепенно исчезаю, если меня лизать. Что я?','Леденец','Леденец — сладость на палочке, которая растворяется во рту.'],['Я сладость в обёртке, но я не письмо. Что я?','Конфета','Конфеты часто заворачивают перед тем, как съесть.'],['Я начинаюсь с бобов и могу стать плиткой. Что я?','Шоколад','Шоколад делают из какао-бобов и выпускают плитками.'],['Я холодное, сладкое и таю на солнце. Что я?','Мороженое','Мороженое тает, когда становится теплее.']],
+  [['Я показываю дороги и острова, но по мне не ездят настоящие машины и не ходят волны. Что я?','Карта','Карта изображает места, но не содержит их в реальности.'],['У меня есть голова и хвост, но нет тела, и мной можно заплатить. Что я?','Монета','У монеты есть две стороны, а ещё ею платят.'],['Я спрятан, и если меня найти, пират может разбогатеть. Что я?','Сокровище','В историях пираты ищут спрятанные сокровища.'],['Если рассказать меня другому, я перестаю быть секретом. Что я?','Секрет','Когда секретом делятся, он уже не секрет.'],['Пираты отмечают мной место, но я не само сокровище. Какая я буква?','Буква X','На картах сокровищ место часто отмечают буквой X.']],
+  [['У меня есть клавиши, но я не открываю двери. У меня есть пробел, но нет комнаты. Что я?','Клавиатура','У клавиатуры есть клавиши и пробел, но нет дверей или комнат.'],['Я храню энергию, но я не электростанция. Что я?','Батарея','Батарея хранит энергию для устройства.'],['У меня есть лицо и стрелки, но нет рук, и я говорю, когда пора уходить. Что я?','Часы','Циферблат и стрелки показывают время.'],['Я отвечаю, когда по мне печатают, но не понимаю, как человек. Что я?','Компьютер','Компьютер обрабатывает введённые команды и информацию.'],['Я могу быть секретом из символов и нужен, чтобы открыть устройство. Что я?','Пароль','Пароль — секретный код для доступа к устройству или аккаунту.']],
+  [['Я начинаюсь с крошечной вещи в земле и могу вырасти в высокое дерево. Что я?','Семя','Семя может прорасти и стать растением.'],['У меня есть лепестки, и я тянусь к солнцу, но я не звезда. Что я?','Цветок','Цветы — растения, которые часто растут к свету.'],['У меня пятнистая шляпка, и я появляюсь после дождя, но я не человек. Что я?','Гриб','Грибы часто появляются во влажных местах после дождя.'],['Я расту под землёй и удерживаю растение на месте. Что я?','Корень','Корни закрепляют растения и впитывают воду.'],['Я падаю из облаков и помогаю саду расти, но я не садовник. Что я?','Дождь','Дождь даёт растениям воду для роста.']],
+  [['Меня можно подхватить, но нельзя бросить. Что я?','Простуда','Простуду можно подхватить, но нельзя бросить.'],['Я выхожу изо рта в морозный день и исчезаю в воздухе. Что я?','Дыхание','Тёплое дыхание становится видимым в очень холодном воздухе.'],['Я падаю из облаков зимой, но не ушибаюсь. Что я?','Снег','Снежинки мягко падают из облаков.'],['Я твёрдая вода и могу растаять в комнате. Что я?','Лёд','Лёд — замёрзшая вода, которая тает при нагревании.'],['Я показываю числом, насколько холодно или тепло. Что я?','Термометр','Термометр измеряет температуру.']],
+  [['Когда я новая, я высокая, а когда старая — низкая. Что я?','Свеча','Свеча становится короче, пока горит.'],['Я могу согреть пещеру, но могу и сжечь её. Что я?','Огонь','Огонь даёт тепло, но может распространиться и вызвать пожар.'],['Я поднимаюсь от огня и растворяюсь в воздухе. Что я?','Дым','Дым состоит из частиц и газов, поднимающихся от огня.'],['Я покрываю дракона, меня можно пересчитать, но я не монета. Что я?','Чешуя','У многих рептилий, в том числе у сказочных драконов, есть чешуя.'],['Я нахожусь в скорлупе и могу стать драконом из сказки. Что я?','Яйцо','Во многих сказках маленький дракон вылупляется из яйца.']],
+  [['Я увеличиваюсь каждый год и никогда не уменьшаюсь. Что я?','Возраст','С годами человек становится старше.'],['У меня двенадцать частей для месяцев, но я не книга рассказов. Что я?','Календарь','Календарь показывает дни и месяцы года.'],['Я наступаю после сегодня, но до послезавтра. Что я?','Завтра','Завтра — день сразу после сегодняшнего.'],['У меня есть лицо и стрелки, но я не могу улыбаться или махать. Что я?','Часы','У часов есть циферблат и стрелки, показывающие время.'],['Меня можно потратить, но нельзя положить в коробку. Что я?','Время','Время идёт, даже если мы этого не замечаем.']],
+  [['Мяч и бита стоят вместе 1 доллар 10 центов. Бита стоит на 1 доллар дороже мяча. Сколько стоит мяч?','5 центов','Если мяч стоит 5 центов, бита стоит 1 доллар 5 центов, всего 1 доллар 10 центов.'],['Пять машин делают пять игрушек за пять минут. За сколько 100 таких машин сделают 100 игрушек?','Пять минут','Каждая машина делает игрушку за пять минут, поэтому все машины работают одновременно.'],['Площадь листьев кувшинок удваивается каждый день. На 48-й день пруд покрыт полностью. Когда он был покрыт наполовину?','На 47-й день','Если площадь удваивается ежедневно, за день до полного покрытия она была половинной.'],['У фермера три яблока. Ты взял два. Сколько яблок у тебя?','Два','Ты взял два яблока, значит у тебя два.'],['В семье два родителя и три дочери. У каждой дочери один брат. Сколько всего детей?','Четверо','У всех трёх сестёр один общий брат, всего четверо детей.']]
+ ]
+};
+Object.assign(TEXT.en,{escapeRoomNames:['The Library','Dinosaur Museum','Space Station','Underwater Lab','Candy Factory','Pirate Ship','Robot Workshop','Fairy Garden','Arctic Base','Dragon Cave','Time Machine','Logic Vault']});
+Object.assign(TEXT.he,{escapeRoomNames:['הספרייה','מוזיאון הדינוזאורים','תחנת החלל','המעבדה התת־ימית','מפעל הממתקים','ספינת הפיראטים','סדנת הרובוטים','גן הפיות','התחנה הארקטית','מערת הדרקון','מכונת הזמן','כספת ההיגיון']});
+Object.assign(TEXT.ru,{escapeRoomNames:['Библиотека','Музей динозавров','Космическая станция','Подводная лаборатория','Фабрика сладостей','Пиратский корабль','Мастерская роботов','Сад фей','Арктическая база','Пещера дракона','Машина времени','Хранилище загадок']});
+function createEscapeRiddles(language,activity){
+  const activityRiddles=ESCAPE_RIDDLE_BANK[language]?.[activity];
+  if(!activityRiddles||activityRiddles.length!==5)throw new Error(`Missing escape-room riddles for ${language}, activity ${activity+1}`);
+  return activityRiddles.map(([prompt,answer,explanation],room)=>{
+    const distractors=activityRiddles.filter((_,index)=>index!==room).map(item=>item[1]);
+    if(new Set([answer,...distractors]).size!==5)throw new Error(`Duplicate escape-room answers for ${language}, activity ${activity+1}`);
+    const options=[answer,...Array.from({length:3},(_,index)=>distractors[(room+index)%distractors.length])];
+    const rotation=(activity+room)%options.length;
+    const ordered=options.slice(rotation).concat(options.slice(0,rotation));
+    return {prompt,explanation,options:ordered,answer:ordered.indexOf(answer)};
+  });
+}
+function createEscapeRiddlesLegacy(language,activity){
+  const [start,found,used,sequenceStart,step,boxCount,perBox,removed,depart,travel,stop,codeMiddle]=ESCAPE_RIDDLE_SEEDS[activity];
+  const topic=ESCAPE_RIDDLE_TOPICS[language][activity];
+  const sequence=[0,1,2,3].map(index=>sequenceStart+index*step);
+  const stockAnswer=start+found-used;
+  const boxAnswer=boxCount*perBox-removed;
+  const arrive=depart+travel+stop;
+  const code=[codeMiddle*2,codeMiddle,codeMiddle-1].join('');
+  const codeOptions=[code,[code[1],code[0],code[2]].join(''),[code[0],code[2],code[1]].join(''),[code[2],code[1],code[0]].join('')];
+  const en=[
+    [`At ${topic}, the team had ${start} supply items. They found ${found} more and used ${used}. How many are left?`,`Start with ${start}, add ${found}, then subtract ${used}: ${start} + ${found} − ${used} = ${stockAnswer}.`,escapeNumberChoices(stockAnswer)],
+    [`A lock in ${topic} opens with the next number in this sequence: ${sequence.join(', ')}, ... What is the next number?`,`Each number increases by ${step}. Add ${step} to ${sequence[3]} to get ${sequence[3]+step}.`,escapeNumberChoices(sequence[3]+step,[0,-step,step,2*step])],
+    [`In ${topic}, ${boxCount} boxes hold ${perBox} items each. The team takes out ${removed} items. How many remain?`,`First multiply ${boxCount} by ${perBox}, then subtract ${removed}: ${boxCount} × ${perBox} − ${removed} = ${boxAnswer}.`,escapeNumberChoices(boxAnswer)],
+    [`A shuttle at ${topic} leaves at ${formatEscapeTime(depart)}. The trip takes ${travel} minutes and a stop adds ${stop} minutes. What time does it arrive?`,`The total journey is ${travel} + ${stop} = ${travel+stop} minutes. ${formatEscapeTime(depart)} plus ${travel+stop} minutes is ${formatEscapeTime(arrive)}.`,[arrive,arrive-10,arrive+10,arrive+20].map(formatEscapeTime)],
+    [`The code for a door in ${topic} has three digits. The first digit is twice the second. The last digit is one less than the second. The digits add up to ${code.split('').reduce((sum,digit)=>sum+Number(digit),0)}. What is the code?`,`If the middle digit is ${codeMiddle}, the first is ${codeMiddle*2} and the last is ${codeMiddle-1}. These digits total ${code.split('').reduce((sum,digit)=>sum+Number(digit),0)}, so the code is ${code}.`,codeOptions]
+  ];
+  const he=[
+    [`ב${topic} היו ${start} פריטי ציוד. מצאו עוד ${found} והשתמשו ב־${used}. כמה פריטים נשארו?`,`מתחילים ב־${start}, מוסיפים ${found} ומחסרים ${used}: ${start} + ${found} − ${used} = ${stockAnswer}.`,escapeNumberChoices(stockAnswer)],
+    [`מנעול ב${topic} נפתח בעזרת המספר הבא בסדרה: ${sequence.join(', ')}, ... מהו המספר הבא?`,`בכל פעם מוסיפים ${step}. לכן מוסיפים ${step} ל־${sequence[3]} ומקבלים ${sequence[3]+step}.`,escapeNumberChoices(sequence[3]+step,[0,-step,step,2*step])],
+    [`ב${topic} יש ${boxCount} ארגזים ובכל אחד ${perBox} פריטים. הוציאו ${removed} פריטים. כמה נשארו?`,`קודם מכפילים ${boxCount} ב־${perBox}, ואז מחסרים ${removed}: ${boxCount} × ${perBox} − ${removed} = ${boxAnswer}.`,escapeNumberChoices(boxAnswer)],
+    [`רכב הסעות ב${topic} יוצא בשעה ${formatEscapeTime(depart)}. הנסיעה אורכת ${travel} דקות ועצירה מוסיפה ${stop} דקות. מתי הוא מגיע?`,`זמן הנסיעה והעצירה יחד הוא ${travel} + ${stop} = ${travel+stop} דקות. ${formatEscapeTime(depart)} ועוד ${travel+stop} דקות הם ${formatEscapeTime(arrive)}.`,[arrive,arrive-10,arrive+10,arrive+20].map(formatEscapeTime)],
+    [`קוד הדלת ב${topic} מורכב משלוש ספרות. הספרה הראשונה היא פי שניים מהשנייה. הספרה האחרונה קטנה מהשנייה באחת. סכום הספרות הוא ${code.split('').reduce((sum,digit)=>sum+Number(digit),0)}. מהו הקוד?`,`אם הספרה האמצעית היא ${codeMiddle}, הראשונה היא ${codeMiddle*2} והאחרונה ${codeMiddle-1}. הסכום הוא ${code.split('').reduce((sum,digit)=>sum+Number(digit),0)}, לכן הקוד הוא ${code}.`,codeOptions]
+  ];
+  const ru=[
+    [`В задании «${topic}» было ${start} предметов. Нашли ещё ${found}, а ${used} использовали. Сколько предметов осталось?`,`К ${start} прибавляем ${found} и вычитаем ${used}: ${start} + ${found} − ${used} = ${stockAnswer}.`,escapeNumberChoices(stockAnswer)],
+    [`Замок в задании «${topic}» открывается следующим числом в последовательности: ${sequence.join(', ')}, ... Какое это число?`,`Каждый раз прибавляется ${step}. Прибавим ${step} к ${sequence[3]} и получим ${sequence[3]+step}.`,escapeNumberChoices(sequence[3]+step,[0,-step,step,2*step])],
+    [`В задании «${topic}» есть ${boxCount} коробок, в каждой по ${perBox} предметов. Взяли ${removed} предметов. Сколько осталось?`,`Умножаем ${boxCount} на ${perBox}, затем вычитаем ${removed}: ${boxCount} × ${perBox} − ${removed} = ${boxAnswer}.`,escapeNumberChoices(boxAnswer)],
+    [`Транспорт в задании «${topic}» отправляется в ${formatEscapeTime(depart)}. Дорога занимает ${travel} минут, а остановка добавляет ${stop} минут. Когда он прибудет?`,`Весь путь занимает ${travel} + ${stop} = ${travel+stop} минут. К ${formatEscapeTime(depart)} прибавляем ${travel+stop} минут и получаем ${formatEscapeTime(arrive)}.`,[arrive,arrive-10,arrive+10,arrive+20].map(formatEscapeTime)],
+    [`Код двери в задании «${topic}» состоит из трёх цифр. Первая цифра вдвое больше второй. Последняя на единицу меньше второй. Сумма цифр равна ${code.split('').reduce((sum,digit)=>sum+Number(digit),0)}. Какой это код?`,`Если средняя цифра ${codeMiddle}, первая — ${codeMiddle*2}, а последняя — ${codeMiddle-1}. Их сумма равна ${code.split('').reduce((sum,digit)=>sum+Number(digit),0)}, значит код — ${code}.`,codeOptions]
+  ];
+  const localized=({en,he,ru})[language];
+  const answers=[String(stockAnswer),String(sequence[3]+step),String(boxAnswer),formatEscapeTime(arrive),code];
+  return localized.map(([prompt,explanation,options],index)=>{
+    const rotation=(activity*7+index*3+1)%options.length;
+    const ordered=options.slice(rotation).concat(options.slice(0,rotation));
+    return {prompt,explanation,options:ordered,answer:ordered.indexOf(answers[index])};
+  });
+}
+Object.assign(TEXT.en,{locked:'🔒 $1.90/month',purchase:'Subscribe to this game — $1.90/month',unlockAll:'Subscribe to all 13 games — $14.90/month',shopGame:'Monthly subscription: {game} for $1.90/month, or all 13 games for $14.90/month.'});
+Object.assign(TEXT.he,{locked:'🔒 $1.90 לחודש',purchase:'מנוי למשחק הזה — $1.90 לחודש',unlockAll:'מנוי לכל 13 המשחקים — $14.90 לחודש',shopGame:'תשלום חודשי: {game} ב־$1.90 לחודש, או כל 13 המשחקים ב־$14.90 לחודש.'});
+Object.assign(TEXT.ru,{locked:'🔒 $1.90 в месяц',purchase:'Подписка на эту игру — $1.90 в месяц',unlockAll:'Подписка на все 13 игр — $14.90 в месяц',shopGame:'Ежемесячная подписка: игра «{game}» за $1.90 в месяц или все 13 игр за $14.90 в месяц.'});
+Object.assign(TEXT.en,{puzzlePrompt:'Tap two pieces to swap them until the picture is complete.'});
+Object.assign(TEXT.he,{puzzlePrompt:'הקישו על שני חלקים כדי להחליף ביניהם עד להשלמת התמונה.'});
+Object.assign(TEXT.ru,{puzzlePrompt:'Нажимайте на две детали, чтобы поменять их местами и собрать картинку.'});
 Object.assign(TEXT.ru,{volume:'Громкость',musicToggle:'Включить или выключить музыку',drawingArea:'Область рисования'});
+Object.assign(TEXT.en,{cameraPermissionBlocked:'Camera access is blocked. Open app settings and allow Camera, then return and try again.',cameraPermissionBrowserHelp:'Camera access is blocked. Allow it in your browser or site settings, then try again.',cameraPermissionUpdateRequired:'Update the app to open its settings here, or open device Settings > Apps > Megical Fun > Permissions > Camera.',cameraPermissionSettings:'Open app settings',cameraSettingsError:'Could not open app settings. Open them from your device settings.'});
+Object.assign(TEXT.he,{cameraPermissionBlocked:'הגישה למצלמה חסומה. פתחו את הגדרות האפליקציה ואשרו גישה למצלמה, ואז חזרו ונסו שוב.',cameraPermissionBrowserHelp:'הגישה למצלמה חסומה. אשרו אותה בהגדרות הדפדפן או האתר ונסו שוב.',cameraPermissionUpdateRequired:'כדי לפתוח מכאן את הגדרות האפליקציה, עדכנו את האפליקציה. לחלופין: הגדרות המכשיר ← אפליקציות ← Megical Fun ← הרשאות ← מצלמה.',cameraPermissionSettings:'פתיחת הגדרות האפליקציה',cameraSettingsError:'לא ניתן לפתוח את הגדרות האפליקציה. פתחו אותן דרך הגדרות המכשיר.'});
+Object.assign(TEXT.ru,{cameraPermissionBlocked:'Доступ к камере заблокирован. Откройте настройки приложения, разрешите доступ к камере, затем вернитесь и попробуйте снова.',cameraPermissionBrowserHelp:'Доступ к камере заблокирован. Разрешите его в настройках браузера или сайта и попробуйте снова.',cameraPermissionUpdateRequired:'Обновите приложение, чтобы открыть настройки отсюда, или выберите: Настройки устройства > Приложения > Megical Fun > Разрешения > Камера.',cameraPermissionSettings:'Открыть настройки приложения',cameraSettingsError:'Не удалось открыть настройки приложения. Откройте их в настройках устройства.'});
 Object.assign(TEXT.en,{childName:"Child's nickname",parentYear:'Parent birth year (1950–2006)',profileStars:'Stars',vipLabel:'VIP',freeLabel:'Free',active:'Active',logout:'Log out',noSavedArt:'No saved art yet.',switchCamera:'🔄 Switch camera',cameraPhotoError:'Could not read that image.',soundAuto:'Surprise me',soundGroove:'Bouncy Groove',soundLullaby:'Dreamy Lullaby',soundJungle:'Jungle Beat',soundSpace:'Space Adventure',soundChip:'Game Time',soundOff:'Silent',mixerTitle:'🌈 Color Mixer',mixerHue:'🌈 Pick a rainbow color',mixerSat:'💧 Pale ↔ Bold',mixerValue:'🌓 Dark ↔ Light',mixerChooser:'🎯 Or pick from the color chooser',mixerBlend:'🥣 Mix with my color',mixerAdd:'➕ Add to palette',hintFill:'Tap an area to color it 🎨',hintBrush:'Draw freely — paint stays inside each shape!',authNameError:'Please enter a nickname.',authYearError:'Parent birth year must be 1950–2006.',adultError:'Please ask an adult to continue.'});
 Object.assign(TEXT.he,{childName:'כינוי הילד/ה',parentYear:'שנת הלידה של ההורה (1950–2006)',profileStars:'כוכבים',vipLabel:'VIP',freeLabel:'חינם',active:'פעיל',logout:'יציאה',noSavedArt:'עדיין אין ציורים שמורים.',switchCamera:'🔄 החלפת מצלמה',cameraPhotoError:'לא ניתן לקרוא את התמונה.',soundAuto:'הפתיעו אותי',soundGroove:'קצב קופצני',soundLullaby:'שיר ערש חלומי',soundJungle:'קצב ג׳ונגל',soundSpace:'הרפתקה בחלל',soundChip:'זמן משחק',soundOff:'שקט',mixerTitle:'🌈 מערבל צבעים',mixerHue:'🌈 בחרו צבע מהקשת',mixerSat:'💧 עדין ↔ בולט',mixerValue:'🌓 כהה ↔ בהיר',mixerChooser:'🎯 או בחרו צבע',mixerBlend:'🥣 ערבוב עם הצבע שלי',mixerAdd:'➕ הוספה ללוח הצבעים',hintFill:'לחצו על אזור כדי לצבוע אותו 🎨',hintBrush:'ציירו בחופשיות — הצבע נשאר בתוך הצורה!',authNameError:'נא להזין כינוי.',authYearError:'שנת הלידה של ההורה חייבת להיות בין 1950 ל־2006.',adultError:'בקשו עזרה ממבוגר כדי להמשיך.'});
 Object.assign(TEXT.ru,{childName:'Имя ребёнка',parentYear:'Год рождения родителя (1950–2006)',profileStars:'Звёзды',vipLabel:'VIP',freeLabel:'Бесплатно',active:'Активно',logout:'Выйти',noSavedArt:'Пока нет сохранённых рисунков.',switchCamera:'🔄 Переключить камеру',cameraPhotoError:'Не удалось прочитать изображение.',soundAuto:'Удиви меня',soundGroove:'Бодрый ритм',soundLullaby:'Нежная колыбельная',soundJungle:'Ритм джунглей',soundSpace:'Космическое приключение',soundChip:'Время игры',soundOff:'Без звука',mixerTitle:'🌈 Смешивание цветов',mixerHue:'🌈 Выбери цвет радуги',mixerSat:'💧 Нежный ↔ Яркий',mixerValue:'🌓 Тёмный ↔ Светлый',mixerChooser:'🎯 Или выбери цвет',mixerBlend:'🥣 Смешать с моим цветом',mixerAdd:'➕ Добавить в палитру',hintFill:'Нажми на область, чтобы раскрасить её 🎨',hintBrush:'Рисуй свободно — краска остаётся внутри фигуры!',authNameError:'Введи имя.',authYearError:'Год рождения родителя должен быть от 1950 до 2006.',adultError:'Попроси взрослого помочь.'});
 Object.assign(TEXT.en,{accountEmail:'Parent or guardian email',accountPassword:'Password (at least 8 characters)',authWorking:'Connecting securely…',authNotConfigured:'Account sign-in is not set up yet. You can still play as a guest.',authFailed:'Could not sign in. Please try again.',invalidEmail:'Enter a valid email address.',invalidPassword:'Enter a password with at least 8 characters.',invalidCredentials:'The email or password is incorrect. Check both fields.',emailInUse:'This email is already registered. Try logging in.',emailConfirmation:'Check your email to confirm the new account, then log in.',entitlementsLoadFailed:'Could not load this account’s VIP access. Please try again.'});
 Object.assign(TEXT.he,{accountEmail:'כתובת האימייל של ההורה',accountPassword:'סיסמה (לפחות 8 תווים)',authWorking:'מתחברים באופן מאובטח…',authNotConfigured:'התחברות לחשבון עדיין לא הוגדרה. אפשר להמשיך כאורחים.',authFailed:'לא ניתן להתחבר. נסו שוב.',invalidEmail:'כתובת האימייל אינה תקינה. בדקו אותה.',invalidPassword:'הסיסמה צריכה להכיל לפחות 8 תווים.',invalidCredentials:'האימייל או הסיסמה אינם נכונים. בדקו את שני השדות.',emailInUse:'כתובת האימייל כבר רשומה. נסו להתחבר.',emailConfirmation:'בדקו את האימייל ואשרו את החשבון החדש, ואז התחברו.',entitlementsLoadFailed:'לא ניתן לטעון את הרשאות ה־VIP של החשבון. נסו שוב.'});
 Object.assign(TEXT.ru,{accountEmail:'Электронная почта родителя или опекуна',accountPassword:'Пароль (не менее 8 символов)',authWorking:'Безопасное подключение…',authNotConfigured:'Вход в аккаунт пока не настроен. Можно играть как гость.',authFailed:'Не удалось войти. Попробуйте ещё раз.',invalidEmail:'Введите правильный адрес электронной почты.',invalidPassword:'Пароль должен содержать не менее 8 символов.',invalidCredentials:'Неверная почта или пароль. Проверьте оба поля.',emailInUse:'Этот адрес уже зарегистрирован. Попробуйте войти.',emailConfirmation:'Подтвердите новый аккаунт по ссылке в письме, затем войдите.',entitlementsLoadFailed:'Не удалось загрузить VIP-доступ аккаунта. Попробуйте ещё раз.'});
-Object.assign(TEXT.en,{hintButton:'💡 Hint',hintFirst:'Small hint: one incorrect option has been removed. Read the question again.',hintSecond:'Another option is gone. Compare the remaining answers with the question.',hintNoMore:'No more hints. Try the remaining answers!',listenQuestion:'🔊 Listen',speechUnavailable:'Read-aloud is not available in this browser.',stickerBook:'Sticker book',noStickers:'Complete activities to earn stickers!',parentDashboard:'👪 Parent dashboard',progressSummary:'Progress and stickers',activitiesCompleted:'Activities completed: {n}',gamesCompleted:'Games explored: {n}',timeLimitTitle:'Daily play-time limit',dailyLimitLabel:'Daily limit',unlimited:'No limit',limit15:'15 minutes',limit30:'30 minutes',limit45:'45 minutes',limit60:'60 minutes',limit90:'90 minutes',limit120:'120 minutes',minutesUsed:'Used today: {used} / {limit} minutes',minutesUnlimited:'Used today: {used} minutes',timeLimitSaved:'Daily time limit saved.',purchaseManagement:'Purchase management',purchaseStatus:'VIP: {vip}. Individual game unlocks: {games}. All games: {all}.',purchaseUnavailableNote:'Purchases are not configured yet. No payment can be made.',viewPurchaseOptions:'View purchase options',contentCheck:'Question content check',runContentCheck:'Run content check',contentCheckPassed:'Checked {n} questions in English, Hebrew, and Russian. No issues found.',contentCheckFailed:'Content check found a problem: {error}',timeLimitReachedTitle:'Time to take a break',timeLimitReached:"Today's play-time limit has been reached. Ask a parent to continue.",askParent:'Ask a parent',stickerEarned:'🎉 You earned a new sticker!',contentQuestionError:'Invalid question or answer options.',notUnlocked:'Not unlocked'});
-Object.assign(TEXT.he,{hintButton:'💡 רמז',hintFirst:'רמז קטן: הסרנו אפשרות שגויה אחת. קראו שוב את השאלה.',hintSecond:'הסרנו עוד אפשרות. השוו בין התשובות שנותרו לשאלה.',hintNoMore:'אין עוד רמזים. נסו את התשובות שנותרו!',listenQuestion:'🔊 הקראה',speechUnavailable:'הקראה אינה זמינה בדפדפן הזה.',stickerBook:'אלבום מדבקות',noStickers:'השלימו פעילויות כדי לאסוף מדבקות!',parentDashboard:'👪 אזור הורים',progressSummary:'התקדמות ומדבקות',activitiesCompleted:'פעילויות שהושלמו: {n}',gamesCompleted:'משחקים שנאספו בהם מדבקות: {n}',timeLimitTitle:'הגבלת זמן יומית',dailyLimitLabel:'זמן משחק ביום',unlimited:'ללא הגבלה',limit15:'15 דקות',limit30:'30 דקות',limit45:'45 דקות',limit60:'60 דקות',limit90:'90 דקות',limit120:'120 דקות',minutesUsed:'שימוש היום: {used} מתוך {limit} דקות',minutesUnlimited:'שימוש היום: {used} דקות',timeLimitSaved:'מגבלת הזמן היומית נשמרה.',purchaseManagement:'ניהול רכישות',purchaseStatus:'VIP: {vip}. משחקים שנפתחו בנפרד: {games}. כל המשחקים: {all}.',purchaseUnavailableNote:'הרכישות עדיין אינן מוגדרות. לא ניתן לבצע חיוב.',viewPurchaseOptions:'הצגת אפשרויות רכישה',contentCheck:'בדיקת תוכן השאלות',runContentCheck:'בדיקת תוכן עכשיו',contentCheckPassed:'נבדקו {n} שאלות באנגלית, בעברית וברוסית. לא נמצאו בעיות.',contentCheckFailed:'בדיקת התוכן מצאה בעיה: {error}',timeLimitReachedTitle:'הגיע הזמן להפסקה',timeLimitReached:'הגעתם למגבלת זמן המשחק להיום. בקשו מהורה עזרה כדי להמשיך.',askParent:'בקשת עזרה מהורה',stickerEarned:'🎉 אספתם מדבקה חדשה!',contentQuestionError:'השאלה או אפשרויות התשובה אינן תקינות.',notUnlocked:'לא נפתח'});
-Object.assign(TEXT.ru,{hintButton:'💡 Подсказка',hintFirst:'Небольшая подсказка: один неверный вариант убран. Перечитай вопрос.',hintSecond:'Ещё один вариант убран. Сравни оставшиеся ответы с вопросом.',hintNoMore:'Подсказок больше нет. Выбери из оставшихся ответов!',listenQuestion:'🔊 Слушать',speechUnavailable:'Озвучивание не поддерживается этим браузером.',stickerBook:'Альбом наклеек',noStickers:'Выполняй задания, чтобы собирать наклейки!',parentDashboard:'👪 Для родителей',progressSummary:'Прогресс и наклейки',activitiesCompleted:'Выполнено заданий: {n}',gamesCompleted:'Игры с наклейками: {n}',timeLimitTitle:'Дневное ограничение времени',dailyLimitLabel:'Лимит на день',unlimited:'Без ограничений',limit15:'15 минут',limit30:'30 минут',limit45:'45 минут',limit60:'60 минут',limit90:'90 минут',limit120:'120 минут',minutesUsed:'Сегодня: {used} из {limit} минут',minutesUnlimited:'Сегодня сыграно: {used} мин.',timeLimitSaved:'Дневной лимит сохранён.',purchaseManagement:'Управление покупками',purchaseStatus:'VIP: {vip}. Открыто игр: {games}. Все игры: {all}.',purchaseUnavailableNote:'Покупки пока не настроены. Оплата невозможна.',viewPurchaseOptions:'Посмотреть варианты покупки',contentCheck:'Проверка вопросов',runContentCheck:'Проверить вопросы',contentCheckPassed:'Проверено вопросов на английском, иврите и русском: {n}. Ошибок нет.',contentCheckFailed:'Проверка обнаружила проблему: {error}',timeLimitReachedTitle:'Пора отдохнуть',timeLimitReached:'Дневной лимит игры достигнут. Попроси родителя помочь продолжить.',askParent:'Позвать родителя',stickerEarned:'🎉 Новая наклейка!',contentQuestionError:'Некорректный вопрос или варианты ответа.',notUnlocked:'Не открыто'});
+Object.assign(TEXT.en,{hintButton:'💡 Hint',hintFirst:'Small hint: one incorrect option has been removed. Read the question again.',hintSecond:'Another option is gone. Compare the remaining answers with the question.',hintNoMore:'No more hints. Try the remaining answers!',listenQuestion:'🔊 Listen',speechUnavailable:'Read-aloud is not available in this browser.',parentDashboard:'👪 Parent dashboard',timeLimitTitle:'Daily play-time limit',dailyLimitLabel:'Daily limit',unlimited:'No limit',limit15:'15 minutes',limit30:'30 minutes',limit45:'45 minutes',limit60:'60 minutes',limit90:'90 minutes',limit120:'120 minutes',minutesUsed:'Used today: {used} / {limit} minutes',minutesUnlimited:'Used today: {used} minutes',timeLimitSaved:'Daily time limit saved.',purchaseManagement:'Purchase management',purchaseStatus:'VIP: {vip}. Individual game unlocks: {games}. All games: {all}.',purchaseUnavailableNote:'Purchases are not configured yet. No payment can be made.',viewPurchaseOptions:'View purchase options',contentCheck:'Question content check',runContentCheck:'Run content check',contentCheckPassed:'Checked {n} questions in English, Hebrew, and Russian. No issues found.',contentCheckFailed:'Content check found a problem: {error}',timeLimitReachedTitle:'Time to take a break',timeLimitReached:"Today's play-time limit has been reached. Ask a parent to continue.",askParent:'Ask a parent',contentQuestionError:'Invalid question or answer options.',notUnlocked:'Not unlocked'});
+Object.assign(TEXT.he,{hintButton:'💡 רמז',hintFirst:'רמז קטן: הסרנו אפשרות שגויה אחת. קראו שוב את השאלה.',hintSecond:'הסרנו עוד אפשרות. השוו בין התשובות שנותרו לשאלה.',hintNoMore:'אין עוד רמזים. נסו את התשובות שנותרו!',listenQuestion:'🔊 הקראה',speechUnavailable:'הקראה אינה זמינה בדפדפן הזה.',parentDashboard:'👪 אזור הורים',timeLimitTitle:'הגבלת זמן יומית',dailyLimitLabel:'זמן משחק ביום',unlimited:'ללא הגבלה',limit15:'15 דקות',limit30:'30 דקות',limit45:'45 דקות',limit60:'60 דקות',limit90:'90 דקות',limit120:'120 דקות',minutesUsed:'שימוש היום: {used} מתוך {limit} דקות',minutesUnlimited:'שימוש היום: {used} דקות',timeLimitSaved:'מגבלת הזמן היומית נשמרה.',purchaseManagement:'ניהול רכישות',purchaseStatus:'VIP: {vip}. משחקים שנפתחו בנפרד: {games}. כל המשחקים: {all}.',purchaseUnavailableNote:'הרכישות עדיין אינן מוגדרות. לא ניתן לבצע חיוב.',viewPurchaseOptions:'הצגת אפשרויות רכישה',contentCheck:'בדיקת תוכן השאלות',runContentCheck:'בדיקת תוכן עכשיו',contentCheckPassed:'נבדקו {n} שאלות באנגלית, בעברית וברוסית. לא נמצאו בעיות.',contentCheckFailed:'בדיקת התוכן מצאה בעיה: {error}',timeLimitReachedTitle:'הגיע הזמן להפסקה',timeLimitReached:'הגעתם למגבלת זמן המשחק להיום. בקשו מהורה עזרה כדי להמשיך.',askParent:'בקשת עזרה מהורה',contentQuestionError:'השאלה או אפשרויות התשובה אינן תקינות.',notUnlocked:'לא נפתח'});
+Object.assign(TEXT.ru,{hintButton:'💡 Подсказка',hintFirst:'Небольшая подсказка: один неверный вариант убран. Перечитай вопрос.',hintSecond:'Ещё один вариант убран. Сравни оставшиеся ответы с вопросом.',hintNoMore:'Подсказок больше нет. Выбери из оставшихся ответов!',listenQuestion:'🔊 Слушать',speechUnavailable:'Озвучивание не поддерживается этим браузером.',parentDashboard:'👪 Для родителей',timeLimitTitle:'Дневное ограничение времени',dailyLimitLabel:'Лимит на день',unlimited:'Без ограничений',limit15:'15 минут',limit30:'30 минут',limit45:'45 минут',limit60:'60 минут',limit90:'90 минут',limit120:'120 минут',minutesUsed:'Сегодня: {used} из {limit} минут',minutesUnlimited:'Сегодня сыграно: {used} мин.',timeLimitSaved:'Дневной лимит сохранён.',purchaseManagement:'Управление покупками',purchaseStatus:'VIP: {vip}. Открыто игр: {games}. Все игры: {all}.',purchaseUnavailableNote:'Покупки пока не настроены. Оплата невозможна.',viewPurchaseOptions:'Посмотреть варианты покупки',contentCheck:'Проверка вопросов',runContentCheck:'Проверить вопросы',contentCheckPassed:'Проверено вопросов на английском, иврите и русском: {n}. Ошибок нет.',contentCheckFailed:'Проверка обнаружила проблему: {error}',timeLimitReachedTitle:'Пора отдохнуть',timeLimitReached:'Дневной лимит игры достигнут. Попроси родителя помочь продолжить.',askParent:'Позвать родителя',contentQuestionError:'Некорректный вопрос или варианты ответа.',notUnlocked:'Не открыто'});
 Object.assign(TEXT.en,{timeLimitReached:"Play is paused because today's limit has been reached. A parent can raise or remove the limit to continue. Otherwise, play will be available again tomorrow."});
 Object.assign(TEXT.he,{timeLimitReached:'המשחק נעצר כי הגעתם למגבלת הזמן להיום. הורה יכול להגדיל או להסיר את המגבלה כדי להמשיך. אחרת, תוכלו לשחק שוב מחר.'});
 Object.assign(TEXT.ru,{timeLimitReached:'Игра приостановлена: дневной лимит исчерпан. Родитель может увеличить или снять ограничение, чтобы продолжить. Иначе играть снова можно будет завтра.'});
@@ -320,20 +437,22 @@ function setLanguage(language){
   document.documentElement.dir=currentLanguage==='he'?'rtl':'ltr';
   $('#language').value=currentLanguage;$('#welcomeLanguage').value=currentLanguage;$('#profileLanguage').value=currentLanguage;
   const privacyLink=$('#privacyLink');if(privacyLink)privacyLink.href=`./privacy.html?lang=${currentLanguage}`;
+  const parentPrivacyLink=$('#parentPrivacyLink');if(parentPrivacyLink)parentPrivacyLink.href=`./privacy.html?lang=${currentLanguage}`;
   try{localStorage.setItem('megical_language',currentLanguage)}catch(e){console.error('Could not save language preference:',e)}
   S.language=currentLanguage;sv();
   document.querySelectorAll('[data-i18n]').forEach(node=>{node.textContent=tr(node.dataset.i18n)});
   document.querySelectorAll('[data-i18n-placeholder]').forEach(node=>{node.placeholder=tr(node.dataset.i18nPlaceholder)});
   document.querySelectorAll('[data-i18n-aria]').forEach(node=>{node.setAttribute('aria-label',tr(node.dataset.i18nAria))});
   if($('#auth').style.display!=='none')$('#aSubmit').textContent=tr(amode==='reg'?'register':'login');
-  if($('#home').classList.contains('on'))renderHome();
+  if($('#games').classList.contains('on'))renderMiniGames();
   if($('#profile').classList.contains('on'))renderProfile();
   if($('#parentM').classList.contains('on'))renderParentDashboard();
   if($('#drawIdea')&&miniGameScene==='play')$('#drawIdea').textContent=DRAWING_IDEAS[currentLanguage][selectedLevel%DRAWING_IDEAS[currentLanguage].length];
   if($('#paint').classList.contains('on'))refreshTools();
   if($('#items').classList.contains('on'))openCat(curCat);
   if($('#gameStage').classList.contains('on')&&miniGameScene==='play'){
-    if(['coloring','puzzle','differences','drawing','memory','letters'].includes(selectedMiniGame))launchMiniGame(selectedMiniGame,selectedLevel);
+    if(selectedMiniGame==='escapeRoom')renderEscapeRoom();
+    else if(['coloring','puzzle','differences','drawing','memory','letters'].includes(selectedMiniGame))launchMiniGame(selectedMiniGame,selectedLevel);
     else playLearningGame(selectedMiniGame,selectedLevel);
   }
   if(typeof renderMiniGames==='function'&&$('#games').classList.contains('on'))renderMiniGames();
@@ -342,11 +461,11 @@ function setLanguage(language){
 
 /* ---------- User Isolation & Storage ---------- */
 let currentUserId = 'guest';
-let S = {name:'Guest',av:'🐶',stars:0,vip:false,art:[],custom:[],music:true,track:'auto',vol:0.6,language:currentLanguage,unlockedGames:[],allGamesUnlocked:false,completedActivities:[],dailyUsageDate:'',dailyUsageSeconds:0,dailyLimitMinutes:0};
+let S = {name:'Guest',av:'🐶',stars:0,vip:false,art:[],custom:[],music:true,track:'auto',vol:0.6,language:currentLanguage,unlockedGames:[],allGamesUnlocked:false,completedEscapeRooms:[],dailyUsageDate:'',dailyUsageSeconds:0,dailyLimitMinutes:0};
 let supabaseClient=null,authBusy=false,currentAuthUserId=null,authChoiceMade=false;
 let usageTimer=null,usageStartedAt=null,pendingParentAction=null;
 function defaultUserData(name){
-  return {name,av:'🐶',stars:0,vip:false,art:[],custom:[],music:true,track:'auto',vol:0.6,language:currentLanguage,unlockedGames:[],allGamesUnlocked:false,completedActivities:[],dailyUsageDate:'',dailyUsageSeconds:0,dailyLimitMinutes:0};
+  return {name,av:'🐶',stars:0,vip:false,art:[],custom:[],music:true,track:'auto',vol:0.6,language:currentLanguage,unlockedGames:[],allGamesUnlocked:false,completedEscapeRooms:[],dailyUsageDate:'',dailyUsageSeconds:0,dailyLimitMinutes:0};
 }
 
 function loadUserData(userId,fallbackName=userId){
@@ -364,8 +483,9 @@ function loadUserData(userId,fallbackName=userId){
   if(!Array.isArray(S.art)) S.art=[];
   if(!Array.isArray(S.custom)) S.custom=[];
   if(!Array.isArray(S.unlockedGames)) S.unlockedGames=[];
-  if(!Array.isArray(S.completedActivities)) S.completedActivities=[];
-  else S.completedActivities=S.completedActivities.filter(key=>typeof key==='string'&&key.includes(':'));
+  delete S.completedActivities;
+  if(!Array.isArray(S.completedEscapeRooms))S.completedEscapeRooms=[];
+  else S.completedEscapeRooms=S.completedEscapeRooms.filter(key=>typeof key==='string'&&/^\d+:\d+$/.test(key));
   if(!Number.isFinite(S.dailyUsageSeconds)||S.dailyUsageSeconds<0)S.dailyUsageSeconds=0;
   if(![0,15,30,45,60,90,120].includes(S.dailyLimitMinutes))S.dailyLimitMinutes=0;
   currentLanguage=TEXT[S.language]?S.language:currentLanguage;
@@ -400,7 +520,7 @@ const SIZES=[["Small",4],["Medium",8],["Large",16],["Extra Large",28],["Jumbo",4
 const OPT_EMOJI={blur:1,passes:1,levels:4,minArea:90,thick:1};
 const OPT_PHOTO={photo:true};
 let curCat = 0, curItem = 0;
-let cur=COLORS[0],back='home',L=null,reg=null,img=null,hist=[],stream=null,cameraFacing='environment';
+let cur=COLORS[0],back='games',L=null,reg=null,img=null,hist=[],stream=null,cameraFacing='environment';
 let mode='fill',sizeIdx=1,drawing=false,lx=0,ly=0,brad=3,dirty=null;
 const cv=$('#cv'),ctx=cv.getContext('2d',{willReadFrequently:true});
 
@@ -421,7 +541,7 @@ const SOUND_OPTS=[
   {id:'off',icon:'🔇',name:'Silent'}
 ];
 /* "Surprise me" picks a style to suit each screen */
-const AUTO_TRACK={welcome:'groove',home:'groove',items:'jungle',paint:'space',games:'chip',gameStage:'chip',camera:'chip',profile:'lullaby'};
+const AUTO_TRACK={welcome:'groove',items:'jungle',games:'chip',gameStage:'chip',camera:'chip',profile:'lullaby'};
 let curScreen='welcome';
 const Snd=(()=>{
   let ac=null,master=null,out=null,noiseBuf=null,timer=null,nextT=0,step=0,playing=false,cur=null,curId=null,SIX=0.14;
@@ -661,7 +781,6 @@ function go(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('on',s.id===id));
   const navId=id==='gameStage'?'games':id;
   document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.g===navId));
-  if(id==='home')renderHome();
   if(id==='games')renderMiniGames();
   if(id==='profile')renderProfile();
   $('#top').style.display=$('#nav').style.display=(id==='welcome')?'none':'';
@@ -698,7 +817,7 @@ function setAuthError(field,key){
 }
 function guest(){
   authChoiceMade=true;currentAuthUserId=null;loadUserData('Guest');
-  S.vip=false;S.allGamesUnlocked=false;S.unlockedGames=[];sv();go('home');
+  S.vip=false;S.allGamesUnlocked=false;S.unlockedGames=[];sv();go('games');
 }
 async function enterAccount(user){
   if(currentAuthUserId===user.id)return;
@@ -711,7 +830,7 @@ async function enterAccount(user){
   S.vip=data.vip===true;
   S.allGamesUnlocked=data.all_games===true;
   S.unlockedGames=Array.isArray(data.unlocked_games)?data.unlocked_games:[];
-  currentAuthUserId=user.id;sv();go('home');
+  currentAuthUserId=user.id;sv();go('games');
 }
 async function authGo(){
   if(authBusy)return;
@@ -786,10 +905,7 @@ async function initializeAuth(){
     console.error('Account sign-in is unavailable:',error);
   }
 }
-/* ---------- home & items ---------- */
-function renderHome(){
-  renderMiniGameCards($('#catGrid'));
-}
+/* ---------- coloring items ---------- */
 function categoryName(id){
   const names={
     en:{animals:'Cute Animals',vehicles:'Vehicles',food:'Yummy Food',dino:'Dinosaurs',fairy:'Fairytale & Magic',space:'Space Exploration',ocean:'Ocean Life',hero:'Superheroes',sport:'Sports & Action',nature:'Nature & Garden',dragon:'Fantasy Dragons'},
@@ -802,7 +918,7 @@ function locked(c,i){return !gameUnlocked('coloring')&&c.vip}
 function openCat(ci){
   const c=CATS[ci];
   if(c.vip&&!gameUnlocked('coloring')){requestGamePurchase('coloring');return}
-  back=curScreen==='gameStage'?'gameStage':'home';coloringLaunch=back==='gameStage';$('#itTitle').textContent=c.icon+' '+categoryName(c.id);
+  back=curScreen==='gameStage'?'gameStage':'games';coloringLaunch=back==='gameStage';$('#itTitle').textContent=c.icon+' '+categoryName(c.id);
   $('#itGrid').innerHTML=c.items.map((e,i)=>{
     const isImg = e.includes('/') || e.includes('.');
     const content = isImg ? `<img src="${e}" style="width:100%;height:100%;object-fit:contain;">` : `<span class="e">${e}</span>`;
@@ -810,7 +926,7 @@ function openCat(ci){
   }).join('');
   go('items');
 }
-function backFromItems(){coloringLaunch=false;go(back==='gameStage'?'gameStage':'home')}
+function backFromItems(){coloringLaunch=false;go(back==='gameStage'?'gameStage':'games')}
 function openItem(ci,i){
   const c=CATS[ci];curCat = ci;
   curItem = i;
@@ -871,7 +987,7 @@ function navItem(dir) {
 }
 
 /* ---------- mini games ---------- */
-let puzzleTiles=[],puzzleImage='';
+let puzzleTiles=[],puzzleImage='',puzzleSelected=-1;
 function puzzleActivityImage(level){
   const freePages=[['animals',0],['animals',1],['animals',2],['vehicles',0],['vehicles',1],['food',0]];
   const paidPages=[['dino',0],['fairy',0],['space',0],['ocean',0],['hero',0],['dragon',0]];
@@ -881,39 +997,34 @@ function puzzleActivityImage(level){
 function startPuzzle(){
   go('gameStage');
   puzzleImage=puzzleActivityImage(selectedLevel);
-  puzzleTiles=[1,2,3,4,5,6,7,8,0];
-  let empty=8,previous=-1;
-  for(let n=0;n<40;n++){
-    const neighbors=[empty-3,empty+3];
-    if(empty%3)neighbors.push(empty-1);
-    if(empty%3<2)neighbors.push(empty+1);
-    const choices=neighbors.filter(i=>i>=0&&i<9&&i!==previous);
-    const next=choices[Math.floor(Math.random()*choices.length)];
-    [puzzleTiles[empty],puzzleTiles[next]]=[puzzleTiles[next],puzzleTiles[empty]];
-    previous=empty;empty=next;
-  }
-  $('#gameContent').innerHTML=`<h2 data-i18n="puzzle">🧩 ${tr('puzzle')}</h2><p data-i18n="puzzlePrompt">${tr('puzzlePrompt')}</p><div id="puzzleBoard" class="game-board"></div><p id="puzzleStatus" aria-live="polite"></p><button class="alt" onclick="startPuzzle()" data-i18n="playAgain">${tr('playAgain')}</button>`;
+  puzzleTiles=[0,1,2,3,4,5];
+  const first=Math.floor(Math.random()*puzzleTiles.length);
+  let second=Math.floor(Math.random()*(puzzleTiles.length-1));
+  if(second>=first)second++;
+  [puzzleTiles[first],puzzleTiles[second]]=[puzzleTiles[second],puzzleTiles[first]];
+  puzzleSelected=-1;
+  $('#gameContent').innerHTML=`<h2 data-i18n="puzzle">🧩 ${tr('puzzle')}</h2><p data-i18n="puzzlePrompt">${tr('puzzlePrompt')}</p><div id="puzzleBoard" class="game-board"></div><p id="puzzleStatus" class="play-status" aria-live="polite"></p><button class="alt" onclick="startPuzzle()" data-i18n="playAgain">${tr('playAgain')}</button>`;
   const board=$('#puzzleBoard');
-  board.dataset.image=puzzleImage;
   drawPuzzle();
 }
 function drawPuzzle(){
   const board=$('#puzzleBoard');
   if(!board)return;
   board.innerHTML=puzzleTiles.map((tile,index)=>{
-    if(!tile)return '<button class="puzzle-piece empty" aria-label="Empty space" disabled></button>';
-    const row=Math.floor((tile-1)/3),col=(tile-1)%3;
-    return `<button class="puzzle-piece" aria-label="Puzzle piece ${tile}" onclick="movePuzzlePiece(${index})" style="background-image:url('${puzzleImage}');background-position:${col*50}% ${row*50}%"></button>`;
+    const row=Math.floor(tile/3),col=tile%3;
+    return `<button class="puzzle-piece${puzzleSelected===index?' selected':''}" aria-label="Puzzle piece ${tile+1}" aria-pressed="${puzzleSelected===index}" onclick="movePuzzlePiece(${index})" style="--puzzle-image:url('${puzzleImage}');--puzzle-position:${col*50}% ${row*100}%"></button>`;
   }).join('');
 }
 function movePuzzlePiece(index){
-  const empty=puzzleTiles.indexOf(0);
-  if(Math.abs(Math.floor(index/3)-Math.floor(empty/3))+Math.abs(index%3-empty%3)!==1)return;
-  [puzzleTiles[index],puzzleTiles[empty]]=[puzzleTiles[empty],puzzleTiles[index]];
+  if(puzzleTiles.every((tile,position)=>tile===position))return;
+  if(puzzleSelected<0){puzzleSelected=index;drawPuzzle();return}
+  if(puzzleSelected===index){puzzleSelected=-1;drawPuzzle();return}
+  [puzzleTiles[index],puzzleTiles[puzzleSelected]]=[puzzleTiles[puzzleSelected],puzzleTiles[index]];
+  puzzleSelected=-1;
   drawPuzzle();
-  if(puzzleTiles.every((tile,i)=>tile===((i+1)%9))){
-    const sticker=recordActivityCompletion();
-    $('#puzzleStatus').textContent='🎉 '+tr('done')+(sticker?' '+tr('stickerEarned'):'');
+  if(puzzleTiles.every((tile,position)=>tile===position)){
+    $('#puzzleStatus').classList.add('puzzle-success');
+    $('#puzzleStatus').innerHTML=`<span>${tr('done')}</span><br><button class="alt" onclick="renderGameLevels()" data-i18n="next">${tr('next')}</button>`;
     toast('🎉 '+tr('done'));
   }
 }
@@ -935,7 +1046,7 @@ function startDifferences(){
   renderDifferences();
 }
 function renderDifferences(){
-  const board=images=>images.map((src,i)=>`<button class="difference-cell ${differenceFound.has(i)?'found':''}" onclick="findDifference(${i})" aria-label="Picture ${i+1}"><img src="${src}" alt=""></button>`).join('');
+  const board=images=>images.map((src,i)=>`<button class="difference-cell ${differenceFound.has(i)?'found':''}" onclick="findDifference(${i})" aria-label="Picture ${i+1}" ${differenceFound.has(i)?'aria-pressed="true"':''}><img src="${src}" alt=""></button>`).join('');
   $('#gameContent').innerHTML=`<h2 data-i18n="differences">🔎 ${tr('differences')}</h2><p data-i18n="differencesPrompt">${tr('differencesPrompt')}</p><div class="difference-boards"><div><b>1</b><div class="difference-board">${board(differenceLeft)}</div></div><div><b>2</b><div class="difference-board">${board(differenceRight)}</div></div></div><p id="differenceStatus" aria-live="polite">${differenceFound.size} / 3</p><button class="alt" onclick="startDifferences()" data-i18n="playAgain">${tr('playAgain')}</button>`;
 }
 function findDifference(index){
@@ -943,14 +1054,19 @@ function findDifference(index){
   if(!differenceSpots.includes(index)){toast(tr('tryAgain'));return;}
   differenceFound.add(index);
   renderDifferences();
-  if(differenceFound.size===3){const sticker=recordActivityCompletion();$('#differenceStatus').textContent='🎉 '+tr('done')+(sticker?' '+tr('stickerEarned'):'');toast('🎉 '+tr('done'));}
+  if(differenceFound.size===3){
+    const status=$('#differenceStatus');
+    status.classList.add('difference-success');
+    status.innerHTML=`<span>${tr('done')}</span><br><button class="alt" onclick="renderGameLevels()" data-i18n="next">${tr('next')}</button>`;
+  }
 }
 
 let drawEraser=false,drawSizeIndex=1,drawHasInk=false;
 function startFreeDraw(){
   go('gameStage');
   const idea=DRAWING_IDEAS[currentLanguage][selectedLevel];
-  $('#gameContent').innerHTML=`<h2 data-i18n="drawing">✏️ ${tr('drawing')}</h2><p id="drawIdea">${idea}</p><p data-i18n="drawingPrompt">${tr('drawingPrompt')}</p><div class="tools"><button id="drawBrush" class="on" onclick="selectDrawTool(false)" data-i18n="brush">🖌️ Brush</button><button id="drawEraser" onclick="selectDrawTool(true)" data-i18n="eraser">🧽 Eraser</button></div><div class="sizes" id="drawSizes"></div><div class="pal" id="drawPalette"></div><canvas id="drawCanvas" class="draw-canvas" width="640" height="480" aria-label="${tr('drawing')}" data-i18n-aria="drawingArea"></canvas><button class="ghost" onclick="clearFreeDraw()">🗑️ <span data-i18n="clear">${tr('clear')}</span></button> <button class="alt" onclick="saveFreeDrawToGallery()">⭐ <span data-i18n="saveToGallery">${tr('saveToGallery')}</span></button> <button class="ghost" onclick="downloadFreeDraw()">💾 <span data-i18n="download">${tr('download')}</span></button>`;
+  const ideaMarkup=selectedLevel===0?'':`<p id="drawIdea">${idea}</p>`;
+  $('#gameContent').innerHTML=`<h2 data-i18n="drawing">✏️ ${tr('drawing')}</h2>${ideaMarkup}<p data-i18n="drawingPrompt">${tr('drawingPrompt')}</p><div class="tools"><button id="drawBrush" class="on" onclick="selectDrawTool(false)" data-i18n="brush">🖌️ Brush</button><button id="drawEraser" onclick="selectDrawTool(true)" data-i18n="eraser">🧽 Eraser</button></div><div class="sizes" id="drawSizes"></div><div class="pal" id="drawPalette"></div><canvas id="drawCanvas" class="draw-canvas" width="640" height="480" aria-label="${tr('drawing')}" data-i18n-aria="drawingArea"></canvas><button class="ghost" onclick="clearFreeDraw()">🗑️ <span data-i18n="clear">${tr('clear')}</span></button> <button class="alt" onclick="saveFreeDrawToGallery()">⭐ <span data-i18n="saveToGallery">${tr('saveToGallery')}</span></button> <button class="ghost" onclick="downloadFreeDraw()">💾 <span data-i18n="download">${tr('download')}</span></button>`;
   drawSizeIndex=1;drawEraser=false;renderDrawTools();
   drawHasInk=false;
   const canvas=$('#drawCanvas'),context=canvas.getContext('2d');
@@ -984,7 +1100,7 @@ function saveFreeDrawToGallery(){
   if(!canvas||!drawHasInk){toast(tr('drawingSaveEmpty'));return}
   const image=canvas.toDataURL('image/jpeg',.7);
   if(S.art.includes(image)){toast(tr('drawingAlreadySaved'));return}
-  S.art.unshift(image);S.art=S.art.slice(0,20);S.stars++;recordActivityCompletion('coloring','free-draw');sv();
+  S.art.unshift(image);S.art=S.art.slice(0,20);S.stars++;sv();
   $('#hStars').textContent='⭐ '+S.stars+(S.vip?' 👑':'');
   toast(tr('drawingSaved')+' '+tr('starEarned'));
 }
@@ -1002,7 +1118,8 @@ const MINI_GAMES=[
   {id:'math',icon:'➕',name:'math'},{id:'words',icon:'🔤',name:'words'},
   {id:'letters',icon:'✍️',name:'letters'},{id:'storyMath',icon:'📖',name:'storyMath'},
   {id:'patterns',icon:'🔁',name:'patterns'},{id:'riddles',icon:'🕵️',name:'riddles'},
-  {id:'scienceQuest',icon:'🔬',name:'scienceQuest'}
+  {id:'scienceQuest',icon:'🔬',name:'scienceQuest'},
+  {id:'escapeRoom',icon:'🚪',name:'escapeRooms'}
 ];
 const ACTIVITY_NAMES={
   en:{
@@ -1013,10 +1130,11 @@ const ACTIVITY_NAMES={
     math:['Two-Digit Addition','Two-Digit Subtraction','Tens and Ones','Missing Addend','Add Across a Ten','Subtract Across a Ten','Multiplication Mission','Division Detective','Three-Number Addition','Two-Step Challenge','Missing Factor','Multiply and Add'],
     words:['Mystery Letters','Mixed-Up Message','Letter Challenge','Spelling Trail','Word Puzzle','Hidden Word','Letter Detective','Scramble Quest','Secret Spelling','Word Workshop','Letter Lab','Spelling Challenge'],
     letters:[],
-    storyMath:['Sticker Surprise','Apple Basket','Pencil Box','Garden Birds','Balloon Party','Shell Collection','Toy Shop','Cookie Boxes','Bakery Orders','Picnic Balloons','Fruit Baskets','Ticket Booth'],
+    storyMath:['Marble Surprise','Apple Basket','Pencil Box','Garden Birds','Balloon Party','Shell Collection','Toy Shop','Cookie Boxes','Bakery Orders','Picnic Balloons','Fruit Baskets','Ticket Booth'],
     patterns:['Color Pattern','Moon & Stars','Pet Pattern','Fruit Pattern','Garden Pattern','Shape Pattern','Vehicle Pattern','Ocean Pattern','Dinosaur Pattern','Music Pattern','Space Pattern','Winter Pattern'],
     riddles:['Riddle Trail','Clue Finder','Mystery Clues','Brain Teaser','Riddle Explorer','Secret Clues','Thinking Quest','Mystery Solver','Clue Challenge','Curious Riddles','Puzzle of Clues','Riddle Master'],
-    scienceQuest:['Plant Clues','Shadow Mystery','Weather Watch','Ice Experiment','Moon Mission','Garden Helpers','Water Cycle','Animal Adaptation','Magnet Test','Day and Night','Seed Journey','Sound Detective']
+    scienceQuest:['Plant Clues','Shadow Mystery','Weather Watch','Ice Experiment','Moon Mission','Garden Helpers','Water Cycle','Animal Adaptation','Magnet Test','Day and Night','Seed Journey','Sound Detective'],
+    escapeRoom:['Enchanted Library','Dinosaur Museum','Space Station','Underwater Lab','Candy Factory','Jungle Temple','Pirate Ship','Robot Workshop','Fairy Garden','Arctic Base','Dragon Cave','Time Machine']
   },
   he:{
     puzzle:['פאזל קואלה','פאזל פנדה','פאזל ארנב','פאזל פינגווין','פאזל ג׳ירפה','פאזל קיפוד','פאזל דינוזאור','פאזל אגדות','פאזל חלל','פאזל ים','פאזל גיבורי על','פאזל דרקון'],
@@ -1026,10 +1144,11 @@ const ACTIVITY_NAMES={
     math:['חיבור דו־ספרתי','חיסור דו־ספרתי','עשרות ואחדות','המחובר החסר','חיבור מעבר לעשר','חיסור מעבר לעשר','משימת כפל','בלשי חילוק','חיבור של שלושה מספרים','אתגר בשני שלבים','הגורם החסר','כפל וחיבור'],
     words:['אותיות מסתוריות','מסר מעורבב','אתגר האותיות','שביל האיות','חידת מילים','מילה נסתרת','בלשי אותיות','מסע הערבוב','איות סודי','סדנת מילים','מעבדת האותיות','אתגר האיות'],
     letters:[],
-    storyMath:['הפתעת מדבקות','סל התפוחים','קלמר העפרונות','ציפורי הגינה','מסיבת בלונים','אוסף הצדפים','חנות הצעצועים','קופסאות העוגיות','הזמנות מהמאפייה','בלונים לפיקניק','סלי הפירות','דוכן הכרטיסים'],
+    storyMath:['הפתעת הגולות','סל התפוחים','קלמר העפרונות','ציפורי הגינה','מסיבת בלונים','אוסף הצדפים','חנות הצעצועים','קופסאות העוגיות','הזמנות מהמאפייה','בלונים לפיקניק','סלי הפירות','דוכן הכרטיסים'],
     patterns:['דוגמת צבעים','ירח וכוכבים','דוגמת חיות מחמד','דוגמת פירות','דוגמת גינה','דוגמת צורות','דוגמת כלי רכב','דוגמת ים','דוגמת דינוזאורים','דוגמת מוזיקה','דוגמת חלל','דוגמת חורף'],
     riddles:['שביל החידות','מחפשי רמזים','רמזים מסתוריים','חידת מחשבה','חוקרי חידות','רמזים סודיים','אתגר חשיבה','פותרים תעלומות','אתגר הרמזים','חידות סקרניות','חידת הרמזים','אלופי החידות'],
-    scienceQuest:['רמזי הצמח','תעלומת הצל','מעקב אחר מזג האוויר','ניסוי הקרח','משימת הירח','עוזרים בגינה','מחזור המים','התאמות בטבע','ניסוי המגנט','יום ולילה','מסע הזרע','בלשי הצלילים']
+    scienceQuest:['רמזי הצמח','תעלומת הצל','מעקב אחר מזג האוויר','ניסוי הקרח','משימת הירח','עוזרים בגינה','מחזור המים','התאמות בטבע','ניסוי המגנט','יום ולילה','מסע הזרע','בלשי הצלילים'],
+    escapeRoom:['הספרייה הקסומה','מוזיאון הדינוזאורים','תחנת החלל','המעבדה התת־ימית','מפעל הממתקים','מקדש הג׳ונגל','ספינת הפיראטים','סדנת הרובוטים','גן הפיות','התחנה הארקטית','מערת הדרקון','מכונת הזמן']
   },
   ru:{
     puzzle:['Пазл с коалой','Пазл с пандой','Пазл с кроликом','Пазл с пингвином','Пазл с жирафом','Пазл с ёжиком','Пазл с динозавром','Сказочный пазл','Космический пазл','Морской пазл','Пазл с героем','Пазл с драконом'],
@@ -1039,10 +1158,11 @@ const ACTIVITY_NAMES={
     math:['Двузначное сложение','Двузначное вычитание','Десятки и единицы','Найди слагаемое','Переход через десяток','Вычитание с переходом','Задание на умножение','Детектив деления','Сложение трёх чисел','Задача в два шага','Найди множитель','Умножение и сложение'],
     words:['Тайные буквы','Перепутанное послание','Испытание букв','Тропа правописания','Задача со словом','Скрытое слово','Детектив букв','Буквенная путаница','Тайное правописание','Мастерская слов','Лаборатория букв','Испытание правописания'],
     letters:[],
-    storyMath:['Наклейки в подарок','Корзина яблок','Карандаши в пенале','Птицы в саду','Праздник шаров','Коллекция ракушек','Магазин игрушек','Коробки печенья','Заказы из пекарни','Шары для пикника','Корзины фруктов','Касса билетов'],
+    storyMath:['Сюрприз с шариками','Корзина яблок','Карандаши в пенале','Птицы в саду','Праздник шаров','Коллекция ракушек','Магазин игрушек','Коробки печенья','Заказы из пекарни','Шары для пикника','Корзины фруктов','Касса билетов'],
     patterns:['Цветной узор','Луна и звёзды','Узор с питомцами','Фруктовый узор','Садовый узор','Узор из фигур','Транспортный узор','Морской узор','Узор с динозаврами','Музыкальный узор','Космический узор','Зимний узор'],
     riddles:['Тропа загадок','Поиск подсказок','Тайные подсказки','Задача на смекалку','Исследователь загадок','Секретные подсказки','Задание на логику','Решатель тайн','Испытание подсказками','Любопытные загадки','Загадка с подсказками','Мастер загадок'],
-    scienceQuest:['Подсказки о растении','Тайна тени','Наблюдаем за погодой','Опыт со льдом','Лунная миссия','Помощники сада','Круговорот воды','Приспособления животных','Опыт с магнитом','День и ночь','Путешествие семени','Детектив звуков']
+    scienceQuest:['Подсказки о растении','Тайна тени','Наблюдаем за погодой','Опыт со льдом','Лунная миссия','Помощники сада','Круговорот воды','Приспособления животных','Опыт с магнитом','День и ночь','Путешествие семени','Детектив звуков'],
+    escapeRoom:['Волшебная библиотека','Музей динозавров','Космическая станция','Подводная лаборатория','Фабрика сладостей','Храм в джунглях','Пиратский корабль','Мастерская роботов','Сад фей','Арктическая база','Пещера дракона','Машина времени']
   }
 };
 let selectedMiniGame=null,selectedLevel=0,miniGameScene='menu',pendingPurchaseGame=null,coloringLaunch=false;
@@ -1088,6 +1208,7 @@ function launchMiniGame(id,level){
   if(level>=6&&!gameUnlocked(id)){requestGamePurchase(id);return}
   selectedMiniGame=id;selectedLevel=level;miniGameScene='play';
   if(learningGameHasTenQuestions(id))riddleQuestionIndex=0;
+  if(id==='escapeRoom'){startEscapeRoom();return}
   if(id==='puzzle'){startPuzzle();return}
   if(id==='differences'){startDifferences();return}
   go('gameStage');playLearningGame(id,level);
@@ -1096,13 +1217,92 @@ function backFromGame(){
   if(miniGameScene==='play'&&selectedMiniGame){miniGameScene='levels';renderGameLevels();go('gameStage');return}
   go('games');
 }
+let escapeRoomIndex=0,escapeRoomSolved=false,escapeRoomStarEarned=false,escapeRoomAnswer='',escapeRoomAnswerIndex=-1,escapeRoomExplanation='';
+function startEscapeRoom(){
+  escapeRoomIndex=0;
+  escapeRoomSolved=false;
+  escapeRoomStarEarned=false;
+  go('gameStage');
+  renderEscapeRoom();
+}
+function getEscapeRoomPuzzle(){
+  if(!Number.isInteger(selectedLevel)||selectedLevel<0||selectedLevel>=ESCAPE_RIDDLE_BANK[currentLanguage].length||!Number.isInteger(escapeRoomIndex)||escapeRoomIndex<0||escapeRoomIndex>=5){
+    throw new Error(`Invalid escape-room activity ${selectedLevel} or room ${escapeRoomIndex}`);
+  }
+  const puzzle=createEscapeRiddles(currentLanguage,selectedLevel)[escapeRoomIndex];
+  if(!puzzle||!Array.isArray(puzzle.options)||puzzle.options.length!==4||new Set(puzzle.options).size!==puzzle.options.length||!Number.isInteger(puzzle.answer)||puzzle.answer<0||puzzle.answer>=puzzle.options.length||!puzzle.options[puzzle.answer]||!puzzle.explanation){
+    throw new Error(`Invalid escape-room riddle for language ${currentLanguage}, room ${escapeRoomIndex+1}`);
+  }
+  return {prompt:puzzle.prompt,answerIndex:puzzle.answer,answer:puzzle.options[puzzle.answer],explanation:puzzle.explanation,options:puzzle.options};
+}
+function renderEscapeRoom(){
+  const activity=activityNames('escapeRoom',currentLanguage)[selectedLevel];
+  const roomNames=tr('escapeRoomNames');
+  const puzzle=getEscapeRoomPuzzle();
+  escapeRoomAnswer=puzzle.answer;
+  escapeRoomAnswerIndex=puzzle.answerIndex;
+  escapeRoomExplanation=puzzle.explanation;
+  genericAnswer=escapeRoomAnswer;
+  questionHintCount=0;
+  const progress=Array.from({length:5},(_,index)=>`<span class="${index<escapeRoomIndex?'done':''}">${index+1}</span>`).join('');
+  $('#gameContent').innerHTML=`<h2>${tr('escapeRooms')}</h2><h3>${activity}</h3><div class="escape-scene" aria-hidden="true"><div class="scene-window">🌙</div><div class="scene-shelf">📚 🧪</div><div class="scene-door">🚪🔒</div><div class="scene-desk">🔍 🗝️ 📦</div></div><div class="escape-progress" aria-label="${tr('escapeRoomProgress',{n:escapeRoomIndex+1,room:roomNames[escapeRoomIndex]})}">${progress}</div><section class="escape-room"><b>${tr('escapeRoomProgress',{n:escapeRoomIndex+1,room:roomNames[escapeRoomIndex]})}</b><p>${tr('escapePrompt')}</p><div id="learningQuestion" class="escape-riddle">${puzzle.prompt}</div><div class="answer-grid">${puzzle.options.map((option,index)=>`<button data-answer-index="${index}" onclick="answerEscapeRoom(this)">${option}</button>`).join('')}</div><div class="learning-tools"><button class="ghost" onclick="revealLearningHint()" data-i18n="hintButton">${tr('hintButton')}</button></div><p id="learningHint" class="learning-hint" aria-live="polite"></p><p id="learningFeedback" class="play-status" aria-live="polite"></p></section><button class="ghost" onclick="backFromGame()" data-i18n="back">${tr('back')}</button>`;
+  if(escapeRoomSolved)renderEscapeRoomSuccess();
+}
+function awardEscapeRoomStar(){
+  if(!Array.isArray(S.completedEscapeRooms))S.completedEscapeRooms=[];
+  const key=`${selectedLevel}:${escapeRoomIndex}`;
+  if(S.completedEscapeRooms.includes(key))return false;
+  S.completedEscapeRooms.push(key);
+  S.stars++;
+  sv();
+  $('#hStars').textContent='⭐ '+S.stars+(S.vip?' 👑':'');
+  return true;
+}
+function renderEscapeRoomSuccess(){
+  const feedback=$('#learningFeedback');
+  if(!feedback)return;
+  document.querySelectorAll('#gameContent .answer-grid button').forEach(button=>button.disabled=true);
+  const reward=escapeRoomStarEarned?` ${tr('starEarned')}`:'';
+  const explanation=`<span class="escape-explanation">${escapeRoomExplanation}</span>`;
+  if(escapeRoomIndex<4){
+    feedback.innerHTML=`<span>${tr('correct')} ${reward}</span><br><span>${tr('escapeRoomCleared')}</span>${explanation}<button class="alt" onclick="nextEscapeRoom()" data-i18n="escapeNextRoom">${tr('escapeNextRoom')}</button>`;
+    return;
+  }
+  feedback.innerHTML=`<span>${tr('correct')} ${reward}</span><br><span>${tr('escapeComplete')}</span>${explanation}<button class="alt" onclick="renderGameLevels()" data-i18n="next">${tr('next')}</button>`;
+}
+function clearLearningHint(){
+  const hint=$('#learningHint');
+  if(hint)hint.textContent='';
+}
+function answerEscapeRoom(button){
+  if(escapeRoomSolved)return;
+  clearLearningHint();
+  const buttons=document.querySelectorAll('#gameContent .answer-grid button');
+  buttons.forEach(item=>item.disabled=true);
+  const feedback=$('#learningFeedback');
+  if(Number(button.dataset.answerIndex)!==escapeRoomAnswerIndex){
+    revealLearningHint();
+    feedback.innerHTML=`<button class="alt" onclick="retryLearningAnswer()" data-i18n="tryAgain">${tr('tryAgain')}</button>`;
+    return;
+  }
+  escapeRoomSolved=true;
+  escapeRoomStarEarned=awardEscapeRoomStar();
+  renderEscapeRoomSuccess();
+}
+function nextEscapeRoom(){
+  if(!escapeRoomSolved||escapeRoomIndex>=4)return;
+  escapeRoomIndex++;
+  escapeRoomSolved=false;
+  escapeRoomStarEarned=false;
+  renderEscapeRoom();
+}
 const GAME_WORDS={
   en:['PLANET','TURTLE','ROCKET','GARDEN','MONKEY','RAINBOW','DINOSAUR','BUTTERFLY','ELEPHANT','PINEAPPLE','WATERFALL','ADVENTURE'],
   he:['כוכבים','מחברת','מכונית','פרפרים','דינוזאור','משקפיים','הרפתקה','חמניות','כדורגל','אוטובוס','אבטיחים','משחקים'],
   ru:['ПЛАНЕТА','ЧЕРЕПАХА','РАКЕТА','БЛОКНОТ','БАБОЧКА','ДИНОЗАВР','СЛОНЁНОК','АНАНАС','ВОДОПАД','ПРИКЛЮЧЕНИЕ','ВЕЛОСИПЕД','БИБЛИОТЕКА']
 };
 const STORY_PROBLEMS=[
-  {answer:15,en:'Mia had 8 stickers and got 7 more. How many stickers does she have now?',he:'למיה היו 8 מדבקות והיא קיבלה עוד 7. כמה מדבקות יש לה עכשיו?',ru:'У Маши было 8 наклеек, и ей подарили ещё 7. Сколько наклеек у неё теперь?'},
+  {answer:15,en:'Mia had 8 marbles and got 7 more. How many marbles does she have now?',he:'למיה היו 8 גולות והיא קיבלה עוד 7. כמה גולות יש לה עכשיו?',ru:'У Маши было 8 шариков, и ей подарили ещё 7. Сколько шариков у неё теперь?'},
   {answer:9,en:'There were 16 apples in a basket. 7 were eaten. How many apples are left?',he:'בסל היו 16 תפוחים. אכלו 7 מהם. כמה תפוחים נשארו?',ru:'В корзине было 16 яблок. 7 яблок съели. Сколько осталось?'},
   {answer:17,en:'Noah had 9 pencils and found 8 more. How many pencils does he have?',he:'לנועם היו 9 עפרונות והוא מצא עוד 8. כמה עפרונות יש לו?',ru:'У Коли было 9 карандашей, и он нашёл ещё 8. Сколько карандашей у него стало?'},
   {answer:8,en:'There were 17 birds in the garden. 9 flew away. How many birds stayed?',he:'בגינה היו 17 ציפורים. 9 עפו. כמה ציפורים נשארו?',ru:'В саду было 17 птиц. 9 птиц улетели. Сколько осталось?'},
@@ -1167,7 +1367,7 @@ const WORD_QUESTION_DATA=[
   ]
 ];
 const STORY_MATH_ITEMS=[
-  ['sticker','stickers','מדבקות','наклейки','наклеек'],['apple','apples','תפוחים','яблоки','яблок'],['pencil','pencils','עפרונות','карандаши','карандашей'],
+  ['marble','marbles','גולות','шарики','шариков'],['apple','apples','תפוחים','яблоки','яблок'],['pencil','pencils','עפרונות','карандаши','карандашей'],
   ['bird','birds','ציפורים','птицы','птиц'],['balloon','balloons','בלונים','шары','шаров'],['shell','shells','צדפים','ракушки','ракушек'],
   ['toy car','toy cars','מכוניות צעצוע','игрушечные машинки','игрушечных машинок'],['cookie','cookies','עוגיות','печенья','печений'],
   ['muffin','muffins','מאפינס','кексы','кексов'],['balloon','balloons','בלונים','шары','шаров'],['orange','oranges','תפוזים','апельсины','апельсинов'],
@@ -1888,41 +2088,16 @@ function playLearningGame(id,level){
   const game=MINI_GAMES.find(item=>item.id===id);
   const questionLabel=learningGameHasTenQuestions(id)?getLearningQuestionLabel(id,riddleQuestionIndex):tr('question',{n:level+1});
   const choiceLabels=currentLanguage==='he'?['א','ב','ג','ד']:currentLanguage==='ru'?['А','Б','В','Г']:['A','B','C','D'];
-  $('#gameContent').innerHTML=`<h2 data-i18n="${game.name}">${game.icon} ${tr(game.name)}</h2><p>${questionLabel}</p><p data-i18n="${promptKey}">${prompt}</p><div id="learningQuestion" class="quiz-swatch" style="width:auto;height:auto;min-height:60px;border:0;box-shadow:none;font-size:${['storyMath','scienceQuest'].includes(id)?'18':'32'}px">${question}</div><div class="answer-grid">${options.map((option,index)=>`<button data-answer="${encodeURIComponent(option)}" onclick="answerLearningGame(this)">${id==='riddles'?`${choiceLabels[index]}) `:''}${option}</button>`).join('')}</div><div class="learning-tools"><button class="ghost" onclick="revealLearningHint()" data-i18n="hintButton">${tr('hintButton')}</button></div><p id="learningHint" class="learning-hint" aria-live="polite"></p><p id="learningFeedback" class="play-status" aria-live="polite"></p>`;
+  $('#gameContent').innerHTML=`<h2 data-i18n="${game.name}">${game.icon} ${tr(game.name)}</h2><p>${questionLabel}</p><p data-i18n="${promptKey}">${prompt}</p><div id="learningQuestion" class="quiz-swatch" style="width:auto;height:auto;min-height:60px;border:0;box-shadow:none;font-size:${['storyMath','scienceQuest','logicQuest'].includes(id)?'18':'32'}px">${question}</div><div class="answer-grid">${options.map((option,index)=>`<button data-answer="${encodeURIComponent(option)}" onclick="answerLearningGame(this)">${id==='riddles'?`${choiceLabels[index]}) `:''}${option}</button>`).join('')}</div><div class="learning-tools"><button class="ghost" onclick="revealLearningHint()" data-i18n="hintButton">${tr('hintButton')}</button></div><p id="learningHint" class="learning-hint" aria-live="polite"></p><p id="learningFeedback" class="play-status" aria-live="polite"></p>`;
 }
 function revealLearningHint(){
   const question=$('#learningQuestion'),feedback=$('#learningHint');
   if(!question||!feedback)return;
-  const candidates=[...document.querySelectorAll('#gameContent .answer-grid button')].filter(button=>!button.hidden&&decodeURIComponent(button.dataset.answer)!==genericAnswer);
+  const candidates=[...document.querySelectorAll('#gameContent .answer-grid button')].filter(button=>!button.hidden&&(selectedMiniGame==='escapeRoom'?Number(button.dataset.answerIndex)!==escapeRoomAnswerIndex:decodeURIComponent(button.dataset.answer)!==genericAnswer));
   if(candidates.length<=1){feedback.textContent=tr('hintNoMore');return}
   const remove=candidates[Math.floor(Math.random()*candidates.length)];
   remove.hidden=true;remove.disabled=true;questionHintCount=Math.min(2,questionHintCount+1);
   feedback.textContent=tr(questionHintCount===1?'hintFirst':'hintSecond');
-}
-function recordActivityCompletion(gameId=selectedMiniGame,activityId=selectedLevel){
-  if(!Array.isArray(S.completedActivities))S.completedActivities=[];
-  const key=`${gameId}:${activityId}`;
-  if(S.completedActivities.includes(key))return false;
-  S.completedActivities.push(key);sv();
-  return true;
-}
-function stickerLabel(gameId,activityId){
-  const game=MINI_GAMES.find(item=>item.id===gameId);
-  if(gameId==='coloring')return tr('coloring');
-  const names=game?activityNames(gameId,currentLanguage):[];
-  return names[Number(activityId)]||tr(game?game.name:'coloring');
-}
-function renderStickerBook(containerId){
-  const container=$('#'+containerId);
-  if(!container)return;
-  const stickers=Array.isArray(S.completedActivities)?S.completedActivities:[];
-  if(!stickers.length){container.innerHTML=containerId==='parentStickerBook'?'':`<p>${tr('noStickers')}</p>`;return}
-  container.innerHTML=stickers.map(key=>{
-    const [gameId,activityId]=key.split(':');
-    const game=MINI_GAMES.find(item=>item.id===gameId);
-    const icon=game?game.icon:'🎨',label=stickerLabel(gameId,activityId);
-    return `<div class="sticker" aria-label="${label}">⭐ ${icon}<small>${label}</small></div>`;
-  }).join('');
 }
 function requestParentDashboard(){
   closeM('timeLimitM');
@@ -1931,10 +2106,6 @@ function requestParentDashboard(){
 }
 function renderParentDashboard(){
   ensureDailyUsage();
-  const stickers=Array.isArray(S.completedActivities)?S.completedActivities:[];
-  const games=new Set(stickers.map(key=>key.split(':')[0]));
-  $('#parentProgress').innerHTML=`<p>${tr('activitiesCompleted',{n:stickers.length})}</p><p>${tr('gamesCompleted',{n:games.size})}</p>`;
-  renderStickerBook('parentStickerBook');
   const used=Math.floor(S.dailyUsageSeconds/60),limit=S.dailyLimitMinutes;
   $('#parentUsage').textContent=limit?tr('minutesUsed',{used,limit}):tr('minutesUnlimited',{used});
   $('#dailyLimit').value=String(limit);
@@ -1985,6 +2156,7 @@ function makeChoices(answer,min,max){
   return [...values].sort(()=>Math.random()-.5);
 }
 function answerLearningGame(button){
+  clearLearningHint();
   const answer=decodeURIComponent(button.dataset.answer);
   document.querySelectorAll('.answer-grid button').forEach(item=>item.disabled=true);
   const feedback=$('#learningFeedback'),correct=answer===genericAnswer;
@@ -1998,15 +2170,13 @@ function answerLearningGame(button){
   if(learningGameHasTenQuestions(selectedMiniGame)){
     if(riddleQuestionIndex===9){
       const completionKey=selectedMiniGame==='riddles'?'riddleComplete':selectedMiniGame==='scienceQuest'?'scienceComplete':'learningComplete';
-      const sticker=recordActivityCompletion();
-      feedback.innerHTML=`<span>${tr('correct')} ${tr('starEarned')}</span><br><span>${tr(completionKey)}</span>${sticker?`<br><span>${tr('stickerEarned')}</span>`:''}<br><button class="alt" onclick="renderGameLevels()" data-i18n="next">${tr('next')}</button>`;
+      feedback.innerHTML=`<span>${tr('correct')} ${tr('starEarned')}</span><br><span>${tr(completionKey)}</span><br><button class="alt" onclick="renderGameLevels()" data-i18n="next">${tr('next')}</button>`;
       return;
     }
     feedback.innerHTML=`<span data-i18n="correct">${tr('correct')} ${tr('starEarned')}</span><br><button class="alt" onclick="nextRiddleQuestion()" data-i18n="next">${tr('next')}</button>`;
     return;
   }
-  const sticker=recordActivityCompletion();
-  feedback.innerHTML=`<span data-i18n="${resultKey}">${tr(resultKey)} ${tr('starEarned')}</span>${sticker?`<br><span>${tr('stickerEarned')}</span>`:''}<br><button class="alt" onclick="renderGameLevels()" data-i18n="next">${tr('next')}</button>`;
+  feedback.innerHTML=`<span data-i18n="${resultKey}">${tr(resultKey)} ${tr('starEarned')}</span><br><button class="alt" onclick="renderGameLevels()" data-i18n="next">${tr('next')}</button>`;
 }
 function nextRiddleQuestion(){
   if(!learningGameHasTenQuestions(selectedMiniGame)||riddleQuestionIndex>=9)return;
@@ -2039,7 +2209,7 @@ function flipMemoryCard(index){
     const [a,b]=memoryOpen;
     if(memoryCards[a]===memoryCards[b]){
       memoryMatched.add(a);memoryMatched.add(b);memoryOpen=[];
-      if(memoryMatched.size===memoryCards.length){const sticker=recordActivityCompletion();$('#memoryStatus').innerHTML=`<span data-i18n="memoryComplete">${tr('memoryComplete')}</span>${sticker?`<br><span>${tr('stickerEarned')}</span>`:''}<br><button class="alt" onclick="renderGameLevels()" data-i18n="next">${tr('next')}</button>`}
+      if(memoryMatched.size===memoryCards.length){$('#memoryStatus').innerHTML=`<span data-i18n="memoryComplete">${tr('memoryComplete')}</span><br><button class="alt" onclick="renderGameLevels()" data-i18n="next">${tr('next')}</button>`}
     }else setTimeout(()=>{if($(`#memory${a}`)&&$(`#memory${b}`)){$(`#memory${a}`).textContent='❔';$(`#memory${b}`).textContent='❔'}memoryOpen=[]},750);
   }
 }
@@ -2056,8 +2226,7 @@ function clearTrace(){const canvas=$('#traceCanvas');canvas.getContext('2d').cle
 function finishTrace(){
   const status=$('#traceStatus');
   if(!traceHasInk){status.textContent=tr('tryAgain');return}
-  const sticker=recordActivityCompletion();
-  status.innerHTML=`<span data-i18n="traceDone">${tr('traceDone')}</span>${sticker?`<br><span>${tr('stickerEarned')}</span>`:''}<br><button class="alt" onclick="renderGameLevels()" data-i18n="next">${tr('next')}</button>`;
+  status.innerHTML=`<span data-i18n="traceDone">${tr('traceDone')}</span><br><button class="alt" onclick="renderGameLevels()" data-i18n="next">${tr('next')}</button>`;
 }
 
 /* ---------- parental gate & VIP ---------- */
@@ -2765,7 +2934,7 @@ function saveArt(){
   }
   if(changedPixels(img.data,baseImg,MIN_CHANGE)<MIN_CHANGE){toast('🎨 Add some color first, then save!');return}
   if(savedImg&&changedPixels(img.data,savedImg,MIN_CHANGE)<MIN_CHANGE){toast('✅ Already saved! Color more to earn more ⭐');return}
-  S.art.unshift(cv.toDataURL('image/jpeg',.85));S.art=S.art.slice(0,20);S.stars++;recordActivityCompletion('coloring',`${CATS[curCat].id}:${curItem}`);
+  S.art.unshift(cv.toDataURL('image/jpeg',.85));S.art=S.art.slice(0,20);S.stars++;
   savedImg=img.data.slice();
   sv();$('#hStars').textContent='⭐ '+S.stars+(S.vip?' 👑':'');
   renderProfile();toast(tr('drawingSaved')+' '+tr('starEarned'));
@@ -2859,8 +3028,16 @@ function addMix(){
 }
 
 /* ---------- Magic Camera ---------- */
+const CameraSettingsPlugin=window.Capacitor&&typeof window.Capacitor.registerPlugin==='function'
+  ?window.Capacitor.registerPlugin('CameraSettings')
+  :null;
+async function openCameraSettings(){
+  if(!CameraSettingsPlugin){$('#camErr').textContent=tr('cameraPermissionBrowserHelp');return}
+  try{await CameraSettingsPlugin.openAppSettings()}
+  catch(error){console.error('Could not open camera permission settings:',error);$('#camErr').textContent=tr('cameraSettingsError')}
+}
 async function startCam(facing=cameraFacing,requireFacing=false){
-  const err=$('#camErr');err.textContent='';
+  const err=$('#camErr'),settingsButton=$('#cameraSettings');err.textContent='';settingsButton.hidden=true;
   /* Live video needs https or localhost. On plain http (e.g. a LAN address) mediaDevices is undefined:
      open the phone's own camera app instead, which works everywhere. */
   if(!window.isSecureContext||!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
@@ -2877,7 +3054,10 @@ async function startCam(facing=cameraFacing,requireFacing=false){
     try{await v.play()}catch(e){}
   }catch(e){
     const denied=e&&(e.name==='NotAllowedError'||e.name==='SecurityError');
-    err.textContent=denied?'Camera permission was blocked. Allow it in your browser settings, or use Gallery.'
+    const native=window.Capacitor&&typeof window.Capacitor.isNativePlatform==='function'&&window.Capacitor.isNativePlatform();
+    const settingsAvailable=native&&typeof window.Capacitor.isPluginAvailable==='function'&&window.Capacitor.isPluginAvailable('CameraSettings');
+    settingsButton.hidden=!(denied&&settingsAvailable);
+    err.textContent=denied?tr(settingsAvailable?'cameraPermissionBlocked':native?'cameraPermissionUpdateRequired':'cameraPermissionBrowserHelp')
       :e&&e.name==='OverconstrainedError'?'This camera is not available on your device.':'Could not start the camera. Please use Gallery instead.';
   }
 }
@@ -2927,7 +3107,6 @@ function renderProfile(){
     }
   }).join('');
 
-  renderStickerBook('stickerBook');
   renderSound();
   const gallery=$('#gal');gallery.replaceChildren();
   if(!S.art.length)gallery.innerHTML=`<p>${tr('noSavedArt')}</p>`;
@@ -3041,7 +3220,7 @@ function dailyBonus(){
   $('#dailyM').classList.add('on');celebrate();
 }
 const _go=go;
-go=function(id){const r=_go.apply(this,arguments);if(id==='home'&&dailyFor!==currentUserId){dailyFor=currentUserId;setTimeout(dailyBonus,500)}return r};
+go=function(id){const r=_go.apply(this,arguments);if(id==='games'&&dailyFor!==currentUserId){dailyFor=currentUserId;setTimeout(dailyBonus,500)}return r};
 setLanguage(currentLanguage);
 
 setLanguage(currentLanguage);
