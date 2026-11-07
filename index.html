@@ -213,7 +213,7 @@ video{width:100%;max-width:420px;border-radius:16px;background:#222;display:bloc
 <div id="welcome" class="screen on center">
   <div class="logo">🎨✨</div><h1>Magical Fun</h1><p data-i18n="tagline">Games, coloring and creativity!</p>
   <label><span data-i18n="language">Language</span><select id="welcomeLanguage" onchange="setLanguage(this.value)" aria-label="Language" data-i18n-aria="language"><option value="en">English</option><option value="he">עברית</option><option value="ru">Русский</option></select></label>
-  <p><a id="privacyLink" href="./privacy.html?lang=en" data-i18n="privacyPolicyLink">Privacy policy</a></p>
+  <p><a id="privacyLink" href="./privacy.html?lang=en" data-i18n="privacyPolicyLink">Privacy policy</a> · <a id="deleteAccountLink" href="./delete-account.html?lang=en" data-i18n="deleteAccountLink">Request account deletion</a></p>
   <button class="guest-button" style="width:100%;margin:6px 0" onclick="guest()" data-i18n="playGuest">Play as Guest</button>
   <button style="width:100%;margin:6px 0" onclick="authForm('login')" data-i18n="login">Login</button>
   <button class="ghost" style="width:100%;margin:6px 0" onclick="authForm('reg')" data-i18n="register">Register</button>
@@ -312,7 +312,7 @@ video{width:100%;max-width:420px;border-radius:16px;background:#222;display:bloc
   <div style="font-size:40px">👪</div><h3 data-i18n="parentDashboard">Parent dashboard</h3>
   <section class="parent-section"><h4 data-i18n="timeLimitTitle">Daily play-time limit</h4><p id="parentUsage"></p><label for="dailyLimit" data-i18n="dailyLimitLabel">Daily limit</label><select id="dailyLimit" onchange="saveDailyLimit(this.value)" style="width:100%;margin-top:8px"><option value="0" data-i18n="unlimited">No limit</option><option value="15" data-i18n="limit15">15 minutes</option><option value="30" data-i18n="limit30">30 minutes</option><option value="45" data-i18n="limit45">45 minutes</option><option value="60" data-i18n="limit60">60 minutes</option><option value="90" data-i18n="limit90">90 minutes</option><option value="120" data-i18n="limit120">120 minutes</option></select></section>
   <section class="parent-section"><h4 data-i18n="purchaseManagement">Purchase management</h4><p id="parentPurchases"></p><button class="alt" onclick="openParentPurchaseOptions()" data-i18n="viewPurchaseOptions">View purchase options</button></section>
-  <p><a id="parentPrivacyLink" href="./privacy.html?lang=en" data-i18n="privacyPolicyLink">Privacy policy</a></p>
+  <p><a id="parentPrivacyLink" href="./privacy.html?lang=en" data-i18n="privacyPolicyLink">Privacy policy</a> · <a id="parentDeleteAccountLink" href="./delete-account.html?lang=en" data-i18n="deleteAccountLink">Request account deletion</a></p>
   <button class="ghost" onclick="closeParentDashboard()" data-i18n="close">✖ Close</button>
 </div></div>
 
@@ -621,6 +621,9 @@ Object.assign(TEXT.ru,{timeLimitReached:'Игра приостановлена: 
 Object.assign(TEXT.en,{privacyPolicyLink:'Privacy policy'});
 Object.assign(TEXT.he,{privacyPolicyLink:'מדיניות פרטיות'});
 Object.assign(TEXT.ru,{privacyPolicyLink:'Политика конфиденциальности'});
+Object.assign(TEXT.en,{deleteAccountLink:'Request account deletion'});
+Object.assign(TEXT.he,{deleteAccountLink:'בקשה למחיקת חשבון'});
+Object.assign(TEXT.ru,{deleteAccountLink:'Запросить удаление аккаунта'});
 Object.assign(TEXT.en,{chooseGameToUnlock:'Choose a game to unlock',purchaseGameAlreadyUnlocked:'Already unlocked'});
 Object.assign(TEXT.he,{chooseGameToUnlock:'בחרו משחק לפתיחה',purchaseGameAlreadyUnlocked:'כבר פתוח'});
 Object.assign(TEXT.ru,{chooseGameToUnlock:'Выберите игру для открытия',purchaseGameAlreadyUnlocked:'Уже открыта'});
@@ -641,6 +644,8 @@ function setLanguage(language){
   $('#language').value=currentLanguage;$('#welcomeLanguage').value=currentLanguage;$('#profileLanguage').value=currentLanguage;
   const privacyLink=$('#privacyLink');if(privacyLink)privacyLink.href=`./privacy.html?lang=${currentLanguage}`;
   const parentPrivacyLink=$('#parentPrivacyLink');if(parentPrivacyLink)parentPrivacyLink.href=`./privacy.html?lang=${currentLanguage}`;
+  const deleteAccountLink=$('#deleteAccountLink');if(deleteAccountLink)deleteAccountLink.href=`./delete-account.html?lang=${currentLanguage}`;
+  const parentDeleteAccountLink=$('#parentDeleteAccountLink');if(parentDeleteAccountLink)parentDeleteAccountLink.href=`./delete-account.html?lang=${currentLanguage}`;
   try{localStorage.setItem('megical_language',currentLanguage)}catch(e){console.error('Could not save language preference:',e)}
   S.language=currentLanguage;sv();
   document.querySelectorAll('[data-i18n]').forEach(node=>{node.textContent=tr(node.dataset.i18n)});

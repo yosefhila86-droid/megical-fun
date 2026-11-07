@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#7c4dff">
+<title>Magical Fun - בקשת מחיקת חשבון</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;padding:24px;font-family:system-ui,Arial,sans-serif;background:#fff7e6;color:#3b2a66;line-height:1.65}
+main{max-width:760px;margin:0 auto;background:#fff;padding:28px 24px;border-radius:20px;box-shadow:0 3px 12px #0002}
+h1,h2{line-height:1.25}
+select{font:inherit;padding:8px;border:2px solid #d9ccff;border-radius:10px}
+a{color:#5733bd}
+.request-link{display:inline-block;margin:12px 0;padding:12px 18px;border-radius:14px;background:#7c4dff;color:#fff;font-weight:700;text-decoration:none}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<main>
+  <h1>Magical Fun - <span id="pageTitle">בקשת מחיקת חשבון ונתונים</span></h1>
+  <label for="pageLanguage"><span id="languageLabel">שפה</span>:
+    <select id="pageLanguage" onchange="setPageLanguage(this.value)">
+      <option value="he">עברית</option><option value="en">English</option><option value="ru">Русский</option>
+    </select>
+  </label>
+
+  <section data-language="he">
+    <p>הורה או אפוטרופוס יכולים לבקש למחוק את חשבון Magical Fun ואת הנתונים המשויכים אליו.</p>
+    <h2>איך מבקשים מחיקה?</h2>
+    <p>לחצו על הקישור כדי לשלוח הודעת דוא״ל אל <a href="mailto:yosefhila86@gmail.com">yosefhila86@gmail.com</a>. ציינו את כתובת הדוא״ל הרשומה בחשבון ואת הבקשה למחיקתו. אין לשלוח סיסמה.</p>
+    <p><a class="request-link" href="mailto:yosefhila86@gmail.com?subject=Magical%20Fun%20-%20Account%20deletion%20request&amp;body=Please%20delete%20my%20Magical%20Fun%20account%20and%20associated%20data.%0ARegistered%20account%20email%3A%20">שליחת בקשת מחיקה</a></p>
+    <p>נבדוק את הבקשה ונאמת את הבעלות על החשבון לפני ביצוע מחיקה. בקשה זו מיועדת לנתוני החשבון והשירות המשויכים אליו. התקדמות משחק, ציורים והגדרות שנשמרו מקומית במכשיר אינם נמחקים באמצעותה; ניתן להסיר אותם דרך הגדרות האחסון של הדפדפן או האפליקציה.</p>
+    <p>ייתכן שמידע מסוים יישמר ככל שנדרש לפי דין או כחלק ממחזורי גיבוי של ספק השירות. למידע נוסף, קראו את <a href="./privacy.html?lang=he">מדיניות הפרטיות</a>.</p>
+  </section>
+
+  <section data-language="en" hidden>
+    <p>A parent or guardian can request deletion of a Magical Fun account and its associated data.</p>
+    <h2>How to request deletion</h2>
+    <p>Use the link below to email <a href="mailto:yosefhila86@gmail.com">yosefhila86@gmail.com</a>. Include the email address registered to the account and your deletion request. Do not send a password.</p>
+    <p><a class="request-link" href="mailto:yosefhila86@gmail.com?subject=Magical%20Fun%20-%20Account%20deletion%20request&amp;body=Please%20delete%20my%20Magical%20Fun%20account%20and%20associated%20data.%0ARegistered%20account%20email%3A%20">Send deletion request</a></p>
+    <p>We will review the request and verify account ownership before processing deletion. This request covers account and associated service data. Gameplay progress, drawings, and settings stored locally on a device are not deleted through this request; remove them through the browser or app storage settings.</p>
+    <p>Some information may be retained as required by law or through the service provider’s backup cycles. See the <a href="./privacy.html?lang=en">Privacy Policy</a> for more information.</p>
+  </section>
+
+  <section data-language="ru" hidden>
+    <p>Родитель или опекун может запросить удаление аккаунта Magical Fun и связанных с ним данных.</p>
+    <h2>Как запросить удаление</h2>
+    <p>Нажмите ссылку ниже, чтобы написать на <a href="mailto:yosefhila86@gmail.com">yosefhila86@gmail.com</a>. Укажите адрес электронной почты, зарегистрированный в аккаунте, и просьбу об удалении. Не отправляйте пароль.</p>
+    <p><a class="request-link" href="mailto:yosefhila86@gmail.com?subject=Magical%20Fun%20-%20Account%20deletion%20request&amp;body=Please%20delete%20my%20Magical%20Fun%20account%20and%20associated%20data.%0ARegistered%20account%20email%3A%20">Отправить запрос на удаление</a></p>
+    <p>Мы рассмотрим запрос и проверим владение аккаунтом перед удалением. Запрос распространяется на данные аккаунта и связанные с ним данные сервиса. Игровой прогресс, рисунки и настройки, сохранённые локально на устройстве, таким запросом не удаляются; их можно удалить в настройках хранилища браузера или приложения.</p>
+    <p>Некоторые данные могут сохраняться в соответствии с законом или циклами резервного копирования поставщика услуг. Подробнее см. в <a href="./privacy.html?lang=ru">Политике конфиденциальности</a>.</p>
+  </section>
+</main>
+<script>
+function setPageLanguage(language){
+  if(!['he','en','ru'].includes(language))language='he';
+  document.querySelectorAll('[data-language]').forEach(section=>{section.hidden=section.dataset.language!==language});
+  document.documentElement.lang=language;
+  document.documentElement.dir=language==='he'?'rtl':'ltr';
+  document.querySelector('#pageLanguage').value=language;
+  document.querySelector('#pageTitle').textContent={he:'בקשת מחיקת חשבון ונתונים',en:'Account and data deletion request',ru:'Запрос на удаление аккаунта и данных'}[language];
+  document.querySelector('#languageLabel').textContent={he:'שפה',en:'Language',ru:'Язык'}[language];
+}
+const requestedLanguage=new URLSearchParams(location.search).get('lang');
+setPageLanguage(['he','en','ru'].includes(requestedLanguage)?requestedLanguage:'he');
+</script>
+</body>
+</html>
