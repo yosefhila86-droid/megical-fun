@@ -70,7 +70,7 @@ video{width:100%;max-width:420px;border-radius:16px;background:#222;display:bloc
 .err{color:#d00;min-height:20px;font-size:14px}
 #paint{position:relative;overflow-y:auto;max-height:calc(100vh - 120px);padding-bottom:60px}
 #cv{max-width:320px;max-height:320px;width:100%;height:auto;margin:0 auto;display:block}
-.nav-btn{position:absolute;top:50%;transform:translateY(-50%);background:#7c4dff;color:#fff;border:0;border-radius:50%;width:44px;height:44px;font-size:20px;font-weight:bold;cursor:pointer;box-shadow:0 4px 10px rgba(0,0,0,.2);z-index:100}
+.nav-btn{position:absolute;top:50%;transform:translateY(-50%);direction:ltr;unicode-bidi:isolate;background:#7c4dff;color:#fff;border:0;border-radius:50%;width:44px;height:44px;font-size:20px;font-weight:bold;cursor:pointer;box-shadow:0 4px 10px rgba(0,0,0,.2);z-index:100}
 .prev-btn{left:10px}
 .next-btn{right:10px}
 .snd-grid{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:6px 0}
@@ -256,13 +256,13 @@ video{width:100%;max-width:420px;border-radius:16px;background:#222;display:bloc
   <div class="sizes dim" id="sizes"></div>
   <div class="hint" id="hint"></div>
 <div id="cvWrap" style="width:min(92vw,400px);margin:0 auto;overflow:hidden;border-radius:16px;touch-action:none"><canvas id="cv" width="512" height="512" style="display:block;width:100%;height:auto;transform-origin:0 0;touch-action:none"></canvas></div>
-<div class="tools" style="margin:6px auto"><button class="ghost" onclick="zm.by(1.4)" aria-label="Zoom in">＋</button><button class="ghost" onclick="zm.by(1/1.4)" aria-label="Zoom out">－</button><button class="ghost" id="bPan" onclick="zm.togglePan()" aria-label="Move">✋</button><button class="ghost" onclick="zm.reset()" aria-label="Reset zoom">↺</button></div>  <button class="nav-btn prev-btn" onclick="navItem(-1)">❮</button>
-<button class="nav-btn next-btn" onclick="navItem(1)">❯</button>
+<div class="tools" style="margin:6px auto"><button class="ghost" onclick="zm.by(1.4)" aria-label="Zoom in">＋</button><button class="ghost" onclick="zm.by(1/1.4)" aria-label="Zoom out">－</button><button class="ghost" id="bPan" onclick="zm.togglePan()" aria-label="Move">✋</button><button class="ghost" onclick="zm.reset()" aria-label="Reset zoom">↺</button></div>  <button id="paintPrevItem" class="nav-btn prev-btn" onclick="navItem(-1)">❮</button>
+<button id="paintNextItem" class="nav-btn next-btn" onclick="navItem(1)">❯</button>
   <div>
     <button class="ghost" onclick="undo()" data-i18n="undo">↩️ Undo</button>
     <button class="ghost" onclick="clearArt()">🗑️ <span data-i18n="clear">Clear</span></button>
     <button class="alt" onclick="saveArt()" data-i18n="save">💾 Save</button>
-    <button class="ghost" onclick="downloadArt()" data-i18n="download">💾 Save to device</button>
+    <button id="downloadPaint" class="ghost" onclick="downloadArt()" data-i18n="download">💾 Save to device</button>
     <button class="ghost" onclick="hintArt()" data-i18n="hintBtn">💡 Hint</button>
     <button onclick="go(back)" data-i18n="close">✖ Close</button>
     <div class="pal" id="pal"></div>
@@ -372,7 +372,7 @@ Object.assign(TEXT.en,{shapeHeart:'Heart',shapeDiamond:'Diamond',homeHive:'Beehi
 Object.assign(TEXT.he,{shapeHeart:'לב',shapeDiamond:'מעוין',homeHive:'כוורת',homeBurrow:'מחילה'});
 Object.assign(TEXT.ru,{shapeHeart:'Сердце',shapeDiamond:'Ромб',homeHive:'Улей',homeBurrow:'Нора'});
 Object.assign(TEXT.en,{logicQuest:'Logic Quest',logicPrompt:'Use all three clues to choose the correct order.',logicBefore:'{a} comes before {b}.',logicNext:'{a} comes immediately before {b}.',logicFirst:'{a} comes first.',logicLast:'{a} comes last.',storyMath:'Story Problems',storyPrompt:'Read the story and solve the problem.',scienceQuest:'Science Detectives',sciencePrompt:'Use what you know about nature and science to solve the mystery.',round:'Round {n}',nextQuestion:'Here comes another question…',riddleQuestion:'Question {n} of {total}',riddleComplete:'You solved all 10 riddles in this activity!',coloringCategories:'Coloring Categories',allColoringPages:'Coloring Categories',cameraColor:'📸 Magic Camera',riddles:'Riddle Quest',riddlePrompt:'Read the riddle and choose the answer.',starEarned:'+1 ⭐',saveToGallery:'Save to Gallery',drawingSaveEmpty:'Draw something first, then save it to your gallery.',drawingAlreadySaved:'This drawing is already in your gallery.',drawingSaved:'Saved to your gallery!',shapeOval:'Oval',shapeRectangle:'Rectangle',shapePentagon:'Pentagon',shapeHexagon:'Hexagon',shapeCrescent:'Crescent',shapeDiamond2:'Diamond',homeCave:'Cave',homePond:'Pond',homeWeb:'Web',homeStable:'Stable',homeJungle:'Jungle',homeTree:'Tree',shapeTrapezoid:'Trapezoid'});
-Object.assign(TEXT.he,{logicQuest:'מסע היגיון',logicPrompt:'השתמשו בכל שלושת הרמזים ובחרו בסדר הנכון.',logicBefore:'{a} צריך להופיע לפני {b}.',logicNext:'{a} צריך להופיע צמוד לפני {b}.',logicFirst:'{a} צריך להופיע ראשון.',logicLast:'{a} צריך להופיע אחרון.',storyMath:'סיפורי חשבון',storyPrompt:'קראו את הסיפור ופתרו את הבעיה.',scienceQuest:'בלשי המדע',sciencePrompt:'השתמשו בידע שלכם בטבע ובמדע כדי לפתור את התעלומה.',round:'סבב {n}',nextQuestion:'הנה מגיע תרגיל נוסף…',riddleQuestion:'שאלה {n} מתוך {total}',riddleComplete:'פתרתם את כל 10 החידות בפעילות!',allColoringPages:'קטגוריות צביעה',cameraColor:'📸 מצלמת הקסם',riddles:'מסע החידות',riddlePrompt:'קראו את החידה ובחרו בתשובה.',starEarned:'+1 ⭐',saveToGallery:'שמירה לגלריה',drawingSaveEmpty:'ציירו משהו לפני השמירה לגלריה.',drawingAlreadySaved:'הציור הזה כבר נמצא בגלריה.',drawingSaved:'נשמר בגלריה!',shapeOval:'אליפסה',shapeRectangle:'מלבן',shapePentagon:'מחומש',shapeHexagon:'משושה',shapeCrescent:'סהר',shapeDiamond2:'מעוין',homeCave:'מערה',homePond:'בריכה',homeWeb:'קורי עכביש',homeStable:'אורווה',homeJungle:'ג׳ונגל',homeTree:'עץ',shapeTrapezoid:'טרפז'});
+Object.assign(TEXT.he,{logicQuest:'מסע היגיון',logicPrompt:'השתמשו בכל שלושת הרמזים ובחרו בסדר הנכון.',logicBefore:'{a} צריך להופיע לפני {b}.',logicNext:'{a} צריך להופיע לפני {b}.',logicFirst:'{a} צריך להופיע ראשון.',logicLast:'{a} צריך להופיע אחרון.',storyMath:'סיפורי חשבון',storyPrompt:'קראו את הסיפור ופתרו את הבעיה.',scienceQuest:'בלשי המדע',sciencePrompt:'השתמשו בידע שלכם בטבע ובמדע כדי לפתור את התעלומה.',round:'סבב {n}',nextQuestion:'הנה מגיע תרגיל נוסף…',riddleQuestion:'שאלה {n} מתוך {total}',riddleComplete:'פתרתם את כל 10 החידות בפעילות!',allColoringPages:'קטגוריות צביעה',cameraColor:'📸 מצלמת הקסם',riddles:'מסע החידות',riddlePrompt:'קראו את החידה ובחרו בתשובה.',starEarned:'+1 ⭐',saveToGallery:'שמירה לגלריה',drawingSaveEmpty:'ציירו משהו לפני השמירה לגלריה.',drawingAlreadySaved:'הציור הזה כבר נמצא בגלריה.',drawingSaved:'נשמר בגלריה!',shapeOval:'אליפסה',shapeRectangle:'מלבן',shapePentagon:'מחומש',shapeHexagon:'משושה',shapeCrescent:'סהר',shapeDiamond2:'מעוין',homeCave:'מערה',homePond:'בריכה',homeWeb:'קורי עכביש',homeStable:'אורווה',homeJungle:'ג׳ונגל',homeTree:'עץ',shapeTrapezoid:'טרפז'});
 Object.assign(TEXT.ru,{logicQuest:'Логический квест',logicPrompt:'Используй все три подсказки и выбери правильный порядок.',logicBefore:'{a} идёт перед {b}.',logicNext:'{a} идёт сразу перед {b}.',logicFirst:'{a} идёт первым.',logicLast:'{a} идёт последним.',storyMath:'Задачи в историях',storyPrompt:'Прочитай историю и реши задачу.',scienceQuest:'Научные детективы',sciencePrompt:'Используй знания о природе и науке, чтобы раскрыть тайну.',round:'Раунд {n}',nextQuestion:'Готовься к следующему заданию…',riddleQuestion:'Вопрос {n} из {total}',riddleComplete:'Ты разгадал все 10 загадок в этом занятии!',allColoringPages:'Категории раскрасок',cameraColor:'📸 Волшебная камера',riddles:'Мир загадок',riddlePrompt:'Прочитай загадку и выбери ответ.',starEarned:'+1 ⭐',saveToGallery:'Сохранить в галерею',drawingSaveEmpty:'Сначала нарисуй что-нибудь, затем сохрани в галерею.',drawingAlreadySaved:'Этот рисунок уже есть в галерее.',drawingSaved:'Сохранено в галерее!',shapeOval:'Овал',shapeRectangle:'Прямоугольник',shapePentagon:'Пятиугольник',shapeHexagon:'Шестиугольник',shapeCrescent:'Полумесяц',shapeDiamond2:'Ромб',homeCave:'Пещера',homePond:'Пруд',homeWeb:'Паутина',homeStable:'Конюшня',homeJungle:'Джунгли',homeTree:'Дерево',shapeTrapezoid:'Трапеция'});
 Object.assign(TEXT.en,{volume:'Volume',musicToggle:'Music on or off',drawingArea:'Drawing area'});
 Object.assign(TEXT.he,{volume:'עוצמת קול',musicToggle:'הפעלה או השתקה של המוזיקה',drawingArea:'אזור ציור'});
@@ -1294,7 +1294,14 @@ function startDifferences(){
 }
 function renderDifferences(){
   const board=images=>images.map((src,i)=>`<button class="difference-cell ${differenceFound.has(i)?'found':''}" onclick="findDifference(${i})" aria-label="Picture ${i+1}" ${differenceFound.has(i)?'aria-pressed="true"':''}><img src="${src}" alt=""></button>`).join('');
-  $('#gameContent').innerHTML=`<h2 data-i18n="differences">🔎 ${tr('differences')}</h2><p data-i18n="differencesPrompt">${tr('differencesPrompt')}</p><div class="difference-boards"><div><b>1</b><div class="difference-board">${board(differenceLeft)}</div></div><div><b>2</b><div class="difference-board">${board(differenceRight)}</div></div></div><p id="differenceStatus" aria-live="polite">${differenceFound.size} / 3</p><button class="alt" onclick="startDifferences()" data-i18n="playAgain">${tr('playAgain')}</button>`;
+  const action=differenceFound.size===3?'nextDifferenceActivity()':'startDifferences()';
+  $('#gameContent').innerHTML=`<h2 data-i18n="differences">🔎 ${tr('differences')}</h2><p data-i18n="differencesPrompt">${tr('differencesPrompt')}</p><div class="difference-boards"><div><b>1</b><div class="difference-board">${board(differenceLeft)}</div></div><div><b>2</b><div class="difference-board">${board(differenceRight)}</div></div></div><p id="differenceStatus" aria-live="polite">${differenceFound.size} / 3</p><button class="alt" onclick="${action}" data-i18n="playAgain">${tr('playAgain')}</button>`;
+}
+function nextDifferenceActivity(){
+  if(differenceFound.size!==3)return;
+  const nextLevel=selectedLevel+1;
+  if(nextLevel>=activityNames('differences',currentLanguage).length){renderGameLevels();return}
+  launchMiniGame('differences',nextLevel);
 }
 function findDifference(index){
   if(differenceFound.has(index)||differenceFound.size===3)return;
@@ -1304,7 +1311,9 @@ function findDifference(index){
   if(differenceFound.size===3){
     const status=$('#differenceStatus');
     status.classList.add('difference-success');
-    status.innerHTML=`<span>${tr('done')}</span><br><button class="alt" onclick="renderGameLevels()" data-i18n="next">${tr('next')}</button>`;
+    status.innerHTML=`<span>${tr('done')}</span>`;
+    const action=$('#gameContent button[data-i18n="playAgain"]');
+    if(action)action.onclick=nextDifferenceActivity;
   }
 }
 
@@ -1667,11 +1676,7 @@ function renderMagneticMaze(){
   const result=puzzle.finished?`<p class="magnet-result" role="status">${won?tr('magneticComplete')+completed:tr('magneticFall')}</p>${won&&selectedMagneticStage<5?` <button class="alt" onclick="startMagneticMaze(selectedLevel,${selectedMagneticStage+1})">${tr('magneticNextStage')}</button>`:''} <button class="ghost" onclick="startMagneticMaze(selectedLevel,selectedMagneticStage)">${tr('magneticRestart')}</button>`:'';
   $('#gameContent').innerHTML=`<h2>${tr('magneticMaze')} - ${activityNames('magneticMaze',currentLanguage)[selectedLevel]}</h2><h3>${tr('magneticStageLabel',{n:selectedMagneticStage+1,difficulty:tr(`magneticDifficulty${selectedMagneticStage+1}`)})}</h3><section class="magnetic-howto"><b>${tr('magneticHowToTitle')}</b><ol><li>${tr('magneticHowTo1')}</li><li>${tr('magneticHowTo2')}</li><li>${tr('magneticHowTo3')}</li></ol></section><div class="magnet-maze"><div class="magnet-maze-board" style="--magnet-size:${puzzle.size}" aria-label="${tr('magneticMaze')}">${cells}</div><div class="magnetic-legend"><span>🔵 ${tr('magneticBall')}</span><span>🧱 ${tr('magneticWall')}</span><span>🕳️ ${tr('magneticHole')}</span><span>🏁 ${tr('magneticGoal')}</span></div><div class="magnet-direction-grid" role="group" aria-label="${tr('magneticChooseDirection')}">${directions}</div><div class="magnetic-preview" aria-live="polite">${tr('magneticMovePreview')} <strong>${puzzle.finished?'—':magneticMazeMovePreview(puzzle)}</strong></div><div class="magnet-controls"><button class="alt" onclick="activateMagnet()" ${puzzle.finished?'disabled':''}>${tr('magneticActivate')}</button></div><p class="magnet-maze-status" aria-live="polite">${puzzle.status}</p></div>${result}<button class="ghost" onclick="renderMagneticMazeStages()">${tr('magneticBackToStages')}</button><button class="ghost" onclick="renderGameLevels()">${tr('back')}</button>`;
 }
-const INTERACTIVE_PATHS=[
-  [0,1,2,6,10,11,15],[0,4,8,9,10,14,15],[0,1,5,9,10,11,15],[0,4,5,6,10,14,15],
-  [0,1,2,3,7,11,15],[0,4,8,12,13,14,15],[0,1,5,6,7,11,15],[0,4,5,9,13,14,15],
-  [0,1,2,6,7,11,15],[0,4,8,9,13,14,15],[0,1,5,6,10,11,15],[0,4,5,6,7,11,15]
-];
+const PATH_LEVEL_CELL_COUNTS=[11,17,23,29,35];
 const INTERACTIVE_DIRECTIONS=[{dx:0,dy:-1,bit:1},{dx:1,dy:0,bit:2},{dx:0,dy:1,bit:4},{dx:-1,dy:0,bit:8}];
 const INTERACTIVE_PATH_STROKES={1:'M 50 50 L 50 4',2:'M 50 50 L 96 50',4:'M 50 50 L 50 96',8:'M 50 50 L 4 50'};
 const INTERACTIVE_CODE_COLORS=['🔴','🟠','🟡','🟢','🔵','🟣'];
@@ -1710,11 +1715,7 @@ function startInteractivePuzzle(id){
 }
 function setupPathPuzzle(){
   const size=selectedPathLevel===0?4:selectedPathLevel+4;
-  const oddRows=Array.from({length:Math.ceil(size/2)},(_,index)=>index*2+1).filter(rows=>rows<=size);
-  const rows=oddRows[Math.max(0,oddRows.length-1-(selectedLevel%2))];
-  const route=selectedPathLevel===0
-    ?INTERACTIVE_PATHS[selectedLevel]
-    :buildProgressivePath(size,rows,selectedLevel+selectedPathLevel);
+  const route=buildProgressivePath(size,PATH_LEVEL_CELL_COUNTS[selectedPathLevel],selectedLevel*5+selectedPathLevel);
   const finish=size*size-1;
   if(!route||route[0]!==0||route[route.length-1]!==finish)throw new Error(`Invalid path activity ${selectedLevel}, level ${selectedPathLevel+1}`);
   const masks=Array(size*size).fill(0);
@@ -1729,31 +1730,38 @@ function setupPathPuzzle(){
   route.forEach((cell,index)=>{rotations[cell]=(selectedLevel+selectedPathLevel+index*2)%3+1});
   interactivePuzzle.route=route;interactivePuzzle.masks=masks;interactivePuzzle.rotations=rotations;
   interactivePuzzle.size=size;interactivePuzzle.finish=finish;
-  interactivePuzzle.maxTurns=rotations.reduce((sum,turns)=>sum+(4-turns)%4,0)+Math.ceil(route.length*0.5);
+  interactivePuzzle.maxTurns=rotations.reduce((sum,turns)=>sum+(4-turns)%4,0)+Math.max(2,Math.ceil(route.length*0.12));
 }
-function buildProgressivePath(size,rows,variant=0){
-  const route=[];
-  if(variant%2===0){
-    for(let y=0;y<rows;y++){
-      const fromLeft=y%2===0;
-      for(let offset=0;offset<size;offset++){
-        const x=fromLeft?offset:size-1-offset;
-        route.push(y*size+x);
-      }
+function buildProgressivePath(size,targetCells,variant=0){
+  const goal=size*size-1,route=[0],visited=new Set(route);
+  let seed=(variant+1)*0x9e3779b1+size*0x85ebca6b+targetCells;
+  const random=()=>{seed=(seed+0x6d2b79f5)|0;let value=seed;value=Math.imul(value^(value>>>15),value|1);value^=value+Math.imul(value^(value>>>7),value|61);return((value^(value>>>14))>>>0)/4294967296};
+  let budget=250000;
+  const search=cell=>{
+    if(cell===goal)return route.length===targetCells;
+    if(route.length>=targetCells||--budget<0)return false;
+    const x=cell%size,y=Math.floor(cell/size),remaining=targetCells-route.length;
+    const distance=Math.abs(size-1-x)+Math.abs(size-1-y);
+    if(distance>remaining||((remaining-distance)&1))return false;
+    const candidates=INTERACTIVE_DIRECTIONS
+      .map(direction=>({direction,order:random()}))
+      .sort((a,b)=>a.order-b.order)
+      .map(({direction})=>cell+direction.dx+direction.dy*size)
+      .filter(next=>next>=0&&next<size*size&&Math.abs(next%size-x)+Math.abs(Math.floor(next/size)-y)===1&&!visited.has(next));
+    for(const next of candidates){
+      if(next===goal&&route.length+1!==targetCells)continue;
+      visited.add(next);route.push(next);
+      if(search(next))return true;
+      route.pop();visited.delete(next);
     }
-    const lastRow=rows-1;
-    for(let y=rows;y<size;y++)route.push(y*size+(lastRow%2===0?size-1:0));
-    return route;
+    return false;
+  };
+  let found=false;
+  for(let attempt=0;attempt<4&&!found;attempt++){
+    if(attempt){route.length=1;visited.clear();visited.add(0);seed+=0x6d2b79f5;budget=250000}
+    found=search(0);
   }
-  for(let x=0;x<rows;x++){
-    const fromTop=x%2===0;
-    for(let offset=0;offset<size;offset++){
-      const y=fromTop?offset:size-1-offset;
-      route.push(y*size+x);
-    }
-  }
-  const lastColumn=rows-1;
-  for(let x=rows;x<size;x++)route.push((size-1)*size+x);
+  if(!found)throw new Error(`Could not generate path for ${size}x${size} board with ${targetCells} tiles`);
   return route;
 }
 function pathLevelStarKey(activity,level){return `physicsPaths:${activity}:path-${level}`}
@@ -1781,8 +1789,8 @@ function continueInteractivePuzzle(){
 }
 function renderPathLevels(){
   const names=activityNames('physicsPaths',currentLanguage),name=names[selectedLevel];
-  const sizes=[4,5,6,7,8],rows=[1,3,5,7,7];
-  const pathLengths=[INTERACTIVE_PATHS[selectedLevel].length,...sizes.slice(1).map((size,index)=>size*rows[index+1]+size-rows[index+1])];
+  const sizes=[4,5,6,7,8];
+  const pathLengths=PATH_LEVEL_CELL_COUNTS;
   $('#gameContent').innerHTML=`<h2>${tr('physicsPaths')} - ${name}</h2><p>${tr('pathLevelsIntro')}</p><div class="level-grid">${sizes.map((size,index)=>{
     const unlocked=pathLevelIsUnlocked(index),complete=S.completedPuzzleStars.includes(pathLevelStarKey(selectedLevel,index));
     return `<button class="level-choice${unlocked?'':' locked'}" ${unlocked?'':'disabled'} onclick="launchPathLevel(${index})">${unlocked?'':'🔒 '}${tr('pathLevelLabel',{n:`<bdi dir="ltr">${index+1}</bdi>`,board:`<bdi dir="ltr">${size}×${size}</bdi>`,tiles:`<bdi dir="ltr">${pathLengths[index]}</bdi>`})}${complete?' ⭐':''}</button>`;
@@ -4007,7 +4015,13 @@ function showPaintResult(r,from){
   L=r.L;reg=r.reg;back=from;hist=[];editingArtIndex=-1;
   img=ctx.createImageData(N,N);resetImg();ctx.putImageData(img,0,0);
   baseImg=img.data.slice();savedImg=null;
+  setPhotoPaintControls(false);
   setMode('fill');go('paint');
+}
+function setPhotoPaintControls(isPhoto){
+  ['#paintPrevItem','#paintNextItem','#downloadPaint'].forEach(selector=>{
+    $(selector).style.display=isPhoto?'none':'';
+  });
 }
 async function startPaint(src,opt,from){
   toast('✨ Making magic…');
@@ -4019,6 +4033,7 @@ async function startPaint(src,opt,from){
     L=r.L;reg=r.reg;back=from;hist=[];editingArtIndex=-1;
     img=ctx.createImageData(N,N);resetImg();ctx.putImageData(img,0,0);
     baseImg=img.data.slice();savedImg=null;               /* remember the blank page and the last saved state */
+    setPhotoPaintControls(!!opt.photo);
     setMode('fill');go('paint');
   };
   const prep=opt.photo?loadPhotoSource(src):Promise.resolve(src);
@@ -4128,6 +4143,7 @@ async function openSavedArt(index){
     for(let i=0,j=0;i<P;i++,j+=4)if(result.L[i])restored.data[j]=restored.data[j+1]=restored.data[j+2]=0;
     L=result.L;reg=result.reg;img=restored;ctx.putImageData(img,0,0);
     baseImg=img.data.slice();savedImg=img.data.slice();editingArtIndex=index;back='profile';hist=[];
+    setPhotoPaintControls(false);
     setMode('fill');go('paint');
   }catch(e){
     console.error('Could not open saved artwork',e);
