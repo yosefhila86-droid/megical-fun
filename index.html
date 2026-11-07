@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Megical Fun</title>
+<title>Magical Fun</title>
 <meta name="theme-color" content="#7c4dff">
 <link rel="manifest" href="./manifest.json">
 <style>
@@ -20,6 +20,16 @@ input[type=color]{height:46px;padding:2px;border-radius:12px}
 #gameStage.screen.center{width:100%;max-width:none;margin:0 auto}
 #gameContent{width:min(100%,560px);margin:0 auto}
 #welcome.screen.on{display:flex;flex-direction:column;justify-content:center}
+#welcome{position:relative;isolation:isolate;overflow:hidden;background:radial-gradient(ellipse at 50% 35%,#fff 0%,#fff8e6 48%,#f1eaff 100%)}
+#welcome:before,#welcome:after{content:"";position:absolute;z-index:-1;inset:0;pointer-events:none}
+#welcome:before{background-image:radial-gradient(circle,#fff 0 2px,transparent 3px),radial-gradient(circle,#ffd166 0 2px,transparent 3px),radial-gradient(circle,#b8a0ff 0 2px,transparent 3px);background-size:120px 120px,170px 170px,210px 210px;background-position:12px 20px,60px 75px,30px 110px;opacity:.65;animation:sparkle-drift 8s linear infinite}
+#welcome:after{inset:12% 8%;border-radius:50%;background:radial-gradient(ellipse,#ffe38a44,transparent 68%);filter:blur(16px)}
+#welcome .logo{filter:drop-shadow(0 0 12px #ffd166aa);animation:logo-sparkle 2.4s ease-in-out infinite alternate}
+#welcome h1{text-shadow:0 2px 0 #fff,0 5px 16px #a88be866}
+.guest-button{background:#2387e8}
+@keyframes sparkle-drift{to{background-position:92px 100px,160px 185px,150px 20px}}
+@keyframes logo-sparkle{to{filter:drop-shadow(0 0 20px #ffd166)}}
+@media(prefers-reduced-motion:reduce){#welcome:before,#welcome .logo{animation:none}}
 header{display:flex;justify-content:space-between;align-items:center;padding:calc(10px + env(safe-area-inset-top)) 14px 10px;background:#7c4dff;color:#fff;font-weight:800}
 header select{width:auto;max-width:105px;margin:0;padding:7px;border:0}
 nav{display:flex;background:#fff;border-top:2px solid #ece6ff;padding-bottom:env(safe-area-inset-bottom)}
@@ -56,7 +66,7 @@ video{width:100%;max-width:420px;border-radius:16px;background:#222;display:bloc
 .av-btn.locked{opacity:.5;filter:grayscale(.8)}
 .av-btn .badge-req{position:absolute;bottom:-4px;right:-4px;font-size:10px;background:#ffb703;color:#3b2a66;padding:1px 4px;border-radius:8px;font-weight:800}
 .gal{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.gal button{padding:0;border-radius:10px;overflow:hidden;background:#ece6ff;color:#3b2a66}.gal img{display:block;width:100%;border:2px solid #ece6ff;border-radius:10px}
-#toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:#3b2a66;color:#fff;padding:10px 18px;border-radius:20px;display:none;z-index:20;max-width:90vw;text-align:center}
+#toast{position:fixed;left:50%;bottom:118px;transform:translateX(-50%);background:#3b2a66;color:#fff;padding:10px 18px;border-radius:20px;display:none;z-index:20;max-width:90vw;text-align:center}
 .err{color:#d00;min-height:20px;font-size:14px}
 #paint{position:relative;overflow-y:auto;max-height:calc(100vh - 120px);padding-bottom:60px}
 #cv{max-width:320px;max-height:320px;width:100%;height:auto;margin:0 auto;display:block}
@@ -73,6 +83,8 @@ video{width:100%;max-width:420px;border-radius:16px;background:#222;display:bloc
 .game-card .e{font-size:42px}
 .escape-room{max-width:520px;margin:12px auto;padding:16px;background:linear-gradient(145deg,#fffdf7,#f5edff);border:2px solid #ded0ff;border-radius:24px;box-shadow:0 8px 20px #36205a20}
 .interactive-puzzle{max-width:520px;margin:12px auto;padding:14px;background:#fff;border:2px solid #e4dcff;border-radius:20px;box-shadow:0 3px 10px #0002}
+#gameContent.railway-game{width:min(100%,780px)}
+.interactive-puzzle.railway-puzzle{max-width:760px}
 .path-board,.sokoban-board{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;width:min(88vw,340px);margin:14px auto}
 .path-board{direction:ltr;grid-template-columns:repeat(var(--path-size,4),minmax(0,1fr));gap:4px;padding:8px;width:min(100%,500px);background:#eee8ff;border-radius:20px}
 .path-cell{position:relative;display:grid;place-items:center;min-width:0;aspect-ratio:1;padding:0;border:1px solid #ded5f5;background:#fff;color:#5b42a0;font-size:18px;line-height:1}
@@ -80,18 +92,52 @@ video{width:100%;max-width:420px;border-radius:16px;background:#222;display:bloc
 .path-marker{position:relative;z-index:1;font-size:clamp(10px,calc(24vw / var(--path-size,4)),24px)}
 .path-empty{opacity:.2}
 .path-cell.start,.path-cell.finish{background:#d8fff2;border-color:#00b894}
+.magnet-maze{max-width:540px;margin:8px auto;padding:8px;background:linear-gradient(145deg,#fff,#f4efff);border:2px solid #ded5f5;border-radius:20px}
+.magnet-maze-middle{display:grid;grid-template-columns:30px minmax(0,1fr) 30px;gap:3px;align-items:stretch}
+.magnet-maze-board{direction:ltr;display:grid;grid-template-columns:repeat(var(--magnet-size),minmax(0,1fr));gap:2px;width:min(100%,240px);margin:0 auto;padding:4px;background:#d8d1e4;border-radius:12px}
+.magnet-maze-cell{display:grid;place-items:center;min-width:0;overflow:hidden;aspect-ratio:1;padding:0;border:1px solid #e5e0eb;border-radius:5px;background:#fff;color:#3b2a66;font-size:clamp(8px,2.4vw,16px);line-height:1}
+.magnet-maze-cell.wall{border-color:#75628e;background-color:#92829d;background-image:linear-gradient(90deg,transparent 46%,#75628e 48% 52%,transparent 54%),linear-gradient(0deg,#75628e 0 7%,transparent 7% 47%,#75628e 47% 54%,transparent 54% 94%,#75628e 94%);background-size:50% 50%}
+.magnet-maze-cell.pit{background:#272136;border-color:#272136}
+.magnet-maze-cell.pit::before{content:"";width:64%;aspect-ratio:1;border:2px solid #534666;border-radius:50%;background:radial-gradient(circle at 36% 32%,#0d0a15,#171320 65%,#30283d 100%);box-shadow:inset 0 2px 5px #0008}
+.magnet-maze-cell.ball{background:#d8f3ff;border-color:#39a9d6;box-shadow:inset 0 0 0 2px #39a9d655}
+.magnet-maze-cell.ball::before{content:"";width:66%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 32% 26%,#b4edff,#48b6f3 44%,#1479c5 100%);box-shadow:0 1px 3px #174c7880}
+.magnet-maze-cell.goal{background:#d8fff2;border-color:#00b894}
+.magnet-edge{display:flex;justify-content:center;align-items:center;gap:3px}
+.magnet-edge.horizontal{width:100%;margin:4px auto}
+.magnet-edge.vertical{flex-direction:column}
+.magnet-slot{position:relative;display:grid;place-items:center;min-width:22px;min-height:26px;padding:1px;background:#ece6ff;color:#3b2a66;border:1px solid #d5c9ee;border-radius:8px;font-size:14px;line-height:1}
+.magnet-slot.selected{background:#ffdf80;border:2px solid #e19a00}
+.magnet-direction-grid{direction:ltr;display:grid;grid-template-columns:repeat(3,44px);grid-template-rows:repeat(2,42px);gap:4px;justify-content:center;margin:8px auto}
+.magnet-direction{display:grid;place-items:center;min-width:44px;min-height:42px;padding:0;background:#ece6ff;color:#3b2a66;border:1px solid #d5c9ee;border-radius:10px;font-size:24px;line-height:1}
+.magnet-direction.selected{background:#ffdf80;border:2px solid #e19a00}
+.magnet-direction.up{grid-area:1/2}
+.magnet-direction.left{grid-area:2/1}
+.magnet-direction.down{grid-area:2/2}
+.magnet-direction.right{grid-area:2/3}
+.magnet-controls{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:8px;margin:10px auto}
+.magnet-pole{background:#ece6ff;color:#3b2a66}
+.magnet-pole.on{background:#7c4dff;color:#fff}
+.magnet-maze-status{min-height:0;margin:6px 0;text-align:center;font-weight:800}
+.magnet-result{text-align:center;font-size:1.15em;font-weight:800;color:#3b2a66}
+.magnetic-howto{max-width:680px;margin:10px auto;padding:10px 16px;background:#f5f0ff;border-radius:14px;text-align:start}
+.magnetic-howto ol{margin:0;padding-inline-start:24px;line-height:1.7}
+.magnetic-preview{display:flex;align-items:center;justify-content:center;gap:8px;margin:10px auto;padding:8px;background:#e8f7ff;border-radius:12px;font-weight:800}
+.magnetic-legend{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:8px auto;font-size:13px}
+.magnetic-legend span{padding:4px 8px;background:#fff;border:1px solid #e5e0eb;border-radius:10px}
+@media(max-width:420px){.magnet-maze{padding:6px}.magnet-maze-middle{grid-template-columns:24px minmax(0,1fr) 24px;gap:2px}.magnet-maze-board{gap:2px;padding:3px}.magnet-slot{min-width:18px;min-height:22px;padding:0;font-size:11px}}
 .sokoban-board{direction:ltr;grid-template-columns:repeat(var(--box-size,6),minmax(0,1fr));gap:3px;padding:7px;width:min(100%,420px);background:#eee8ff;border-radius:18px}
 .sokoban-cell{aspect-ratio:1;display:grid;place-items:center;min-width:0;padding:0;border:1px solid #d9ccff;border-radius:5px;background:#fff;color:#3b2a66;font-size:clamp(12px,calc(44vw / var(--box-size,6)),30px);line-height:1}
 .sokoban-cell.wall{background:#75628e;border-color:#75628e}
 .control-pad{direction:ltr;display:grid;grid-template-columns:repeat(3,54px);gap:5px;justify-content:center;margin:10px auto}
 .control-pad button{height:48px;padding:4px;font-size:22px}
-.rail-board{direction:ltr;display:grid;grid-template-columns:repeat(var(--rail-cols),minmax(0,1fr));grid-template-rows:repeat(5,minmax(0,1fr));gap:2px;width:min(100%,540px);margin:14px auto;padding:6px;border-radius:18px;background:#d9d0e7}
+.rail-board-scroll{max-width:100%;margin:14px auto;overflow-x:auto;overscroll-behavior-x:contain}
+.rail-board{direction:ltr;display:grid;grid-template-columns:repeat(var(--rail-cols),minmax(0,1fr));grid-template-rows:repeat(5,minmax(0,1fr));gap:2px;width:100%;min-width:var(--rail-min-width);max-width:700px;margin:0 auto;padding:10px;background:#d9d0e7;border-radius:18px}
 .rail-cell{position:relative;display:grid;place-items:center;min-width:0;aspect-ratio:1;background:#fff9ed}
 .rail-cell.empty{background:transparent}
 .rail-cell svg{position:absolute;inset:0;width:100%;height:100%;color:#9486a8}
 .rail-switch-marker{position:absolute;z-index:2;top:0;right:0;display:grid;place-items:center;width:16px;height:16px;border:1px solid #fff;border-radius:50%;background:#ece6ff;color:#3b2a66;font-size:10px;line-height:1}
 .rail-switch-marker.on{background:#ffb703}
-.rail-switch-controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(72px,1fr));gap:6px;max-width:500px;margin:8px auto}
+.rail-switch-controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(72px,1fr));gap:6px;max-width:700px;margin:8px auto}
 .rail-switch-control{display:flex;justify-content:center;align-items:center;gap:4px;min-height:44px;padding:4px;border-radius:10px;background:#ece6ff;color:#3b2a66;font-size:13px}
 .rail-switch-control.on{background:#ffdf80}
 .rail-switch-control small{font-size:10px}
@@ -101,6 +147,7 @@ video{width:100%;max-width:420px;border-radius:16px;background:#222;display:bloc
 .rail-train i{position:absolute;right:-2px;bottom:-2px;width:9px;height:9px;border:1px solid #fff;border-radius:50%;background:var(--train-color)}
 .rail-queue{display:flex;justify-content:center;gap:5px;flex-wrap:wrap;margin:8px auto}
 .rail-queue span{padding:4px 7px;border:2px solid var(--train-color);border-radius:12px;background:#fff;font-size:16px}
+.rail-color-chip{display:inline-block;width:12px;height:12px;border:2px solid #fff;border-radius:50%;background:var(--train-color);box-shadow:0 0 0 1px #6a55a5;vertical-align:middle}
 .rail-controls{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
 .rail-status{min-height:22px}
 .code-row,.code-palette{display:flex;justify-content:center;align-items:center;gap:7px;flex-wrap:wrap;margin:12px auto}
@@ -121,9 +168,16 @@ video{width:100%;max-width:420px;border-radius:16px;background:#222;display:bloc
 .escape-riddle{margin:14px auto;padding:18px;background:#fff;border:2px solid #d8c8ff;border-radius:18px;text-align:start;line-height:1.6;box-shadow:inset 0 2px 8px #36205a0a}
 .escape-explanation{display:block;margin:8px auto;padding:10px;background:#fff;border-radius:12px;font-weight:500;line-height:1.5}
 .game-board{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));gap:4px;width:min(78vw,320px);aspect-ratio:1;margin:14px auto}
+.word-search-board{direction:ltr;display:grid;grid-template-columns:repeat(var(--word-grid-size),minmax(0,1fr));gap:3px;width:min(94vw,480px);margin:14px auto;padding:8px;background:#eee8ff;border-radius:16px}
+.word-search-cell{display:grid;place-items:center;min-width:0;aspect-ratio:1;padding:0;border:2px solid #ded5f5;border-radius:8px;background:#fff;color:#3b2a66;font-size:clamp(14px,5vw,25px);font-weight:800;line-height:1}
+.word-search-cell.selected{background:#ffdf80;border-color:#f0a800}
+.word-search-cell.found{background:#c9f5e4;border-color:#00b894;color:#08734d}
+.word-search-words{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;max-width:560px;margin:12px auto;padding:0;list-style:none}
+.word-search-words li{padding:6px 10px;border:2px solid #ded5f5;border-radius:12px;background:#fff;font-weight:700}
+.word-search-words li.found{text-decoration:line-through;background:#d8fff2;border-color:#00b894;color:#08734d}
 .puzzle-piece{position:relative;overflow:hidden;border-radius:8px;padding:0;min-width:0;background:#fff;box-shadow:0 2px 6px #0002}
 .puzzle-piece::before{content:"";position:absolute;inset:0;background-image:var(--puzzle-image);background-repeat:no-repeat;background-size:300% auto;background-position:var(--puzzle-position);filter:grayscale(1)}
-.puzzle-piece.selected{outline:4px solid #7c4dff;outline-offset:-4px}
+.puzzle-piece.selected{outline:5px solid #7c4dff;outline-offset:-5px;box-shadow:0 0 0 5px #ffd166,0 4px 12px #36205a66;transform:scale(.96)}
 #puzzleStatus.puzzle-success{max-width:320px;margin:12px auto;padding:12px;background:#d8fff2;border:2px solid #00b894;border-radius:16px;font-weight:800}
 .game-image{width:min(58vw,220px);height:min(58vw,220px);object-fit:contain;background:#fff;border-radius:16px;box-shadow:0 3px 10px #0002;margin:8px auto}
 .answer-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;max-width:420px;margin:14px auto}
@@ -144,7 +198,7 @@ video{width:100%;max-width:420px;border-radius:16px;background:#222;display:bloc
 .level-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;max-width:480px;margin:14px auto}
 .level-choice{min-height:72px}
 .level-choice.locked{background:#ece6ff;color:#6a55a5}
-.play-status{min-height:24px;font-weight:700;color:#6a55a5}
+.play-status{position:sticky;bottom:8px;z-index:4;min-height:24px;margin:8px auto;padding:8px 12px;border-radius:14px;background:#fffdf6eF;box-shadow:0 2px 10px #36205a20;font-weight:700;color:#6a55a5;text-align:center;scroll-margin-bottom:96px}
 .trace-canvas{display:block;width:min(78vw,320px);height:auto;aspect-ratio:1;margin:12px auto;background:#fff;border:3px dashed #d9ccff;border-radius:20px;touch-action:none}
 .learning-tools{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin:8px auto}
 .learning-hint{min-height:24px;color:#6a55a5;font-weight:700}
@@ -157,10 +211,10 @@ video{width:100%;max-width:420px;border-radius:16px;background:#222;display:bloc
 <body>
 
 <div id="welcome" class="screen on center" style="margin:auto">
-  <div class="logo">🎨✨</div><h1>Megical Fun</h1><p data-i18n="tagline">Games, coloring and creativity!</p>
+  <div class="logo">🎨✨</div><h1>Magical Fun</h1><p data-i18n="tagline">Games, coloring and creativity!</p>
   <label><span data-i18n="language">Language</span><select id="welcomeLanguage" onchange="setLanguage(this.value)" aria-label="Language" data-i18n-aria="language"><option value="en">English</option><option value="he">עברית</option><option value="ru">Русский</option></select></label>
   <p><a id="privacyLink" href="./privacy.html?lang=en" data-i18n="privacyPolicyLink">Privacy policy</a></p>
-  <button class="alt" style="width:100%;margin:6px 0" onclick="guest()" data-i18n="playGuest">Play as Guest</button>
+  <button class="guest-button" style="width:100%;margin:6px 0" onclick="guest()" data-i18n="playGuest">Play as Guest</button>
   <button style="width:100%;margin:6px 0" onclick="authForm('login')" data-i18n="login">Login</button>
   <button class="ghost" style="width:100%;margin:6px 0" onclick="authForm('reg')" data-i18n="register">Register</button>
   <div id="auth" style="display:none;text-align:left">
@@ -318,7 +372,7 @@ Object.assign(TEXT.en,{shapeHeart:'Heart',shapeDiamond:'Diamond',homeHive:'Beehi
 Object.assign(TEXT.he,{shapeHeart:'לב',shapeDiamond:'מעוין',homeHive:'כוורת',homeBurrow:'מחילה'});
 Object.assign(TEXT.ru,{shapeHeart:'Сердце',shapeDiamond:'Ромб',homeHive:'Улей',homeBurrow:'Нора'});
 Object.assign(TEXT.en,{logicQuest:'Logic Quest',logicPrompt:'Use all three clues to choose the correct order.',logicBefore:'{a} comes before {b}.',logicNext:'{a} comes immediately before {b}.',logicFirst:'{a} comes first.',logicLast:'{a} comes last.',storyMath:'Story Problems',storyPrompt:'Read the story and solve the problem.',scienceQuest:'Science Detectives',sciencePrompt:'Use what you know about nature and science to solve the mystery.',round:'Round {n}',nextQuestion:'Here comes another question…',riddleQuestion:'Question {n} of {total}',riddleComplete:'You solved all 10 riddles in this activity!',coloringCategories:'Coloring Categories',allColoringPages:'Coloring Categories',cameraColor:'📸 Magic Camera',riddles:'Riddle Quest',riddlePrompt:'Read the riddle and choose the answer.',starEarned:'+1 ⭐',saveToGallery:'Save to Gallery',drawingSaveEmpty:'Draw something first, then save it to your gallery.',drawingAlreadySaved:'This drawing is already in your gallery.',drawingSaved:'Saved to your gallery!',shapeOval:'Oval',shapeRectangle:'Rectangle',shapePentagon:'Pentagon',shapeHexagon:'Hexagon',shapeCrescent:'Crescent',shapeDiamond2:'Diamond',homeCave:'Cave',homePond:'Pond',homeWeb:'Web',homeStable:'Stable',homeJungle:'Jungle',homeTree:'Tree',shapeTrapezoid:'Trapezoid'});
-Object.assign(TEXT.he,{logicQuest:'מסע היגיון',logicPrompt:'השתמשו בכל שלושת הרמזים ובחרו בסדר הנכון.',logicBefore:'{a} צריך להופיע לפני {b}.',logicNext:'{a} צריך להופיע מיד לפני {b}.',logicFirst:'{a} צריך להופיע ראשון.',logicLast:'{a} צריך להופיע אחרון.',storyMath:'סיפורי חשבון',storyPrompt:'קראו את הסיפור ופתרו את הבעיה.',scienceQuest:'בלשי המדע',sciencePrompt:'השתמשו בידע שלכם בטבע ובמדע כדי לפתור את התעלומה.',round:'סבב {n}',nextQuestion:'הנה מגיע תרגיל נוסף…',riddleQuestion:'שאלה {n} מתוך {total}',riddleComplete:'פתרתם את כל 10 החידות בפעילות!',allColoringPages:'קטגוריות צביעה',cameraColor:'📸 מצלמת הקסם',riddles:'מסע החידות',riddlePrompt:'קראו את החידה ובחרו בתשובה.',starEarned:'+1 ⭐',saveToGallery:'שמירה לגלריה',drawingSaveEmpty:'ציירו משהו לפני השמירה לגלריה.',drawingAlreadySaved:'הציור הזה כבר נמצא בגלריה.',drawingSaved:'נשמר בגלריה!',shapeOval:'אליפסה',shapeRectangle:'מלבן',shapePentagon:'מחומש',shapeHexagon:'משושה',shapeCrescent:'סהר',shapeDiamond2:'מעוין',homeCave:'מערה',homePond:'בריכה',homeWeb:'קורי עכביש',homeStable:'אורווה',homeJungle:'ג׳ונגל',homeTree:'עץ',shapeTrapezoid:'טרפז'});
+Object.assign(TEXT.he,{logicQuest:'מסע היגיון',logicPrompt:'השתמשו בכל שלושת הרמזים ובחרו בסדר הנכון.',logicBefore:'{a} צריך להופיע לפני {b}.',logicNext:'{a} צריך להופיע צמוד לפני {b}.',logicFirst:'{a} צריך להופיע ראשון.',logicLast:'{a} צריך להופיע אחרון.',storyMath:'סיפורי חשבון',storyPrompt:'קראו את הסיפור ופתרו את הבעיה.',scienceQuest:'בלשי המדע',sciencePrompt:'השתמשו בידע שלכם בטבע ובמדע כדי לפתור את התעלומה.',round:'סבב {n}',nextQuestion:'הנה מגיע תרגיל נוסף…',riddleQuestion:'שאלה {n} מתוך {total}',riddleComplete:'פתרתם את כל 10 החידות בפעילות!',allColoringPages:'קטגוריות צביעה',cameraColor:'📸 מצלמת הקסם',riddles:'מסע החידות',riddlePrompt:'קראו את החידה ובחרו בתשובה.',starEarned:'+1 ⭐',saveToGallery:'שמירה לגלריה',drawingSaveEmpty:'ציירו משהו לפני השמירה לגלריה.',drawingAlreadySaved:'הציור הזה כבר נמצא בגלריה.',drawingSaved:'נשמר בגלריה!',shapeOval:'אליפסה',shapeRectangle:'מלבן',shapePentagon:'מחומש',shapeHexagon:'משושה',shapeCrescent:'סהר',shapeDiamond2:'מעוין',homeCave:'מערה',homePond:'בריכה',homeWeb:'קורי עכביש',homeStable:'אורווה',homeJungle:'ג׳ונגל',homeTree:'עץ',shapeTrapezoid:'טרפז'});
 Object.assign(TEXT.ru,{logicQuest:'Логический квест',logicPrompt:'Используй все три подсказки и выбери правильный порядок.',logicBefore:'{a} идёт перед {b}.',logicNext:'{a} идёт сразу перед {b}.',logicFirst:'{a} идёт первым.',logicLast:'{a} идёт последним.',storyMath:'Задачи в историях',storyPrompt:'Прочитай историю и реши задачу.',scienceQuest:'Научные детективы',sciencePrompt:'Используй знания о природе и науке, чтобы раскрыть тайну.',round:'Раунд {n}',nextQuestion:'Готовься к следующему заданию…',riddleQuestion:'Вопрос {n} из {total}',riddleComplete:'Ты разгадал все 10 загадок в этом занятии!',allColoringPages:'Категории раскрасок',cameraColor:'📸 Волшебная камера',riddles:'Мир загадок',riddlePrompt:'Прочитай загадку и выбери ответ.',starEarned:'+1 ⭐',saveToGallery:'Сохранить в галерею',drawingSaveEmpty:'Сначала нарисуй что-нибудь, затем сохрани в галерею.',drawingAlreadySaved:'Этот рисунок уже есть в галерее.',drawingSaved:'Сохранено в галерее!',shapeOval:'Овал',shapeRectangle:'Прямоугольник',shapePentagon:'Пятиугольник',shapeHexagon:'Шестиугольник',shapeCrescent:'Полумесяц',shapeDiamond2:'Ромб',homeCave:'Пещера',homePond:'Пруд',homeWeb:'Паутина',homeStable:'Конюшня',homeJungle:'Джунгли',homeTree:'Дерево',shapeTrapezoid:'Трапеция'});
 Object.assign(TEXT.en,{volume:'Volume',musicToggle:'Music on or off',drawingArea:'Drawing area'});
 Object.assign(TEXT.he,{volume:'עוצמת קול',musicToggle:'הפעלה או השתקה של המוזיקה',drawingArea:'אזור ציור'});
@@ -331,6 +385,9 @@ Object.assign(TEXT.ru,{learningQuestion:'Вопрос {n} из {total}',learning
 Object.assign(TEXT.en,{miniGames:'🎮 17 Mini Games',freeDrawButton:'✏️ Free Drawing',escapeRooms:'Escape Rooms',escapePrompt:'Solve each riddle to unlock the exit!',escapeRoomProgress:'Riddle {n} of 5 - {room}',escapeRoomCleared:'Riddle solved! The way out is getting closer.',escapeComplete:'You solved all five riddles and escaped!',escapeNextRoom:'Next riddle',starEarned:'⭐ Star earned!',escapeRoomNames:['The Three Switches','The Sheep Puzzle','The Number Pattern','Three Generations','The Clock']});
 Object.assign(TEXT.he,{miniGames:'🎮 17 משחקי מיני',freeDrawButton:'✏️ ציור חופשי',escapeRooms:'משחק בריחה',escapePrompt:'פתרו כל חידה כדי לפתוח את היציאה!',escapeRoomProgress:'חידה {n} מתוך 5 - {room}',escapeRoomCleared:'פתרתם את החידה! אתם מתקרבים ליציאה.',escapeComplete:'פתרתם את כל חמש החידות וברחתם!',escapeNextRoom:'לחידה הבאה',starEarned:'⭐ קיבלתם כוכב!',escapeRoomNames:['שלושת המתגים','חידת הכבשים','סדרת המספרים','שלושה דורות','השעון']});
 Object.assign(TEXT.ru,{miniGames:'🎮 17 мини-игр',freeDrawButton:'✏️ Свободное рисование',escapeRooms:'Комнаты-квесты',escapePrompt:'Реши каждую загадку, чтобы открыть выход!',escapeRoomProgress:'Загадка {n} из 5 - {room}',escapeRoomCleared:'Загадка решена! Выход уже ближе.',escapeComplete:'Ты решил все пять загадок и выбрался!',escapeNextRoom:'Следующая загадка',starEarned:'⭐ Звезда получена!',escapeRoomNames:['Три выключателя','Задача про овец','Числовая последовательность','Три поколения','Часы']});
+Object.assign(TEXT.en,{wordSearch:'Word Search',wordSearchPrompt:'Find each hidden word. Tap its letters in order, then continue through all six levels.',wordSearchLevel:'Level {n} of 6',wordSearchActivity:'Activity {n} of 12',wordSearchGrid:'{size} × {cols} grid · {words} words',wordSearchClear:'Clear selection',wordSearchFound:'Found: {found} of {total}',wordSearchTryAgain:'Those letters do not spell a hidden word. Try again.',wordSearchComplete:'All words found! Great searching!',wordSearchNextLevel:'Next level',wordSearchLevels:['Warm-up','Getting started','More directions','Twists and turns','Word explorer','Master search']});
+Object.assign(TEXT.he,{miniGames:'🎮 18 משחקי מיני',wordSearch:'תפזורת מילים',wordSearchPrompt:'מצאו כל מילה שהוחבאה. לחצו על אותיותיה לפי הסדר והמשיכו דרך כל ששת השלבים.',wordSearchLevel:'שלב {n} מתוך 6',wordSearchActivity:'פעילות {n} מתוך 12',wordSearchGrid:'לוח {size} × {cols} · {words} מילים',wordSearchClear:'ניקוי הבחירה',wordSearchFound:'נמצאו: {found} מתוך {total}',wordSearchTryAgain:'האותיות האלה לא יוצרות מילה חבויה. נסו שוב.',wordSearchComplete:'מצאתם את כל המילים! כל הכבוד!',wordSearchNextLevel:'לשלב הבא',wordSearchLevels:['חימום','מתחילים','עוד כיוונים','פניות ואתגרים','חוקרי מילים','אלופי התפזורת']});
+Object.assign(TEXT.ru,{miniGames:'🎮 18 мини-игр',wordSearch:'Поиск слов',wordSearchPrompt:'Найди все спрятанные слова. Нажимай буквы по порядку и пройди все шесть уровней.',wordSearchLevel:'Уровень {n} из 6',wordSearchActivity:'Задание {n} из 12',wordSearchGrid:'Поле {size} × {cols} · слов: {words}',wordSearchClear:'Сбросить выбор',wordSearchFound:'Найдено: {found} из {total}',wordSearchTryAgain:'Эти буквы не составляют спрятанное слово. Попробуй ещё.',wordSearchComplete:'Все слова найдены! Отличный поиск!',wordSearchNextLevel:'Следующий уровень',wordSearchLevels:['Разминка','Начинаем','Больше направлений','Повороты и загадки','Исследователь слов','Мастер поиска']});
 Object.assign(TEXT.en,{escapeRoomNames:['Supply Count','Sequence Lock','Storage Room','Departure Gate','Code Lock']});
 Object.assign(TEXT.he,{escapeRoomNames:['ספירת ציוד','מנעול הסדרה','מחסן','שער היציאה','מנעול הקוד']});
 Object.assign(TEXT.ru,{escapeRoomNames:['Подсчёт запасов','Числовой замок','Склад','Ворота отправления','Кодовый замок']});
@@ -453,7 +510,7 @@ Object.assign(TEXT.en,{
   sokobanWin:'Box delivered!',sokobanRestart:'Restart board',
   codeInstruction:'Crack the secret 4-color code. Colors do not repeat. After each guess, feedback shows which colors are correct and whether they are in the right place.',
   codeSubmit:'Check guess',codeNeedFour:'Choose a color for all four spaces first.',codeAttempt:'Guess {n} of 8',
-  codeFeedback:'{exact} in the right place ({exactColors}) · {present} right color, different place ({presentColors}) · not in code ({absentColors})',
+  codeFeedback:'{exact} in the right place ({exactColors}) · {present} right color, different place ({presentColors}) · incorrect ({absentColors})',
   codeNone:'none',
   codeWin:'Secret code cracked!',codeFail:'No guesses left. The code was {code}.',codeHint:'Use the exact-place and color-only counts to eliminate possibilities. Colors never repeat.',
 });
@@ -499,38 +556,38 @@ Object.assign(TEXT.ru,{
   sokobanWin:'Ящик доставлен!',sokobanRestart:'Начать уровень заново',
   codeInstruction:'Взломай секретный код из четырёх цветов. Цвета не повторяются. После каждой попытки подсказка показывает, какие цвета угаданы и стоят ли они на верном месте.',
   codeSubmit:'Проверить вариант',codeNeedFour:'Сначала выбери цвет для всех четырёх мест.',codeAttempt:'Попытка {n} из 8',
-  codeFeedback:'На месте ({exact}): {exactColors} · Верный цвет, другое место ({present}): {presentColors} · Нет в коде: {absentColors}',
+  codeFeedback:'На месте ({exact}): {exactColors} · Верный цвет, другое место ({present}): {presentColors} · Неверно: {absentColors}',
   codeNone:'нет',
   codeWin:'Код взломан!',codeFail:'Попытки закончились. Код был: {code}.',codeHint:'Используй количество точных совпадений и цветов не на месте, чтобы исключать варианты. Цвета не повторяются.',
 });
 Object.assign(TEXT.en,{
-  railwayControl:'Railway Control',railwayInstruction:'Send each train to the station with the same color. Tap a switch to send a train onto its branch, then advance traffic one step at a time. Avoid collisions!',
+  railwayControl:'Railway Control',railwayInstruction:'Send each train to the station with the same color. Set each turn manually, advance the trains one step at a time, and return a switch to straight after the train passes. Avoid collisions!',
   railwayLevelsIntro:'Choose one of five increasingly challenging traffic plans. Higher levels add more trains and switches.',
   railwayLevelLabel:'Level {n} · {trains} trains · {switches} switches',railwayProgress:'Level {n} of 5 complete.',
-  railwayNextLevel:'Next level',railwayAllComplete:'Finish activity',railwayStraight:'Straight',railwayBranch:'Branch',
-  railwayAdvance:'Advance trains',railwayTrainQueue:'Waiting trains:',railwaySteps:'Steps: {n}',railwaySwitch:'Switch {n}: {state}',
+  railwayNextLevel:'Next level',railwayAllComplete:'Finish activity',railwayStraight:'Straight',railwayBranch:'Turn',
+  railwayAdvance:'Advance trains',railwayTrainQueue:'Waiting trains:',railwaySwitch:'Switch {n}: {state}',
   railwayWin:'Every train reached its matching station!',railwayCollision:'Collision! Restart and change the switches in time.',
   railwayWrongStation:'A train reached the wrong-color station. That station is occupied, so route the remaining trains carefully.',
   railwayDerail:'A train ran past the end of the track. Restart and route it to a station.',
   railwayHint:'Watch each train’s color and the station above or below its switch. Set a switch to the branch only when its matching train reaches it, then return it to straight for the next train.',
 });
 Object.assign(TEXT.he,{
-  railwayControl:'ניהול מסילות',railwayInstruction:'הובילו כל רכבת לתחנה בצבע שלה. לחצו על מתג כדי להפנות רכבת למסילה הצדדית, ואז קִדמו את התנועה צעד אחד בכל פעם. הימנעו מהתנגשויות!',
+  railwayControl:'ניהול מסילות',railwayInstruction:'הובילו כל רכבת לתחנה בצבע שלה. שנו כל פנייה ידנית, קדמו את הרכבות צעד בכל פעם והחזירו את המתג לישר אחרי שהרכבת עוברת. הימנעו מהתנגשויות!',
   railwayLevelsIntro:'בחרו אחד מחמישה שלבים בדרגת קושי עולה. בשלבים המתקדמים מתווספות רכבות ומסילות.',
   railwayLevelLabel:'שלב {n} · {trains} רכבות · {switches} מתגים',railwayProgress:'השלמתם את שלב {n} מתוך 5.',
-  railwayNextLevel:'לשלב הבא',railwayAllComplete:'סיום הפעילות',railwayStraight:'ישר',railwayBranch:'הסתעפות',
-  railwayAdvance:'קידום הרכבות',railwayTrainQueue:'רכבות בתור:',railwaySteps:'צעדים: {n}',railwaySwitch:'מתג {n}: {state}',
+  railwayNextLevel:'לשלב הבא',railwayAllComplete:'סיום הפעילות',railwayStraight:'ישר',railwayBranch:'פנייה',
+  railwayAdvance:'קידום הרכבות',railwayTrainQueue:'רכבות בתור:',railwaySwitch:'מתג {n}: {state}',
   railwayWin:'כל הרכבות הגיעו לתחנה בצבע המתאים!',railwayCollision:'התנגשות! התחילו מחדש ושנו את המתגים בזמן.',
   railwayWrongStation:'רכבת הגיעה לתחנה בצבע לא מתאים. התחנה תפוסה, לכן נתבו בזהירות את הרכבות הבאות.',
   railwayDerail:'הרכבת חלפה על פני סוף המסילה. התחילו מחדש ונתבו אותה לתחנה.',
-  railwayHint:'עקבו אחר צבע הרכבת והתחנה שמעל או מתחת למתג. העבירו את המתג להסתעפות רק כשהרכבת המתאימה מגיעה אליו, והחזירו אותו לישר לפני הרכבת הבאה.',
+  railwayHint:'עקבו אחר צבע הרכבת והתחנה שמעל או מתחת למתג. בחרו בפנייה רק כשהרכבת המתאימה מגיעה אליה, והחזירו את המתג לישר לפני הרכבת הבאה.',
 });
 Object.assign(TEXT.ru,{
-  railwayControl:'Управление поездами',railwayInstruction:'Направь каждый поезд на станцию такого же цвета. Нажми на стрелку, чтобы отправить поезд на боковой путь, и продвигай составы по одному шагу. Избегай столкновений!',
+  railwayControl:'Управление поездами',railwayInstruction:'Направляй каждый поезд на станцию такого же цвета. Переключай повороты вручную, продвигай поезда по одному шагу и возвращай стрелку прямо после проезда поезда. Избегай столкновений!',
   railwayLevelsIntro:'Выбери один из пяти уровней возрастающей сложности. На сложных уровнях больше поездов и стрелок.',
   railwayLevelLabel:'Уровень {n} · поездов: {trains} · стрелок: {switches}',railwayProgress:'Уровень {n} из 5 пройден.',
-  railwayNextLevel:'Следующий уровень',railwayAllComplete:'Завершить занятие',railwayStraight:'Прямо',railwayBranch:'Ответвление',
-  railwayAdvance:'Продвинуть поезда',railwayTrainQueue:'Поезда в очереди:',railwaySteps:'Шаги: {n}',railwaySwitch:'Стрелка {n}: {state}',
+  railwayNextLevel:'Следующий уровень',railwayAllComplete:'Завершить занятие',railwayStraight:'Прямо',railwayBranch:'Поворот',
+  railwayAdvance:'Продвинуть поезда',railwayTrainQueue:'Поезда в очереди:',railwaySwitch:'Стрелка {n}: {state}',
   railwayWin:'Все поезда прибыли на станции нужного цвета!',railwayCollision:'Столкновение! Начни заново и вовремя переключай стрелки.',
   railwayWrongStation:'Поезд прибыл на станцию другого цвета. Она занята - внимательно направляй остальные поезда.',
   railwayDerail:'Поезд проехал конец пути. Начни заново и направь его на станцию.',
@@ -542,13 +599,13 @@ Object.assign(TEXT.ru,{unlockAll:'Подписка на все 17 игр - $14.9
 Object.assign(TEXT.en,{miniGames:'🎮 17 Mini Games'});
 Object.assign(TEXT.he,{miniGames:'🎮 17 משחקי מיני'});
 Object.assign(TEXT.ru,{miniGames:'🎮 17 мини-игр'});
-Object.assign(TEXT.en,{puzzlePrompt:'Tap two pieces to swap them until the picture is complete.'});
-Object.assign(TEXT.he,{puzzlePrompt:'הקישו על שני חלקים כדי להחליף ביניהם עד להשלמת התמונה.'});
-Object.assign(TEXT.ru,{puzzlePrompt:'Нажимайте на две детали, чтобы поменять их местами и собрать картинку.'});
+Object.assign(TEXT.en,{puzzlePrompt:'Tap a piece and watch it highlight, then tap another piece to swap them. Complete every picture in the activity!',puzzlePictureProgress:'Picture {n} of {total}',puzzleSelection:'Piece selected. Choose another piece to swap.',puzzleNextPicture:'Next picture',railwayManualSwitch:'Set each turn manually and switch it back to straight after the train passes.',traceProgress:'Letter {n} of {total}'});
+Object.assign(TEXT.he,{puzzlePrompt:'בחרו חלק וראו שהוא מסומן, ואז בחרו חלק נוסף כדי להחליף ביניהם. השלימו את כל התמונות בפעילות!',puzzlePictureProgress:'תמונה {n} מתוך {total}',puzzleSelection:'החלק סומן. בחרו חלק נוסף כדי להחליף ביניהם.',puzzleNextPicture:'לתמונה הבאה',railwayManualSwitch:'שנו כל פנייה ידנית והחזירו את המתג לישר אחרי שהרכבת עוברת.',traceProgress:'אות {n} מתוך {total}'});
+Object.assign(TEXT.ru,{puzzlePrompt:'Нажмите на деталь — она выделится, затем выберите другую, чтобы поменять их местами. Соберите все картинки в задании!',puzzlePictureProgress:'Картинка {n} из {total}',puzzleSelection:'Деталь выбрана. Выберите другую деталь для обмена.',puzzleNextPicture:'Следующая картинка',railwayManualSwitch:'Переключайте каждый поворот вручную и возвращайте стрелку прямо после поезда.',traceProgress:'Буква {n} из {total}'});
 Object.assign(TEXT.ru,{volume:'Громкость',musicToggle:'Включить или выключить музыку',drawingArea:'Область рисования'});
-Object.assign(TEXT.en,{cameraPermissionBlocked:'Camera access is blocked. Open app settings and allow Camera, then return and try again.',cameraPermissionBrowserHelp:'Camera access is blocked. Allow it in your browser or site settings, then try again.',cameraPermissionUpdateRequired:'Update the app to open its settings here, or open device Settings > Apps > Megical Fun > Permissions > Camera.',cameraPermissionSettings:'Open app settings',cameraSettingsError:'Could not open app settings. Open them from your device settings.'});
-Object.assign(TEXT.he,{cameraPermissionBlocked:'הגישה למצלמה חסומה. פתחו את הגדרות האפליקציה ואשרו גישה למצלמה, ואז חזרו ונסו שוב.',cameraPermissionBrowserHelp:'הגישה למצלמה חסומה. אשרו אותה בהגדרות הדפדפן או האתר ונסו שוב.',cameraPermissionUpdateRequired:'כדי לפתוח מכאן את הגדרות האפליקציה, עדכנו את האפליקציה. לחלופין: הגדרות המכשיר ← אפליקציות ← Megical Fun ← הרשאות ← מצלמה.',cameraPermissionSettings:'פתיחת הגדרות האפליקציה',cameraSettingsError:'לא ניתן לפתוח את הגדרות האפליקציה. פתחו אותן דרך הגדרות המכשיר.'});
-Object.assign(TEXT.ru,{cameraPermissionBlocked:'Доступ к камере заблокирован. Откройте настройки приложения, разрешите доступ к камере, затем вернитесь и попробуйте снова.',cameraPermissionBrowserHelp:'Доступ к камере заблокирован. Разрешите его в настройках браузера или сайта и попробуйте снова.',cameraPermissionUpdateRequired:'Обновите приложение, чтобы открыть настройки отсюда, или выберите: Настройки устройства > Приложения > Megical Fun > Разрешения > Камера.',cameraPermissionSettings:'Открыть настройки приложения',cameraSettingsError:'Не удалось открыть настройки приложения. Откройте их в настройках устройства.'});
+Object.assign(TEXT.en,{cameraPermissionBlocked:'Camera access is blocked. Open app settings and allow Camera, then return and try again.',cameraPermissionBrowserHelp:'Camera access is blocked. Allow it in your browser or site settings, then try again.',cameraPermissionUpdateRequired:'Update the app to open its settings here, or open device Settings > Apps > Magical Fun > Permissions > Camera.',cameraPermissionSettings:'Open app settings',cameraSettingsError:'Could not open app settings. Open them from your device settings.'});
+Object.assign(TEXT.he,{cameraPermissionBlocked:'הגישה למצלמה חסומה. פתחו את הגדרות האפליקציה ואשרו גישה למצלמה, ואז חזרו ונסו שוב.',cameraPermissionBrowserHelp:'הגישה למצלמה חסומה. אשרו אותה בהגדרות הדפדפן או האתר ונסו שוב.',cameraPermissionUpdateRequired:'כדי לפתוח מכאן את הגדרות האפליקציה, עדכנו את האפליקציה. לחלופין: הגדרות המכשיר ← אפליקציות ← Magical Fun ← הרשאות ← מצלמה.',cameraPermissionSettings:'פתיחת הגדרות האפליקציה',cameraSettingsError:'לא ניתן לפתוח את הגדרות האפליקציה. פתחו אותן דרך הגדרות המכשיר.'});
+Object.assign(TEXT.ru,{cameraPermissionBlocked:'Доступ к камере заблокирован. Откройте настройки приложения, разрешите доступ к камере, затем вернитесь и попробуйте снова.',cameraPermissionBrowserHelp:'Доступ к камере заблокирован. Разрешите его в настройках браузера или сайта и попробуйте снова.',cameraPermissionUpdateRequired:'Обновите приложение, чтобы открыть настройки отсюда, или выберите: Настройки устройства > Приложения > Magical Fun > Разрешения > Камера.',cameraPermissionSettings:'Открыть настройки приложения',cameraSettingsError:'Не удалось открыть настройки приложения. Откройте их в настройках устройства.'});
 Object.assign(TEXT.en,{childName:"Child's nickname",parentYear:'Parent birth year (1950–2006)',profileStars:'Stars',vipLabel:'VIP',freeLabel:'Free',active:'Active',logout:'Log out',noSavedArt:'No saved art yet.',switchCamera:'🔄 Switch camera',cameraPhotoError:'Could not read that image.',soundAuto:'Surprise me',soundGroove:'Bouncy Groove',soundLullaby:'Dreamy Lullaby',soundJungle:'Jungle Beat',soundSpace:'Space Adventure',soundChip:'Game Time',soundOff:'Silent',mixerTitle:'🌈 Color Mixer',mixerHue:'🌈 Pick a rainbow color',mixerSat:'💧 Pale ↔ Bold',mixerValue:'🌓 Dark ↔ Light',mixerChooser:'🎯 Or pick from the color chooser',mixerBlend:'🥣 Mix with my color',mixerAdd:'➕ Add to palette',hintFill:'Tap an area to color it 🎨',hintBrush:'Draw freely - paint stays inside each shape!',authNameError:'Please enter a nickname.',authYearError:'Parent birth year must be 1950–2006.',adultError:'Please ask an adult to continue.'});
 Object.assign(TEXT.he,{childName:'כינוי הילד/ה',parentYear:'שנת הלידה של ההורה (1950–2006)',profileStars:'כוכבים',vipLabel:'VIP',freeLabel:'חינם',active:'פעיל',logout:'יציאה',noSavedArt:'עדיין אין ציורים שמורים.',switchCamera:'🔄 החלפת מצלמה',cameraPhotoError:'לא ניתן לקרוא את התמונה.',soundAuto:'הפתיעו אותי',soundGroove:'קצב קופצני',soundLullaby:'שיר ערש חלומי',soundJungle:'קצב ג׳ונגל',soundSpace:'הרפתקה בחלל',soundChip:'זמן משחק',soundOff:'שקט',mixerTitle:'🌈 מערבל צבעים',mixerHue:'🌈 בחרו צבע מהקשת',mixerSat:'💧 עדין ↔ בולט',mixerValue:'🌓 כהה ↔ בהיר',mixerChooser:'🎯 או בחרו צבע',mixerBlend:'🥣 ערבוב עם הצבע שלי',mixerAdd:'➕ הוספה ללוח הצבעים',hintFill:'לחצו על אזור כדי לצבוע אותו 🎨',hintBrush:'ציירו בחופשיות - הצבע נשאר בתוך הצורה!',authNameError:'נא להזין כינוי.',authYearError:'שנת הלידה של ההורה חייבת להיות בין 1950 ל־2006.',adultError:'בקשו עזרה ממבוגר כדי להמשיך.'});
 Object.assign(TEXT.ru,{childName:'Имя ребёнка',parentYear:'Год рождения родителя (1950–2006)',profileStars:'Звёзды',vipLabel:'VIP',freeLabel:'Бесплатно',active:'Активно',logout:'Выйти',noSavedArt:'Пока нет сохранённых рисунков.',switchCamera:'🔄 Переключить камеру',cameraPhotoError:'Не удалось прочитать изображение.',soundAuto:'Удиви меня',soundGroove:'Бодрый ритм',soundLullaby:'Нежная колыбельная',soundJungle:'Ритм джунглей',soundSpace:'Космическое приключение',soundChip:'Время игры',soundOff:'Без звука',mixerTitle:'🌈 Смешивание цветов',mixerHue:'🌈 Выбери цвет радуги',mixerSat:'💧 Нежный ↔ Яркий',mixerValue:'🌓 Тёмный ↔ Светлый',mixerChooser:'🎯 Или выбери цвет',mixerBlend:'🥣 Смешать с моим цветом',mixerAdd:'➕ Добавить в палитру',hintFill:'Нажми на область, чтобы раскрасить её 🎨',hintBrush:'Рисуй свободно - краска остаётся внутри фигуры!',authNameError:'Введи имя.',authYearError:'Год рождения родителя должен быть от 1950 до 2006.',adultError:'Попроси взрослого помочь.'});
@@ -637,7 +694,7 @@ function loadUserData(userId,fallbackName=userId){
   if(!Array.isArray(S.completedEscapeRooms))S.completedEscapeRooms=[];
   else S.completedEscapeRooms=S.completedEscapeRooms.filter(key=>typeof key==='string'&&/^\d+:\d+$/.test(key));
   if(!Array.isArray(S.completedPuzzleStars))S.completedPuzzleStars=[];
-  else S.completedPuzzleStars=S.completedPuzzleStars.filter(key=>typeof key==='string'&&/^(physicsPaths:\d+(?::path-\d+)?|gridSokoban:\d+(?::box-\d+)?|railwayControl:\d+:rail-\d+|codeBreaker:\d+)$/.test(key));
+  else S.completedPuzzleStars=S.completedPuzzleStars.filter(key=>typeof key==='string'&&/^(physicsPaths:\d+(?::path-\d+)?|gridSokoban:\d+(?::box-\d+)?|railwayControl:\d+:rail-\d+|codeBreaker:\d+|wordSearch:\d+:word-\d+)$/.test(key));
   if(!Number.isFinite(S.dailyUsageSeconds)||S.dailyUsageSeconds<0)S.dailyUsageSeconds=0;
   if(![0,15,30,45,60,90,120].includes(S.dailyLimitMinutes))S.dailyLimitMinutes=0;
   currentLanguage=TEXT[S.language]?S.language:currentLanguage;
@@ -1139,24 +1196,34 @@ function navItem(dir) {
 }
 
 /* ---------- mini games ---------- */
-let puzzleTiles=[],puzzleImage='',puzzleSelected=-1;
-function puzzleActivityImage(level){
-  const freePages=[['animals',0],['animals',1],['animals',2],['vehicles',0],['vehicles',1],['food',0]];
-  const paidPages=[['dino',0],['fairy',0],['space',0],['ocean',0],['hero',0],['dragon',0]];
-  const [category,index]=(level<6?freePages:paidPages)[level%6];
-  return CATS.find(item=>item.id===category).items[index];
+let puzzleTiles=[],puzzleImage='',puzzleSelected=-1,puzzleImages=[],puzzleImageIndex=0;
+const PUZZLE_CATEGORIES=['animals','vehicles','food','dino','fairy','space','ocean','hero','sport','nature','dragon'];
+function puzzleActivityImages(level){
+  if(level===11)return CATS.flatMap(category=>category.items);
+  const category=CATS.find(item=>item.id===PUZZLE_CATEGORIES[level]);
+  if(!category)throw new Error(`Unknown picture puzzle activity: ${level}`);
+  return category.items;
+}
+function shufflePuzzleTiles(){
+  puzzleTiles=Array.from({length:6},(_,index)=>index);
+  for(let index=puzzleTiles.length-1;index>0;index--){
+    const other=Math.floor(Math.random()*(index+1));
+    [puzzleTiles[index],puzzleTiles[other]]=[puzzleTiles[other],puzzleTiles[index]];
+  }
+  if(puzzleTiles.every((tile,index)=>tile===index))[puzzleTiles[0],puzzleTiles[1]]=[puzzleTiles[1],puzzleTiles[0]];
 }
 function startPuzzle(){
   go('gameStage');
-  puzzleImage=puzzleActivityImage(selectedLevel);
-  puzzleTiles=[0,1,2,3,4,5];
-  const first=Math.floor(Math.random()*puzzleTiles.length);
-  let second=Math.floor(Math.random()*(puzzleTiles.length-1));
-  if(second>=first)second++;
-  [puzzleTiles[first],puzzleTiles[second]]=[puzzleTiles[second],puzzleTiles[first]];
+  puzzleImages=puzzleActivityImages(selectedLevel);
+  puzzleImageIndex=0;
+  startPuzzlePicture();
+}
+function startPuzzlePicture(){
+  puzzleImage=puzzleImages[puzzleImageIndex];
+  if(!puzzleImage)throw new Error(`Missing picture ${puzzleImageIndex+1} in puzzle activity ${selectedLevel}`);
+  shufflePuzzleTiles();
   puzzleSelected=-1;
-  $('#gameContent').innerHTML=`<h2 data-i18n="puzzle">🧩 ${tr('puzzle')}</h2><p data-i18n="puzzlePrompt">${tr('puzzlePrompt')}</p><div id="puzzleBoard" class="game-board"></div><p id="puzzleStatus" class="play-status" aria-live="polite"></p><button class="alt" onclick="startPuzzle()" data-i18n="playAgain">${tr('playAgain')}</button>`;
-  const board=$('#puzzleBoard');
+  $('#gameContent').innerHTML=`<h2 data-i18n="puzzle">🧩 ${tr('puzzle')}</h2><p>${tr('puzzlePictureProgress',{n:puzzleImageIndex+1,total:puzzleImages.length})}</p><p data-i18n="puzzlePrompt">${tr('puzzlePrompt')}</p><div id="puzzleBoard" class="game-board"></div><p id="puzzleStatus" class="play-status" aria-live="polite"></p><button class="alt" onclick="startPuzzle()" data-i18n="playAgain">${tr('playAgain')}</button>`;
   drawPuzzle();
 }
 function drawPuzzle(){
@@ -1169,31 +1236,41 @@ function drawPuzzle(){
 }
 function movePuzzlePiece(index){
   if(puzzleTiles.every((tile,position)=>tile===position))return;
-  if(puzzleSelected<0){puzzleSelected=index;drawPuzzle();return}
-  if(puzzleSelected===index){puzzleSelected=-1;drawPuzzle();return}
+  if(puzzleSelected<0){puzzleSelected=index;drawPuzzle();$('#puzzleStatus').textContent=tr('puzzleSelection');return}
+  if(puzzleSelected===index){puzzleSelected=-1;drawPuzzle();$('#puzzleStatus').textContent='';return}
   [puzzleTiles[index],puzzleTiles[puzzleSelected]]=[puzzleTiles[puzzleSelected],puzzleTiles[index]];
   puzzleSelected=-1;
   drawPuzzle();
   if(puzzleTiles.every((tile,position)=>tile===position)){
     $('#puzzleStatus').classList.add('puzzle-success');
-    $('#puzzleStatus').innerHTML=`<span>${tr('done')}</span><br><button class="alt" onclick="renderGameLevels()" data-i18n="next">${tr('next')}</button>`;
+    const next=puzzleImageIndex+1<puzzleImages.length
+      ?`<button class="alt" onclick="nextPuzzlePicture()">${tr('puzzleNextPicture')}</button>`
+      :`<button class="alt" onclick="renderGameLevels()" data-i18n="next">${tr('next')}</button>`;
+    $('#puzzleStatus').innerHTML=`<span>${tr('done')}</span><br>${next}`;
     toast('🎉 '+tr('done'));
   }
 }
+function nextPuzzlePicture(){
+  if(!puzzleTiles.every((tile,index)=>tile===index)||puzzleImageIndex+1>=puzzleImages.length)return;
+  puzzleImageIndex++;
+  startPuzzlePicture();
+}
 
 let differenceFound=new Set(),differenceSpots=[],differenceLeft=[],differenceRight=[];
-const DIFFERENCE_SCENES=[
-  ['animals','vehicles'],['food','animals'],['vehicles','food'],['sport','vehicles'],['nature','fairy'],['ocean','space'],
-  ['dino','dragon'],['fairy','hero'],['space','ocean'],['hero','sport'],['dragon','dino'],['sport','nature']
-];
+const DIFFERENCE_SCENES=['nature','animals','food','ocean','space','animals','vehicles','dino','fairy','sport','nature','dragon'];
 function startDifferences(){
   go('gameStage');
-  const [leftId,rightId]=DIFFERENCE_SCENES[selectedLevel],leftCategory=CATS.find(item=>item.id===leftId),rightCategory=CATS.find(item=>item.id===rightId);
-  differenceLeft=Array.from({length:12},(_,i)=>leftCategory.items[i%leftCategory.items.length]);
+  const category=CATS.find(item=>item.id===DIFFERENCE_SCENES[selectedLevel]);
+  if(!category)throw new Error(`Unknown difference activity: ${selectedLevel}`);
+  differenceLeft=Array.from({length:12},(_,i)=>category.items[i%category.items.length]);
   differenceRight=[...differenceLeft];
   differenceSpots=[];
   while(differenceSpots.length<3){const spot=Math.floor(Math.random()*differenceLeft.length);if(!differenceSpots.includes(spot))differenceSpots.push(spot)}
-  differenceSpots.forEach((spot,i)=>differenceRight[spot]=rightCategory.items[(selectedLevel+i)%rightCategory.items.length]);
+  differenceSpots.forEach((spot,i)=>{
+    let replacement=(spot+selectedLevel+i+1)%category.items.length;
+    if(replacement===spot%category.items.length)replacement=(replacement+1)%category.items.length;
+    differenceRight[spot]=category.items[replacement];
+  });
   differenceFound=new Set();
   renderDifferences();
 }
@@ -1239,7 +1316,7 @@ function renderDrawTools(){
   const palette=$('#drawPalette'),sizes=$('#drawSizes');
   if(!palette||!sizes)return;
   palette.innerHTML=COLORS.concat(S.custom).map(color=>`<button class="sw${color.toLowerCase()===cur.toLowerCase()?' on':''}" style="background:${color}" onclick="setDrawColor('${color}')" aria-label="Color ${color}"></button>`).join('')
-    +'<button class="sw mix" onclick="openMixer()" aria-label="Rainbow color mixer">🌈</button>';
+    +'<button class="sw mix" onclick="openColorNumberMixer()" aria-label="Rainbow color mixer">🌈</button>';
   sizes.innerHTML=SIZES.map((size,index)=>{const diameter=Math.round(6+size[1]*.45);return `<button class="bs${index===drawSizeIndex?' on':''}" onclick="setDrawSize(${index})" aria-label="${size[0]} brush, ${size[1]} pixels"><span class="dw"><i style="width:${diameter}px;height:${diameter}px"></i></span><b>${size[0]==='Extra Large'?'X-Large':size[0]}</b><span>${size[1]}px</span></button>`}).join('');
   $('#drawBrush').classList.toggle('on',!drawEraser);$('#drawEraser').classList.toggle('on',drawEraser);
 }
@@ -1275,13 +1352,15 @@ const MINI_GAMES=[
   {id:'physicsPaths',icon:'🛤️',name:'physicsPaths'},
   {id:'gridSokoban',icon:'📦',name:'gridSokoban'},
   {id:'codeBreaker',icon:'🔐',name:'codeBreaker'},
-  {id:'railwayControl',icon:'🚂',name:'railwayControl'}
+  {id:'railwayControl',icon:'🚂',name:'railwayControl'},
+  {id:'wordSearch',icon:'🔡',name:'wordSearch'},
+  {id:'magneticMaze',icon:'🧲',name:'magneticMaze'}
 ];
 const ACTIVITY_NAMES={
   en:{
-    puzzle:['Koala Jigsaw','Panda Jigsaw','Rabbit Jigsaw','Penguin Jigsaw','Giraffe Jigsaw','Hedgehog Jigsaw','Dinosaur Jigsaw','Fairytale Jigsaw','Space Jigsaw','Ocean Jigsaw','Hero Jigsaw','Dragon Jigsaw'],
+    puzzle:['Animal Pictures','Vehicles','Food','Dinosaurs','Fairytales & Magic','Space','Ocean Life','Superheroes','Sports','Nature & Garden','Dragons','All Coloring Pictures'],
     logicQuest:['Garden Order','Ocean Voyage','Space Mission','Farm Morning','City Traffic','Fruit Picnic','Dinosaur Trail','Rainbow Garden','Band Practice','Big Match','Winter Day','Night Sky'],
-    differences:['Garden Picture','Animal Picture','Fruit Picture','Ocean Picture','Space Picture','Farm Picture','Vehicle Picture','Dinosaur Picture','Magic Picture','Sports Picture','Nature Picture','Dragon Picture'],
+    differences:['Garden Picture','Animal Picture','Fruit Picture','Ocean Picture','Space Picture','Cute Animals','Vehicle Picture','Dinosaur Picture','Magic Picture','Sports Picture','Nature Picture','Dragon Picture'],
     memory:['Puppy Pairs','Forest Friends','Farm Animals','Ocean Buddies','Vehicle Pairs','Fruit Pairs','Dinosaur Pairs','Space Pairs','Garden Pairs','Pet Pairs','Bird Pairs','Sea Creature Pairs'],
     math:['Two-Digit Addition','Two-Digit Subtraction','Tens and Ones','Missing Addend','Add Across a Ten','Subtract Across a Ten','Multiplication Mission','Division Detective','Three-Number Addition','Two-Step Challenge','Missing Factor','Multiply and Add'],
     words:['Mystery Letters','Mixed-Up Message','Letter Challenge','Spelling Trail','Word Puzzle','Hidden Word','Letter Detective','Scramble Quest','Secret Spelling','Word Workshop','Letter Lab','Spelling Challenge'],
@@ -1295,11 +1374,13 @@ const ACTIVITY_NAMES={
     gridSokoban:['Boxy Beginnings','Garden Delivery','Museum Move','Space Cargo','Candy Crates','Jungle Push','Robot Storage','Ocean Supplies','Arctic Rescue','Castle Boxes','Dino Eggs','Treasure Haul'],
     codeBreaker:['Color Starter','Secret Signal','Gem Sequence','Robot Password','Rainbow Lock','Space Cipher','Pirate Code','Museum Vault','Garden Gate','Dino Decoder','Arctic Access','Master Cipher'],
     railwayControl:['Forest Express','Harbor Line','Mountain Railway','Desert Crossing','Candy Station','Dino Railway','Moon Shuttle','Coral Coast Line','Toy Town Express','Winter Route','Jungle Junction','Dragon Valley Rail'],
+    wordSearch:['Animal World','Fruit Basket','At Home','School Supplies','Clothes','Ways to Travel','Music Makers','Landscapes','Toys & Games','Outer Space','Weather Watch','My Body'],
+    magneticMaze:['Steel Ball Start','Garden Magnet','Tunnel Rescue','Space Polarity','Ocean Current','Toy Factory','Dinosaur Track','Crystal Cavern','Arctic Pull','Robot Workshop','Stormy Passage','Master Magnet Maze'],
   },
   he:{
-    puzzle:['פאזל קואלה','פאזל פנדה','פאזל ארנב','פאזל פינגווין','פאזל ג׳ירפה','פאזל קיפוד','פאזל דינוזאור','פאזל אגדות','פאזל חלל','פאזל ים','פאזל גיבורי על','פאזל דרקון'],
+    puzzle:['תמונות חיות','כלי רכב','אוכל','דינוזאורים','אגדות וקסמים','חלל','חיי הים','גיבורי על','ספורט','טבע וגינה','דרקונים','כל תמונות הצביעה'],
     logicQuest:['סדר בגינה','מסע בים','משימת חלל','בוקר בחווה','תנועה בעיר','פיקניק פירות','שביל הדינוזאורים','גן הקשת','חזרה מוזיקלית','משחק גדול','יום חורפי','שמיים בלילה'],
-    differences:['תמונת גינה','תמונת חיות','תמונת פירות','תמונת ים','תמונת חלל','תמונת חווה','תמונת כלי רכב','תמונת דינוזאורים','תמונת קסם','תמונת ספורט','תמונת טבע','תמונת דרקונים'],
+    differences:['תמונת גינה','תמונת חיות','תמונת פירות','תמונת ים','תמונת חלל','חיות חמודות','תמונת כלי רכב','תמונת דינוזאורים','תמונת קסם','תמונת ספורט','תמונת טבע','תמונת דרקונים'],
     memory:['זוגות כלבלבים','חברים ביער','חיות החווה','חברים בים','זוגות כלי רכב','זוגות פירות','זוגות דינוזאורים','זוגות חלל','זוגות גינה','זוגות חיות מחמד','זוגות ציפורים','זוגות יצורי ים'],
     math:['חיבור דו־ספרתי','חיסור דו־ספרתי','עשרות ואחדות','המחובר החסר','חיבור מעבר לעשר','חיסור מעבר לעשר','משימת כפל','בלשי חילוק','חיבור של שלושה מספרים','אתגר בשני שלבים','הגורם החסר','כפל וחיבור'],
     words:['אותיות מסתוריות','מסר מעורבב','אתגר האותיות','שביל האיות','חידת מילים','מילה נסתרת','בלשי אותיות','מסע הערבוב','איות סודי','סדנת מילים','מעבדת האותיות','אתגר האיות'],
@@ -1313,11 +1394,13 @@ const ACTIVITY_NAMES={
     gridSokoban:['דחיפה ראשונה','משלוח לגינה','העברה במוזיאון','מטען חלל','ארגזי ממתקים','דחיפה בג׳ונגל','מחסן הרובוטים','אספקה לאוקיינוס','חילוץ בקוטב','תיבות בטירה','ביצי דינוזאור','אוצר הפיראטים'],
     codeBreaker:['צבע ראשון','אות סודית','רצף אבני חן','סיסמת הרובוט','מנעול הקשת','צופן החלל','קוד הפיראטים','כספת המוזיאון','שער הגינה','מפענח הדינוזאורים','כניסה לקוטב','צופן האמן'],
     railwayControl:['רכבת היער','קו הנמל','מסילת ההרים','חציית המדבר','תחנת הממתקים','רכבת הדינוזאורים','הסעת הירח','קו חוף האלמוגים','אקספרס צעצועים','מסלול החורף','צומת הג׳ונגל','מסילת עמק הדרקון'],
+    wordSearch:['עולם החיות','סלסלת פירות','בבית','ציוד לבית הספר','בגדים','כלי תחבורה','כלי נגינה','נופים','צעצועים ומשחקים','בחלל','מזג האוויר','הגוף שלי'],
+    magneticMaze:['כדור המתכת','מגנט בגינה','חילוץ במנהרה','קטבים בחלל','זרם באוקיינוס','מפעל הצעצועים','מסלול הדינוזאור','מערת הגבישים','משיכה בקוטב','סדנת הרובוטים','מעבר סוער','מבוך המגנטים'],
   },
   ru:{
-    puzzle:['Пазл с коалой','Пазл с пандой','Пазл с кроликом','Пазл с пингвином','Пазл с жирафом','Пазл с ёжиком','Пазл с динозавром','Сказочный пазл','Космический пазл','Морской пазл','Пазл с героем','Пазл с драконом'],
+    puzzle:['Животные','Транспорт','Еда','Динозавры','Сказки и магия','Космос','Морская жизнь','Супергерои','Спорт','Природа и сад','Драконы','Все раскраски'],
     logicQuest:['Порядок в саду','Морское путешествие','Космическая миссия','Утро на ферме','Движение в городе','Фруктовый пикник','Тропа динозавров','Радужный сад','Репетиция оркестра','Большой матч','Зимний день','Ночное небо'],
-    differences:['Садовая картина','Картина с животными','Фруктовая картина','Морская картина','Космическая картина','Ферма','Транспорт','Динозавры','Волшебный мир','Спорт','Природа','Драконы'],
+    differences:['Садовая картина','Картина с животными','Фруктовая картина','Морская картина','Космическая картина','Милые животные','Транспорт','Динозавры','Волшебный мир','Спорт','Природа','Драконы'],
     memory:['Пары щенков','Лесные друзья','Фермерские животные','Морские друзья','Пары транспорта','Пары фруктов','Пары динозавров','Космические пары','Садовые пары','Пары питомцев','Пары птиц','Морские существа'],
     math:['Двузначное сложение','Двузначное вычитание','Десятки и единицы','Найди слагаемое','Переход через десяток','Вычитание с переходом','Задание на умножение','Детектив деления','Сложение трёх чисел','Задача в два шага','Найди множитель','Умножение и сложение'],
     words:['Тайные буквы','Перепутанное послание','Испытание букв','Тропа правописания','Задача со словом','Скрытое слово','Детектив букв','Буквенная путаница','Тайное правописание','Мастерская слов','Лаборатория букв','Испытание правописания'],
@@ -1331,6 +1414,8 @@ const ACTIVITY_NAMES={
     gridSokoban:['Первый ящик','Доставка в сад','Переезд музея','Космический груз','Ящики со сладостями','Толкай в джунглях','Склад роботов','Запасы океана','Спасение в Арктике','Коробки в замке','Яйца динозавров','Пиратский клад'],
     codeBreaker:['Первый цвет','Тайный сигнал','Ряд самоцветов','Пароль робота','Радужный замок','Космический шифр','Код пиратов','Музейный сейф','Садовые ворота','Шифр динозавра','Доступ в Арктику','Мастер шифров'],
     railwayControl:['Лесной экспресс','Портовая линия','Горная железная дорога','Пустынный переезд','Сладкая станция','Поезд динозавров','Лунный шаттл','Коралловый берег','Игрушечный экспресс','Зимний маршрут','Джунглевый узел','Драконья долина'],
+    wordSearch:['Мир животных','Корзина фруктов','Домашние вещи','Школьные принадлежности','Одежда','Транспорт','Музыкальные инструменты','Пейзажи','Игрушки и игры','Космос','Погода','Моё тело'],
+    magneticMaze:['Стальной шарик','Магнит в саду','Спасение в туннеле','Полюса в космосе','Течение океана','Игрушечная фабрика','След динозавра','Хрустальная пещера','Притяжение на полюсе','Мастерская роботов','Бурный проход','Мастер магнитного лабиринта'],
   }
 };
 let selectedMiniGame=null,selectedLevel=0,miniGameScene='menu',pendingPurchaseGame=null,coloringLaunch=false;
@@ -1347,6 +1432,7 @@ function selectMiniGame(id){
   selectedMiniGame=id;miniGameScene='levels';renderGameLevels();go('gameStage');
 }
 function renderGameLevels(){
+  $('#gameContent').classList.remove('railway-game');
   const game=MINI_GAMES.find(item=>item.id===selectedMiniGame);
   if(!game)return;
   miniGameScene='levels';
@@ -1362,12 +1448,44 @@ function renderGameLevels(){
     return `<button class="level-choice ${paid?'locked':''}" aria-label="${paid?'🔒 ':''}${label}" onclick="launchMiniGame('${game.id}',${i})">${paid?'🔒 ':''}${label}</button>`;
   }).join('')}</div><button class="ghost" onclick="go('games')">${tr('back')}</button>`;
 }
+const WORD_SEARCH_LEVELS=[
+  {size:7,words:3,directions:[0]},
+  {size:8,words:4,directions:[0,1]},
+  {size:9,words:5,directions:[0,1,2,3]},
+  {size:10,words:6,directions:[0,1,2,3,4,5,6,7]},
+  {size:11,words:7,directions:[0,1,2,3,4,5,6,7]},
+  {size:12,words:8,directions:[0,1,2,3,4,5,6,7]}
+];
+let selectedWordSearchLevel=0,wordSearchPuzzle=null;
+function startWordSearchActivity(activity){
+  selectedMiniGame='wordSearch';selectedLevel=activity;selectedWordSearchLevel=0;
+  miniGameScene='wordSearchLevels';renderWordSearchLevels();go('gameStage');
+}
+function wordSearchStarKey(activity,level){return `wordSearch:${activity}:word-${level}`}
+function wordSearchLevelIsUnlocked(level){
+  return level===0||S.completedPuzzleStars.includes(wordSearchStarKey(selectedLevel,level-1));
+}
+function renderWordSearchLevels(){
+  miniGameScene='wordSearchLevels';
+  const activityName=activityNames('wordSearch',currentLanguage)[selectedLevel];
+  $('#gameContent').innerHTML=`<h2>${tr('wordSearch')} - ${activityName}</h2><p>${tr('wordSearchPrompt')}</p><div class="level-grid">${WORD_SEARCH_LEVELS.map((level,index)=>{
+    const unlocked=wordSearchLevelIsUnlocked(index),complete=S.completedPuzzleStars.includes(wordSearchStarKey(selectedLevel,index));
+    return `<button class="level-choice${unlocked?'':' locked'}" ${unlocked?'':'disabled'} onclick="launchWordSearchLevel(${index})">${unlocked?'':'🔒 '}${tr('wordSearchLevel',{n:index+1})}<br><small>${tr('wordSearchGrid',{size:level.size,cols:level.size,words:level.words})}</small>${complete?' ⭐':''}</button>`;
+  }).join('')}</div><button class="ghost" onclick="renderGameLevels()">${tr('back')}</button>`;
+}
+function launchWordSearchLevel(level){
+  if(!Number.isInteger(level)||level<0||level>=WORD_SEARCH_LEVELS.length||!wordSearchLevelIsUnlocked(level))return;
+  selectedWordSearchLevel=level;miniGameScene='play';
+  wordSearchPuzzle=createWordSearchPuzzle(selectedLevel,level);
+  renderWordSearchGame();
+}
 function requestGamePurchase(id){
   pendingPurchaseGame=id;
   pendingParentAction='purchase';
   $('#gYear').value='';$('#gErr').textContent='';$('#gate').classList.add('on');
 }
 function launchMiniGame(id,level){
+  $('#gameContent').classList.remove('railway-game');
   const game=MINI_GAMES.find(item=>item.id===id);
   if(game&&id==='coloring'){
     selectedMiniGame=id;miniGameScene='levels';renderGameLevels();go('gameStage');return;
@@ -1375,10 +1493,13 @@ function launchMiniGame(id,level){
   if(!game||!Number.isInteger(level)||level<0||level>=activityNames(id,currentLanguage).length)return;
   if(level>=6&&!gameUnlocked(id)){requestGamePurchase(id);return}
   selectedMiniGame=id;selectedLevel=level;miniGameScene='play';
+  if(id==='letters')traceLetterIndex=0;
   if(learningGameHasTenQuestions(id))riddleQuestionIndex=0;
   if(id==='physicsPaths'){miniGameScene='pathLevels';renderPathLevels();go('gameStage');return}
   if(id==='gridSokoban'){miniGameScene='sokobanLevels';renderSokobanLevels();go('gameStage');return}
   if(id==='railwayControl'){miniGameScene='railwayLevels';renderRailwayLevels();go('gameStage');return}
+  if(id==='wordSearch'){startWordSearchActivity(level);return}
+  if(id==='magneticMaze'){renderMagneticMazeStages();go('gameStage');return}
   if(id==='escapeRoom'){startEscapeRoom();return}
   if(id==='puzzle'){startPuzzle();return}
   if(id==='differences'){startDifferences();return}
@@ -1394,6 +1515,139 @@ function backFromGame(){
   if(miniGameScene==='play'&&selectedMiniGame==='railwayControl'){miniGameScene='railwayLevels';renderRailwayLevels();go('gameStage');return}
   if(miniGameScene==='play'&&selectedMiniGame){miniGameScene='levels';renderGameLevels();go('gameStage');return}
   go('games');
+}
+let magneticMaze=null,selectedMagneticStage=0;
+function magneticMazeStarKey(activity,stage){return `magneticMaze:${activity}:magnet-${stage}`}
+function magneticMazeStageIsUnlocked(stage){
+  return stage===0||S.completedPuzzleStars.includes(magneticMazeStarKey(selectedLevel,stage-1));
+}
+function renderMagneticMazeStages(){
+  miniGameScene='magneticStages';
+  const activityName=activityNames('magneticMaze',currentLanguage)[selectedLevel];
+  $('#gameContent').innerHTML=`<h2>${tr('magneticMaze')} - ${activityName}</h2><p>${tr('magneticStagesInstruction')}</p><div class="level-grid">${Array.from({length:6},(_,stage)=>{
+    const unlocked=magneticMazeStageIsUnlocked(stage),complete=S.completedPuzzleStars.includes(magneticMazeStarKey(selectedLevel,stage));
+    return `<button class="level-choice${unlocked?'':' locked'}" ${unlocked?'':'disabled'} onclick="startMagneticMaze(selectedLevel,${stage})">${unlocked?'':'🔒 '}${tr('magneticStageLabel',{n:stage+1,difficulty:tr(`magneticDifficulty${stage+1}`)})}${complete?' ⭐':''}</button>`;
+  }).join('')}</div><button class="ghost" onclick="renderGameLevels()">${tr('back')}</button>`;
+}
+function startMagneticMaze(activity,stage=0){
+  if(!Number.isInteger(activity)||activity<0||activity>=12||!Number.isInteger(stage)||stage<0||stage>=6)return;
+  selectedMiniGame='magneticMaze';selectedLevel=activity;selectedMagneticStage=stage;miniGameScene='play';
+  const size=5+stage,route=[];
+  let seed=(Math.imul(activity+1,73856093)^Math.imul(stage+1,19349663))>>>0;
+  const random=()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296};
+  const startColumn=activity%4>=2?size-1:0,startRow=activity%2?size-1:0;
+  const start=startRow*size+startColumn,goal=(size-1-startRow)*size+(size-1-startColumn);
+  let routeFound=false;
+  for(let attempt=0;attempt<100&&!routeFound;attempt++){
+    const visited=new Set([start]),parent=new Map(),stack=[start];
+    while(stack.length){
+      const current=stack[stack.length-1],x=current%size,y=Math.floor(current/size);
+      const neighbors=[[x+1,y],[x-1,y],[x,y+1],[x,y-1]].filter(([nextX,nextY])=>nextX>=0&&nextX<size&&nextY>=0&&nextY<size&&!visited.has(nextY*size+nextX));
+      if(!neighbors.length){stack.pop();continue}
+      for(let index=neighbors.length-1;index>0;index--){
+        const other=Math.floor(random()*(index+1));
+        [neighbors[index],neighbors[other]]=[neighbors[other],neighbors[index]];
+      }
+      const [nextX,nextY]=neighbors[0],next=nextY*size+nextX;
+      visited.add(next);parent.set(next,current);stack.push(next);
+    }
+    const candidate=[];
+    for(let current=goal;current!==undefined;current=parent.get(current)){
+      candidate.push(current);
+      if(current===start)break;
+    }
+    candidate.reverse();
+    const directions=new Set();
+    let turns=0,previousX=0,previousY=0;
+    for(let index=1;index<candidate.length;index++){
+      const previous=candidate[index-1],current=candidate[index];
+      const dx=current%size-previous%size,dy=Math.floor(current/size)-Math.floor(previous/size);
+      directions.add(dx===1?'right':dx===-1?'left':dy===1?'down':'up');
+      if(index>1&&(dx!==previousX||dy!==previousY))turns++;
+      previousX=dx;previousY=dy;
+    }
+    if(directions.size===4&&turns>=6){route.push(...candidate);routeFound=true;}
+  }
+  if(!routeFound)throw new Error(`Could not generate a varied magnetic maze for activity ${activity+1}, stage ${stage+1}`);
+  const safePath=new Set(route),walls=new Set(),holes=new Set(),openCells=[];
+  for(let y=0;y<size;y++)for(let x=0;x<size;x++){
+    const index=y*size+x;
+    if(!safePath.has(index))openCells.push(index);
+  }
+  openCells.sort((a,b)=>((a*17+activity*11+stage*7)%29)-((b*17+activity*11+stage*7)%29)||a-b);
+  const holeCount=Math.min(openCells.length,stage+Math.floor(activity/3));
+  openCells.forEach((index,position)=>position<holeCount?holes.add(index):walls.add(index));
+  const firstStep=route[1]-route[0],startX=route[0]%size,startY=Math.floor(route[0]/size);
+  const magnetSide=firstStep===1?'east':firstStep===-1?'west':firstStep>0?'south':'north';
+  const magnetSlot=firstStep===1||firstStep===-1?startY:startX;
+  magneticMaze={size,route,safePath,walls,holes,start:route[0],goal:route[route.length-1],ball:route[0],magnetSide,magnetSlot,status:'',finished:false,won:false};
+  renderMagneticMaze();
+  go('gameStage');
+}
+function magneticMazeMagnet(side,slot){
+  if(!magneticMaze||magneticMaze.finished)return;
+  if(!['north','east','south','west'].includes(side)||!Number.isInteger(slot)||slot<0||slot>=magneticMaze.size)return;
+  magneticMaze.magnetSide=side;magneticMaze.magnetSlot=slot;
+  magneticMaze.status='';
+  renderMagneticMaze();
+}
+function magneticMazeDirection(direction){
+  if(!magneticMaze||magneticMaze.finished)return;
+  const directions={
+    north:{side:'north',slot:magneticMaze.ball%magneticMaze.size},
+    east:{side:'east',slot:Math.floor(magneticMaze.ball/magneticMaze.size)},
+    south:{side:'south',slot:magneticMaze.ball%magneticMaze.size},
+    west:{side:'west',slot:Math.floor(magneticMaze.ball/magneticMaze.size)}
+  };
+  const selected=directions[direction];
+  if(!selected)return;
+  magneticMazeMagnet(selected.side,selected.slot);
+}
+function activateMagnet(){
+  const puzzle=magneticMaze;
+  if(!puzzle||puzzle.finished)return;
+  const ballX=puzzle.ball%puzzle.size,ballY=Math.floor(puzzle.ball/puzzle.size);
+  const magnet={north:{x:puzzle.magnetSlot,y:-1},south:{x:puzzle.magnetSlot,y:puzzle.size},west:{x:-1,y:puzzle.magnetSlot},east:{x:puzzle.size,y:puzzle.magnetSlot}}[puzzle.magnetSide];
+  const dx=Math.sign(magnet.x-ballX),dy=Math.sign(magnet.y-ballY);
+  const x=ballX+dx,y=ballY+dy;
+  if(x<0||x>=puzzle.size||y<0||y>=puzzle.size){puzzle.status=tr('magneticEdge');renderMagneticMaze();return}
+  const next=y*puzzle.size+x;
+  if(puzzle.holes.has(next)){puzzle.ball=next;puzzle.finished=true;puzzle.won=false;puzzle.status=tr('magneticFall');renderMagneticMaze();return}
+  if(puzzle.walls.has(next)){puzzle.status=tr('magneticBlocked');renderMagneticMaze();return}
+  puzzle.ball=next;puzzle.status='';
+  if(puzzle.ball===puzzle.goal){
+    puzzle.finished=true;puzzle.won=true;
+    puzzle.newStar=awardInteractivePuzzleStar();
+  }
+  renderMagneticMaze();
+}
+function magneticMazeMovePreview(puzzle){
+  const ballX=puzzle.ball%puzzle.size,ballY=Math.floor(puzzle.ball/puzzle.size);
+  const magnet={north:{x:puzzle.magnetSlot,y:-1},south:{x:puzzle.magnetSlot,y:puzzle.size},west:{x:-1,y:puzzle.magnetSlot},east:{x:puzzle.size,y:puzzle.magnetSlot}}[puzzle.magnetSide];
+  const dx=Math.sign(magnet.x-ballX);
+  const dy=Math.sign(magnet.y-ballY);
+  return ({'0,-1':'↑','1,-1':'↗','1,0':'→','1,1':'↘','0,1':'↓','-1,1':'↙','-1,0':'←','-1,-1':'↖'})[`${dx},${dy}`];
+}
+function renderMagneticMaze(){
+  const puzzle=magneticMaze;
+  if(!puzzle)return;
+  const cells=Array.from({length:puzzle.size*puzzle.size},(_,index)=>{
+    const ball=index===puzzle.ball,goal=index===puzzle.goal,hole=puzzle.holes.has(index),wall=puzzle.walls.has(index);
+    const icon=goal?'🏁':'';
+    const type=ball?' ball':goal?' goal':hole?' pit':wall?' wall':'';
+    return `<div class="magnet-maze-cell${type}" aria-label="${ball?tr('magneticBall'):goal?tr('magneticGoal'):hole?tr('magneticHole'):wall?tr('magneticWall'):''}">${icon}</div>`;
+  }).join('');
+  const directionButtons=[['north','↑','magneticMoveUp'],['west','←','magneticMoveLeft'],['east','→','magneticMoveRight'],['south','↓','magneticMoveDown']];
+  const directions=directionButtons.map(([direction,arrow,label])=>{
+    const side=direction==='north'?'north':direction==='south'?'south':direction;
+    const ballSlot=direction==='north'||direction==='south'?puzzle.ball%puzzle.size:Math.floor(puzzle.ball/puzzle.size);
+    const selected=puzzle.magnetSide===side&&puzzle.magnetSlot===ballSlot;
+    const position=direction==='north'?'up':direction==='south'?'down':direction==='east'?'right':'left';
+    return `<button class="magnet-direction ${position}${selected?' selected':''}" onclick="magneticMazeDirection('${direction}')" aria-label="${tr(label)}" aria-pressed="${selected}" ${puzzle.finished?'disabled':''}>${arrow}</button>`;
+  }).join('');
+  const won=puzzle.finished&&puzzle.won,completed=puzzle.newStar?` ${tr('starEarned')}`:'';
+  const result=puzzle.finished?`<p class="magnet-result" role="status">${won?tr('magneticComplete')+completed:tr('magneticFall')}</p>${won&&selectedMagneticStage<5?` <button class="alt" onclick="startMagneticMaze(selectedLevel,${selectedMagneticStage+1})">${tr('magneticNextStage')}</button>`:''} <button class="ghost" onclick="startMagneticMaze(selectedLevel,selectedMagneticStage)">${tr('magneticRestart')}</button>`:'';
+  $('#gameContent').innerHTML=`<h2>${tr('magneticMaze')} - ${activityNames('magneticMaze',currentLanguage)[selectedLevel]}</h2><h3>${tr('magneticStageLabel',{n:selectedMagneticStage+1,difficulty:tr(`magneticDifficulty${selectedMagneticStage+1}`)})}</h3><section class="magnetic-howto"><b>${tr('magneticHowToTitle')}</b><ol><li>${tr('magneticHowTo1')}</li><li>${tr('magneticHowTo2')}</li><li>${tr('magneticHowTo3')}</li></ol></section><div class="magnet-maze"><div class="magnet-maze-board" style="--magnet-size:${puzzle.size}" aria-label="${tr('magneticMaze')}">${cells}</div><div class="magnetic-legend"><span>🔵 ${tr('magneticBall')}</span><span>🧱 ${tr('magneticWall')}</span><span>🕳️ ${tr('magneticHole')}</span><span>🏁 ${tr('magneticGoal')}</span></div><div class="magnet-direction-grid" role="group" aria-label="${tr('magneticChooseDirection')}">${directions}</div><div class="magnetic-preview" aria-live="polite">${tr('magneticMovePreview')} <strong>${puzzle.finished?'—':magneticMazeMovePreview(puzzle)}</strong></div><div class="magnet-controls"><button class="alt" onclick="activateMagnet()" ${puzzle.finished?'disabled':''}>${tr('magneticActivate')}</button></div><p class="magnet-maze-status" aria-live="polite">${puzzle.status}</p></div>${result}<button class="ghost" onclick="renderMagneticMazeStages()">${tr('magneticBackToStages')}</button><button class="ghost" onclick="renderGameLevels()">${tr('back')}</button>`;
 }
 const INTERACTIVE_PATHS=[
   [0,1,2,6,10,11,15],[0,4,8,9,10,14,15],[0,1,5,9,10,11,15],[0,4,5,6,10,14,15],
@@ -1414,6 +1668,8 @@ function awardInteractivePuzzleStar(){
     ?`gridSokoban:${selectedLevel}:box-${selectedBoxLevel}`
     :selectedMiniGame==='railwayControl'
     ?railwayLevelStarKey(selectedLevel,selectedRailwayLevel)
+    :selectedMiniGame==='magneticMaze'
+    ?magneticMazeStarKey(selectedLevel,selectedMagneticStage)
     :`${selectedMiniGame}:${selectedLevel}`;
   if(!Array.isArray(S.completedPuzzleStars))S.completedPuzzleStars=[];
   if(S.completedPuzzleStars.includes(key))return false;
@@ -1436,9 +1692,11 @@ function startInteractivePuzzle(id){
 }
 function setupPathPuzzle(){
   const size=selectedPathLevel===0?4:selectedPathLevel+4;
+  const oddRows=Array.from({length:Math.ceil(size/2)},(_,index)=>index*2+1).filter(rows=>rows<=size);
+  const rows=oddRows[Math.max(0,oddRows.length-1-(selectedLevel%2))];
   const route=selectedPathLevel===0
     ?INTERACTIVE_PATHS[selectedLevel]
-    :buildProgressivePath(size,selectedPathLevel===1?3:size-(size%2===0?1:0));
+    :buildProgressivePath(size,rows,selectedLevel+selectedPathLevel);
   const finish=size*size-1;
   if(!route||route[0]!==0||route[route.length-1]!==finish)throw new Error(`Invalid path activity ${selectedLevel}, level ${selectedPathLevel+1}`);
   const masks=Array(size*size).fill(0);
@@ -1455,17 +1713,29 @@ function setupPathPuzzle(){
   interactivePuzzle.size=size;interactivePuzzle.finish=finish;
   interactivePuzzle.maxTurns=rotations.reduce((sum,turns)=>sum+(4-turns)%4,0)+Math.ceil(route.length*0.5);
 }
-function buildProgressivePath(size,rows){
+function buildProgressivePath(size,rows,variant=0){
   const route=[];
-  for(let y=0;y<rows;y++){
-    const fromLeft=y%2===0;
+  if(variant%2===0){
+    for(let y=0;y<rows;y++){
+      const fromLeft=y%2===0;
+      for(let offset=0;offset<size;offset++){
+        const x=fromLeft?offset:size-1-offset;
+        route.push(y*size+x);
+      }
+    }
+    const lastRow=rows-1;
+    for(let y=rows;y<size;y++)route.push(y*size+(lastRow%2===0?size-1:0));
+    return route;
+  }
+  for(let x=0;x<rows;x++){
+    const fromTop=x%2===0;
     for(let offset=0;offset<size;offset++){
-      const x=fromLeft?offset:size-1-offset;
+      const y=fromTop?offset:size-1-offset;
       route.push(y*size+x);
     }
   }
-  const lastRow=rows-1;
-  for(let y=rows;y<size;y++)route.push(y*size+(lastRow%2===0?size-1:0));
+  const lastColumn=rows-1;
+  for(let x=rows;x<size;x++)route.push((size-1)*size+x);
   return route;
 }
 function pathLevelStarKey(activity,level){return `physicsPaths:${activity}:path-${level}`}
@@ -1519,6 +1789,7 @@ function renderSokobanLevels(){
 }
 const RAILWAY_COLOR_VALUES=['#ef476f','#f78c36','#ffd166','#06a77d','#2784d5','#8b5cf6'];
 const RAILWAY_COLORS=['🔴','🟠','🟡','🟢','🔵','🟣'];
+const RAILWAY_BRANCH_PATTERNS=[[0,4,0,4,0,4],[4,0,4,0,4,0],[0,0,4,4,0,4],[4,4,0,0,4,0],[0,4,4,0,0,4],[4,0,0,4,4,0]];
 function railwayLevelStarKey(activity,level){return `railwayControl:${activity}:rail-${level}`}
 function railwayLevelIsUnlocked(level){
   return level===0||S.completedPuzzleStars.includes(railwayLevelStarKey(selectedLevel,level-1));
@@ -1538,8 +1809,9 @@ function setupRailwayPuzzle(){
   const count=selectedRailwayLevel+2,colors=Array.from({length:count},(_,index)=>
     RAILWAY_COLORS[(index+(selectedLevel%6)+(selectedLevel>=6?count-1:0))%6]);
   if(selectedLevel>=6)colors.reverse();
+  const branchPattern=RAILWAY_BRANCH_PATTERNS[(selectedLevel+selectedRailwayLevel)%RAILWAY_BRANCH_PATTERNS.length];
   const switches=Array.from({length:count},(_,index)=>({
-    x:2+index*2,color:colors[index],branchY:(index+selectedRailwayLevel)%2===0?0:4,branch:false
+    x:2+index*2,color:colors[index],branchY:branchPattern[index],branch:false
   }));
   const endX=2+count*2;
   interactivePuzzle.trainCount=count;
@@ -1547,7 +1819,6 @@ function setupRailwayPuzzle(){
   interactivePuzzle.switches=switches;
   interactivePuzzle.trackEnd=endX;
   interactivePuzzle.columns=endX+1;
-  interactivePuzzle.steps=0;
   interactivePuzzle.trains=[{color:colors[0],position:{x:0,y:2},status:'moving',misrouted:false}];
   interactivePuzzle.spawned=1;
 }
@@ -1577,7 +1848,6 @@ function advanceRailwayTrains(){
     if(switchIndex>=0&&puzzle.switches[switchIndex].branch){
       const trackSwitch=puzzle.switches[switchIndex];
       updates.push({train,position:{x,y:trackSwitch.branchY===0?1:3},status:'moving'});
-      trackSwitch.branch=false;
     }else if(x>=puzzle.trackEnd){
       puzzle.finished=true;puzzle.won=false;puzzle.feedback=tr('railwayDerail');renderInteractivePuzzle();return;
     }else updates.push({train,position:{x:x+1,y},status:'moving'});
@@ -1602,7 +1872,6 @@ function advanceRailwayTrains(){
       }
     }
   }
-  puzzle.steps++;
   if(puzzle.spawned<puzzle.trainCount){
     const color=puzzle.stationColors[puzzle.spawned];
     puzzle.trains.push({color,position:{x:0,y:2},status:'moving',misrouted:false});
@@ -1652,9 +1921,47 @@ function setupSokobanPuzzle(){
     return [x,y];
   };
   const [playerX,playerY]=transform([1,size-3]),[boxX,boxY]=transform([2,size-3]),[goalX,goalY]=transform([size-2,1]);
-  interactivePuzzle.size=size;interactivePuzzle.player={x:playerX,y:playerY};interactivePuzzle.box={x:boxX,y:boxY};interactivePuzzle.goal={x:goalX,y:goalY};
-  interactivePuzzle.walls=new Set(baseWalls.map(transform).map(([x,y])=>`${x},${y}`));
+  const player={x:playerX,y:playerY},box={x:boxX,y:boxY},goal={x:goalX,y:goalY};
+  const walls=new Set(baseWalls.map(transform).map(([x,y])=>`${x},${y}`));
+  const layouts=[
+    [[mid,2],[mid,size-3],[mid+1,3],[size-3,2],[size-3,size-3]],
+    [[2,mid],[size-3,mid],[3,mid+1],[size-3,mid-1],[2,size-3]],
+    [[2,2],[3,3],[size-3,size-3],[size-4,size-4],[size-3,2]],
+    [[2,size-3],[3,size-4],[size-3,2],[size-4,3],[mid,mid+1]]
+  ][selectedLevel%4];
+  const protectedCells=new Set([player,box,goal].map(point=>`${point.x},${point.y}`));
+  for(const candidate of layouts.slice(0,selectedBoxLevel+2)){
+    const [x,y]=transform(candidate),key=`${x},${y}`;
+    if(protectedCells.has(key)||walls.has(key)||x<=0||x>=size-1||y<=0||y>=size-1)continue;
+    walls.add(key);
+    if(!sokobanHasSolution(size,player,box,goal,walls))walls.delete(key);
+  }
+  interactivePuzzle.size=size;interactivePuzzle.player=player;interactivePuzzle.box=box;interactivePuzzle.goal=goal;
+  interactivePuzzle.walls=walls;
   interactivePuzzle.pushes=0;
+}
+function sokobanHasSolution(size,player,box,goal,walls){
+  const position=(x,y)=>y*size+x,blocked=(x,y)=>x<=0||x>=size-1||y<=0||y>=size-1||walls.has(`${x},${y}`);
+  const directions=[[0,-1],[1,0],[0,1],[-1,0]],startBox=position(box.x,box.y);
+  const queue=[[position(player.x,player.y),startBox]],seen=new Set([`${position(player.x,player.y)}:${startBox}`]);
+  for(let head=0;head<queue.length;head++){
+    const [playerPos,boxPos]=queue[head];
+    if(boxPos===position(goal.x,goal.y))return true;
+    const px=playerPos%size,py=Math.floor(playerPos/size),bx=boxPos%size,by=Math.floor(boxPos/size);
+    for(const [dx,dy] of directions){
+      const nx=px+dx,ny=py+dy;
+      if(blocked(nx,ny))continue;
+      let nextBox=boxPos;
+      if(nx===bx&&ny===by){
+        const nextX=bx+dx,nextY=by+dy;
+        if(blocked(nextX,nextY))continue;
+        nextBox=position(nextX,nextY);
+      }
+      const nextPlayer=position(nx,ny),key=`${nextPlayer}:${nextBox}`;
+      if(!seen.has(key)){seen.add(key);queue.push([nextPlayer,nextBox])}
+    }
+  }
+  return false;
 }
 function setupCodeBreaker(){
   const start=selectedLevel%6;
@@ -1716,10 +2023,11 @@ function renderInteractivePuzzle(){
     }).join('')).join('');
     const switchControls=`<div class="rail-switch-controls">${interactivePuzzle.switches.map((trackSwitch,index)=>{
       const state=trackSwitch.branch?'railwayBranch':'railwayStraight',direction=trackSwitch.branch?(trackSwitch.branchY===0?'↗':'↘'):'↔';
-      return `<button class="rail-switch-control${trackSwitch.branch?' on':''}" onclick="toggleRailwaySwitch(${index})" aria-label="${tr('railwaySwitch',{n:index+1,state:tr(state)})}" ${interactivePuzzle.finished?'disabled':''}><b>${index+1}</b> ${direction}<small>${tr(state)}</small></button>`;
+      const color=RAILWAY_COLOR_VALUES[RAILWAY_COLORS.indexOf(trackSwitch.color)];
+      return `<button class="rail-switch-control${trackSwitch.branch?' on':''}" onclick="toggleRailwaySwitch(${index})" aria-label="${tr('railwaySwitch',{n:index+1,state:tr(state)})}" ${interactivePuzzle.finished?'disabled':''}><i class="rail-color-chip" style="--train-color:${color}" aria-hidden="true"></i><b>${index+1}</b> ${direction}<small>${tr(state)}</small></button>`;
     }).join('')}</div>`;
-    const queued=interactivePuzzle.stationColors.slice(interactivePuzzle.spawned).map(color=>`<span style="--train-color:${RAILWAY_COLOR_VALUES[RAILWAY_COLORS.indexOf(color)]}">🚂 ${color}</span>`).join('');
-    board=`<div class="rail-board" style="--rail-cols:${interactivePuzzle.columns}" aria-label="${tr('railwayControl')}">${cells}</div>${switchControls}<div class="rail-queue"><b>${tr('railwayTrainQueue')}</b>${queued||'-'}</div><p>${tr('railwaySteps',{n:interactivePuzzle.steps})}</p><div class="rail-controls"><button class="alt" onclick="advanceRailwayTrains()" ${interactivePuzzle.finished?'disabled':''}>${tr('railwayAdvance')}</button></div>`;
+    const queued=interactivePuzzle.stationColors.slice(interactivePuzzle.spawned).map(color=>`<span style="--train-color:${RAILWAY_COLOR_VALUES[RAILWAY_COLORS.indexOf(color)]}"><i class="rail-color-chip" aria-hidden="true"></i>🚂 ${color}</span>`).join('');
+    board=`<p>${tr('railwayManualSwitch')}</p><div class="rail-board-scroll"><div class="rail-board" style="--rail-cols:${interactivePuzzle.columns};--rail-min-width:${Math.min(700,interactivePuzzle.columns*36)}px" aria-label="${tr('railwayControl')}">${cells}</div></div>${switchControls}<div class="rail-queue"><b>${tr('railwayTrainQueue')}</b>${queued||'-'}</div><div class="rail-controls"><button class="alt" onclick="advanceRailwayTrains()" ${interactivePuzzle.finished?'disabled':''}>${tr('railwayAdvance')}</button></div>`;
   }
   const hint=interactivePuzzle.hint?`<p class="learning-hint" aria-live="polite">${tr(interactivePuzzle.hint)}</p>`:'<p class="learning-hint" aria-live="polite"></p>';
   const feedback=interactivePuzzle.feedback?`<p class="play-status">${interactivePuzzle.feedback}</p>`:'<p class="play-status"></p>';
@@ -1727,7 +2035,8 @@ function renderInteractivePuzzle(){
   const continueLabel=id==='physicsPaths'?tr(selectedPathLevel<4?'pathNextLevel':'pathAllComplete'):id==='gridSokoban'?tr(selectedBoxLevel<4?'boxNextLevel':'boxAllComplete'):id==='railwayControl'?tr(selectedRailwayLevel<4?'railwayNextLevel':'railwayAllComplete'):tr('next');
   const success=interactivePuzzle.won?`<p class="play-status"><b>${tr('correct')} ${interactivePuzzle.newStar?tr('starEarned'):''}</b><br>${tr(interactivePuzzle.successKey)}${progress?`<br>${progress}`:''}<br><button class="alt" onclick="continueInteractivePuzzle()">${continueLabel}</button></p>`:'';
   const restart=interactivePuzzle.finished&&!interactivePuzzle.won?`<button class="alt" onclick="startInteractivePuzzle('${id}')">${tr('puzzleRetry')}</button>`:'';
-  $('#gameContent').innerHTML=`<h2>${tr(MINI_GAMES.find(game=>game.id===id).name)}</h2><p>${interactiveGamePrompt(id)}</p><section class="interactive-puzzle">${board}${hint}<div class="puzzle-controls"><button class="ghost" onclick="showInteractiveHint()">${tr('hintButton')}</button></div>${feedback}${success}${restart}</section><button class="ghost" onclick="backFromGame()" data-i18n="back">${tr('back')}</button>`;
+  $('#gameContent').classList.toggle('railway-game',id==='railwayControl');
+  $('#gameContent').innerHTML=`<h2>${tr(MINI_GAMES.find(game=>game.id===id).name)}</h2><p>${interactiveGamePrompt(id)}</p><section class="interactive-puzzle${id==='railwayControl'?' railway-puzzle':''}">${board}${hint}<div class="puzzle-controls"><button class="ghost" onclick="showInteractiveHint()">${tr('hintButton')}</button></div>${feedback}${success}${restart}</section><button class="ghost" onclick="backFromGame()" data-i18n="back">${tr('back')}</button>`;
 }
 function showInteractiveHint(){
   if(!interactivePuzzle||interactivePuzzle.finished)return;
@@ -1931,6 +2240,234 @@ const WORD_QUESTION_DATA=[
     ['stomach','בטן','Живот'],['forehead','מצח','Лоб'],['eyebrow','גבה','Бровь'],['tooth','שן','Зуб'],['thumb','אגודל','Большой палец']
   ]
 ];
+const WORD_SEARCH_EXTRA_WORDS=[
+  [
+    ['lion','אריה','Лев'],['tiger','נמר','Тигр'],['elephant','פיל','Слон'],['giraffe','ג׳ירפה','Жираф'],['zebra','זברה','Зебра'],
+    ['monkey','קוף','Обезьяна'],['camel','גמל','Верблюд'],['donkey','חמור','Осёл'],['deer','צבי','Олень'],['wolf','זאב','Волк'],
+    ['mouse','עכבר','Мышь'],['squirrel','סנאי','Белка'],['hedgehog','קיפוד','Ёж'],['turtle','צב','Черепаха'],['snake','נחש','Змея'],
+    ['frog','צפרדע','Лягушка'],['dolphin','דולפין','Дельфин'],['whale','לווייתן','Кит'],['shark','כריש','Акула'],['eagle','עיט','Орёл'],
+    ['owl','ינשוף','Сова'],['duck','ברווז','Утка'],['bee','דבורה','Пчела'],['chicken','תרנגולת','Курица'],['goose','אווז','Гусь'],
+    ['swan','ברבור','Лебедь'],['parrot','תוכי','Попугай'],['bat','עטלף','Летучая мышь'],['ant','נמלה','Муравей'],['spider','עכביש','Паук'],['seal','כלב ים','Тюлень']
+  ],
+  [
+    ['banana','בננה','Банан'],['grape','ענבים','Виноград'],['lemon','לימון','Лимон'],['peach','אפרסק','Персик'],['strawberry','תות','Клубника'],
+    ['watermelon','אבטיח','Арбуз'],['pineapple','אננס','Ананас'],['coconut','קוקוס','Кокос'],['raspberry','פטל','Малина'],['blueberry','אוכמניות','Черника'],
+    ['carrot','גזר','Морковь'],['onion','בצל','Лук'],['tomato','עגבנייה','Помидор'],['cucumber','מלפפון','Огурец'],['pepper','פלפל','Перец'],
+    ['lettuce','חסה','Салат'],['cabbage','כרוב','Капуста'],['broccoli','ברוקולי','Брокколи'],['pumpkin','דלעת','Тыква'],['garlic','שום','Чеснок'],
+    ['mushroom','פטרייה','Гриб'],['bean','שעועית','Фасоль'],['pea','אפונה','Горох'],['fig','תאנה','Инжир'],['date','תמר','Финик'],
+    ['beet','סלק','Свёкла'],['celery','סלרי','Сельдерей'],['zucchini','קישוא','Кабачок'],['radish','צנון','Редис'],['olive','זית','Оливка'],['apricot','משמש','Абрикос']
+  ],
+  [
+    ['knife','סכין','Нож'],['pan','מחבת','Сковорода'],['pot','סיר','Кастрюля'],['kettle','קומקום','Чайник'],['toaster','טוסטר','Тостер'],
+    ['fridge','מקרר','Холодильник'],['oven','תנור','Духовка'],['table','שולחן','Стол'],['chair','כיסא','Стул'],['bed','מיטה','Кровать'],
+    ['door','דלת','Дверь'],['window','חלון','Окно'],['rug','שטיח','Ковёр'],['pillow','כרית','Подушка'],['drawer','מגירה','Ящик'],
+    ['sink','כיור','Раковина'],['towel','מגבת','Полотенце'],['soap','סבון','Мыло'],['key','מפתח','Ключ'],['clock','שעון','Часы'],
+    ['bottle','בקבוק','Бутылка'],['basket','סל','Корзина'],['mirror','מראה','Зеркало'],['shower','מקלחת','Душ'],['faucet','ברז','Кран'],
+    ['fan','מאוורר','Вентилятор'],['radio','רדיו','Радио'],['cabinet','ארון','Шкаф'],['mat','שטיחון','Коврик'],['vacuum','שואב אבק','Пылесос'],['broom','מטאטא','Метла']
+  ],
+  [
+    ['book','ספר','Книга'],['pen','עט','Ручка'],['paper','נייר','Бумага'],['bag','תיק','Сумка'],['desk','שולחן כתיבה','Парта'],
+    ['board','לוח','Доска'],['backpack','תרמיל','Рюкзак'],['calculator','מחשבון','Калькулятор'],['computer','מחשב','Компьютер'],['teacher','מורה','Учитель'],
+    ['student','תלמיד','Ученик'],['lesson','שיעור','Урок'],['school','בית ספר','Школа'],['class','כיתה','Класс'],['map','מפה','Карта'],
+    ['paint','צבע','Краска'],['brush','מכחול','Кисть'],['tape','סרט הדבקה','Лента'],['pencil case','קלמר','Пенал'],['textbook','ספר לימוד','Учебник'],
+    ['workbook','חוברת עבודה','Тетрадь'],['dictionary','מילון','Словарь'],['uniform','תלבושת','Форма'],['globe','גלובוס','Глобус'],['atlas','אטלס','Атлас'],
+    ['stapler','שדכן','Степлер'],['clip','אטב','Скрепка'],['ink','דיו','Чернила'],['easel','כן ציור','Мольберт'],['folder','תיקייה','Папка'],['worksheet','דף עבודה','Лист заданий']
+  ],
+  [
+    ['coat','מעיל','Пальто'],['skirt','חצאית','Юбка'],['sweater','סוודר','Свитер'],['boots','מגפיים','Сапоги'],['pajamas','פיג׳מה','Пижама'],
+    ['shorts','מכנסיים קצרים','Шорты'],['jeans','ג׳ינס','Джинсы'],['tie','עניבה','Галстук'],['suit','חליפה','Костюм'],['uniform','מדים','Форма'],
+    ['vest','אפוד','Жилет'],['blouse','חולצה','Блузка'],['raincoat','מעיל גשם','Плащ'],['slippers','נעלי בית','Тапочки'],['sandals','סנדלים','Сандалии'],
+    ['cap','כובע מצחייה','Кепка'],['crown','כתר','Корона'],['button','כפתור','Пуговица'],['zipper','רוכסן','Молния'],['pocket','כיס','Карман'],
+    ['underwear','תחתונים','Бельё'],['robe','חלוק','Халат'],['apron','סינר','Фартук'],['hoodie','קפוצ׳ון','Худи'],['cardigan','קרדיגן','Кардиган'],
+    ['leggings','טייץ','Легинсы'],['tights','גרביונים','Колготки'],['sneaker','נעל ספורט','Кроссовок'],['laces','שרוכים','Шнурки'],['collar','צווארון','Воротник'],['sleeve','שרוול','Рукав']
+  ],
+  [
+    ['car','מכונית','Машина'],['bus','אוטובוס','Автобус'],['truck','משאית','Грузовик'],['taxi','מונית','Такси'],['van','טנדר','Фургон'],
+    ['ship','אונייה','Корабль'],['boat','סירה','Лодка'],['motorbike','אופנוע','Мотоцикл'],['canoe','קאנו','Каноэ'],['ferry','מעבורת','Паром'],
+    ['yacht','יאכטה','Яхта'],['wagon','קרון','Вагон'],['carriage','כרכרה','Карета'],['cart','עגלה','Тележка'],['subway','רכבת תחתית','Метро'],
+    ['monorail','רכבת חד־פסית','Монорельс'],['glider','דאון','Планёр'],['hot air balloon','כדור פורח','Аэростат'],['jet','מטוס סילון','Джет'],
+    ['hovercraft','רחפת','Судно на воздушной подушке'],['rickshaw','ריקשה','Рикша'],['snowmobile','אופנוע שלג','Снегоход'],['sled','מזחלת','Сани'],['pickup','טנדר','Пикап'],
+    ['minibus','מיניבוס','Микроавтобус'],['trolleybus','טרוליבוס','Троллейбус'],['locomotive','קטר','Локомотив'],['gondola','גונדולה','Гондола'],['unicycle','חד אופן','Моноцикл'],
+    ['skateboard','סקייטבורד','Скейтборд'],['lifeboat','סירת הצלה','Спасательная шлюпка']
+  ],
+  [
+    ['piano','פסנתר','Пианино'],['keyboard','קלידים','Клавиатура'],['cello','צ׳לו','Виолончель'],['saxophone','סקסופון','Саксофон'],['oboe','אבוב','Гобой'],
+    ['clarinet','קלרינט','Кларнет'],['banjo','בנג׳ו','Банджо'],['ukulele','יוקולילי','Укулеле'],['bass','בס','Бас'],['organ','עוגב','Орган'],
+    ['recorder','חלילית','Блокфлейта'],['lyre','לירה','Лира'],['bagpipe','חמת חלילים','Волынка'],['xylophone','קסילופון','Ксилофон'],['triangle','משולש','Треугольник'],
+    ['castanets','קסטנייטות','Кастаньеты'],['bongo','בונגו','Бонго'],['gong','גונג','Гонг'],['lute','לאוטה','Лютня'],['pipe','צינור','Труба'],
+    ['mandolin','מנדולינה','Мандолина'],['harmonica','מפוחית','Губная гармошка'],['timpani','טימפני','Литавры'],['piccolo','פיקולו','Пикколо'],['viola','ויולה','Альт'],
+    ['bassoon','בסון','Фагот'],['cornet','קורנט','Корнет'],['horn','קרן','Валторна'],['tabla','טאבלה','Табла'],['shawm','זורנה','Зурна'],['whistle','משרוקית','Свисток']
+  ],
+  [
+    ['mountain','הר','Гора'],['hill','גבעה','Холм'],['forest','יער','Лес'],['river','נהר','Река'],['lake','אגם','Озеро'],
+    ['ocean','אוקיינוס','Океан'],['beach','חוף','Пляж'],['coast','קו חוף','Побережье'],['plain','מישור','Равнина'],['marsh','ביצה','Болото'],
+    ['spring','מעיין','Родник'],['stream','פלג','Ручей'],['pond','בריכה','Пруд'],['bay','מפרץ','Залив'],['peninsula','חצי אי','Полуостров'],
+    ['plateau','רמה','Плато'],['dune','דיונה','Дюна'],['reef','שונית','Риф'],['shore','חוף ים','Берег'],['peak','פסגה','Вершина'],
+    ['pass','מעבר הרים','Перевал'],['ridge','רכס','Гряда'],['delta','דלתה','Дельта'],['iceberg','קרחון ימי','Айсберг'],['mountain range','רכס הרים','Горная цепь'],
+    ['ravine','נקיק','Овраг'],['oasis','נווה מדבר','Оазис'],['basin','אגן','Бассейн'],['cove','מפרצון','Бухта'],['cape','כף','Мыс'],['gorge','ערוץ','Ущелье']
+  ],
+  [
+    ['doll','בובה','Кукла'],['blocks','קוביות','Кубики'],['robot','רובוט','Робот'],['swing','נדנדה','Качели'],['slide','מגלשה','Горка'],
+    ['skates','גלגיליות','Коньки'],['sled','מזחלת','Сани'],['bat','מחבט','Бита'],['racket','מחבט טניס','Ракетка'],['marbles','גולות','Шарики'],
+    ['top','סביבון','Юла'],['cube','קובייה','Кубик'],['spinner','סביבון','Спиннер'],['puppet','בובת תיאטרון','Марионетка'],['bubbles','בועות','Пузыри'],
+    ['sandbox','ארגז חול','Песочница'],['jump rope','חבל קפיצה','Скакалка'],['truck toy','משאית צעצוע','Игрушечный грузовик'],['cards','קלפים','Карты'],
+    ['board game','משחק קופסה','Настольная игра'],['darts','חיצים','Дартс'],['bowling','באולינג','Боулинг'],['skipping rope','חבל דילוג','Скакалка'],['ball','כדור','Мяч'],['hoop','חישוק','Обруч'],
+    ['dice','קוביות משחק','Кости'],['mask','מסכה','Маска'],['whistle','משרוקית','Свисток'],['tent','אוהל','Палатка'],['yo-yo string','חוט יו־יו','Нить йо-йо'],['target','מטרה','Мишень']
+  ],
+  [
+    ['sun','שמש','Солнце'],['moon','ירח','Луна'],['star','כוכב','Звезда'],['earth','כדור הארץ','Земля'],['mars','מאדים','Марс'],
+    ['venus','נוגה','Венера'],['jupiter','צדק','Юпитер'],['saturn','שבתאי','Сатурн'],['neptune','נפטון','Нептун'],['uranus','אורנוס','Уран'],
+    ['astronaut','אסטרונאוט','Космонавт'],['space','חלל','Космос'],['constellation','קבוצת כוכבים','Созвездие'],['black hole','חור שחור','Чёрная дыра'],
+    ['nebula','ערפילית','Туманность'],['universe','יקום','Вселенная'],['launch','שיגור','Запуск'],['spacesuit','חליפת חלל','Скафандр'],
+    ['observatory','מצפה כוכבים','Обсерватория'],['telescope lens','עדשת טלסקופ','Линза телескопа'],['star cluster','צביר כוכבים','Звёздное скопление'],
+    ['solar system','מערכת השמש','Солнечная система'],['lunar','ירחי','Лунный'],['pluto','פלוטו','Плутон'],['mercury','כוכב חמה','Меркурий'],
+    ['quasar','קוואזר','Квазар'],['pulsar','פולסר','Пульсар'],['stardust','אבק כוכבים','Звёздная пыль'],['solstice','היפוך','Солнцестояние'],['rover','רובר','Ровер'],['moonlight','אור ירח','Лунный свет']
+  ],
+  [
+    ['cloud','ענן','Облако'],['wind','רוח','Ветер'],['sunshine','שמש','Солнце'],['snow','שלג','Снег'],['storm','סערה','Шторм'],
+    ['fog','ערפל','Туман'],['rain','גשם','Дождь'],['heat','חום','Жара'],['cold','קור','Холод'],['drizzle','טפטוף','Морось'],
+    ['shower','ממטר','Ливень'],['forecast','תחזית','Прогноз'],['season','עונה','Сезон'],['summer','קיץ','Лето'],['winter','חורף','Зима'],
+    ['springtime','אביב','Весна'],['autumn','סתיו','Осень'],['humidity','לחות','Влажность'],['temperature','טמפרטורה','Температура'],['thermometer','מדחום','Термометр'],
+    ['barometer','ברומטר','Барометр'],['cloudy','מעונן','Облачно'],['sunny','שמשי','Солнечно'],['dew','טל','Роса'],['mist','אד קל','Дымка'],
+    ['cyclone','ציקלון','Циклон'],['monsoon','מונסון','Муссон'],['typhoon','טייפון','Тайфун'],['climate','אקלים','Климат'],['sunrise','זריחה','Восход'],['sunset','שקיעה','Закат']
+  ],
+  [
+    ['head','ראש','Голова'],['arm','זרוע','Рука'],['leg','רגל','Нога'],['hand','כף יד','Кисть'],['foot','כף רגל','Ступня'],
+    ['knee','ברך','Колено'],['neck','צוואר','Шея'],['nose','אף','Нос'],['eye','עין','Глаз'],['ear','אוזן','Ухо'],
+    ['mouth','פה','Рот'],['heart','לב','Сердце'],['hair','שיער','Волосы'],['cheek','לחי','Щека'],['chin','סנטר','Подбородок'],
+    ['wrist','שורש כף היד','Запястье'],['chest','חזה','Грудь'],['back','גב','Спина'],['heel','עקב','Пятка'],['lip','שפה','Губа'],
+    ['face','פנים','Лицо'],['brain','מוח','Мозг'],['skin','עור','Кожа'],['toe','בוהן','Палец ноги'],['muscle','שריר','Мышца'],
+    ['bone','עצם','Кость'],['jaw','לסת','Челюсть'],['tongue','לשון','Язык'],['lung','ריאה','Лёгкое'],['liver','כבד','Печень'],['blood','דם','Кровь']
+  ]
+];
+const WORD_SEARCH_DIRECTIONS=[[1,0],[0,1],[1,1],[-1,1],[-1,0],[0,-1],[-1,-1],[1,-1]];
+const WORD_SEARCH_ALPHABETS={
+  en:Array.from('ABCDEFGHIJKLMNOPQRSTUVWXYZ'),
+  he:Array.from('אבגדהוזחטיכלמנסעפצקרשת'),
+  ru:Array.from('АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ')
+};
+function normalizeSearchWord(word){
+  return Array.from(word.toLocaleUpperCase()).filter(letter=>/[A-Z\u0590-\u05FF\u0400-\u04FF]/.test(letter)).join('');
+}
+function shuffledItems(items){
+  const shuffled=items.slice();
+  for(let index=shuffled.length-1;index>0;index--){
+    const other=Math.floor(Math.random()*(index+1));
+    [shuffled[index],shuffled[other]]=[shuffled[other],shuffled[index]];
+  }
+  return shuffled;
+}
+function wordSearchWordsConflict(first,second){
+  const firstForms=[first,Array.from(first).reverse().join('')],secondForms=[second,Array.from(second).reverse().join('')];
+  return firstForms.some(a=>secondForms.some(b=>a.startsWith(b)||b.startsWith(a)));
+}
+function getWordSearchLevelWords(activity,languageIndex){
+  const allWords=[...WORD_QUESTION_DATA[activity],...WORD_SEARCH_EXTRA_WORDS[activity]]
+    .map(row=>normalizeSearchWord(row[languageIndex]))
+    .filter((word,index,words)=>word.length>=2&&word.length<=12&&words.indexOf(word)===index);
+  const used=new Set();
+  return WORD_SEARCH_LEVELS.map((config,level)=>{
+    const candidates=allWords.filter(word=>!used.has(word)&&word.length<=config.size).sort((a,b)=>b.length-a.length);
+    const selected=[];
+    function chooseWords(start){
+      if(selected.length===config.words)return true;
+      if(candidates.length-start<config.words-selected.length)return false;
+      for(let index=start;index<candidates.length;index++){
+        if(selected.some(existing=>wordSearchWordsConflict(candidates[index],existing)))continue;
+        selected.push(candidates[index]);
+        if(chooseWords(index+1))return true;
+        selected.pop();
+      }
+      return false;
+    }
+    if(!chooseWords(0))throw new Error(`Not enough unique words for word search activity ${activity+1}, level ${level+1}`);
+    selected.forEach(word=>used.add(word));
+    return selected;
+  });
+}
+function createWordSearchPuzzle(activity,level){
+  const config=WORD_SEARCH_LEVELS[level],languageIndex={en:0,he:1,ru:2}[currentLanguage]??0;
+  const candidates=getWordSearchLevelWords(activity,languageIndex)[level];
+  const directions=config.directions.map(index=>WORD_SEARCH_DIRECTIONS[index]);
+  for(let boardAttempt=0;boardAttempt<80;boardAttempt++){
+    const grid=Array.from({length:config.size},()=>Array(config.size).fill(''));
+    const placed=[];
+    let failed=false;
+    for(const word of candidates.slice().sort((a,b)=>b.length-a.length)){
+      let success=false;
+      for(let attempt=0;attempt<400&&!success;attempt++){
+        const [dx,dy]=directions[Math.floor(Math.random()*directions.length)];
+        const x=Math.floor(Math.random()*config.size),y=Math.floor(Math.random()*config.size);
+        const endX=x+dx*(word.length-1),endY=y+dy*(word.length-1);
+        if(endX<0||endX>=config.size||endY<0||endY>=config.size)continue;
+        const cells=Array.from({length:word.length},(_,index)=>({x:x+dx*index,y:y+dy*index}));
+        if(cells.some((cell,index)=>grid[cell.y][cell.x]&&grid[cell.y][cell.x]!==word[index]))continue;
+        cells.forEach((cell,index)=>{grid[cell.y][cell.x]=word[index]});
+        placed.push({word,cells:cells.map(cell=>cell.y*config.size+cell.x)});
+        success=true;
+      }
+      if(!success){failed=true;break}
+    }
+    if(failed)continue;
+    const alphabet=WORD_SEARCH_ALPHABETS[currentLanguage]||WORD_SEARCH_ALPHABETS.en;
+    for(const row of grid)for(let column=0;column<row.length;column++){
+      if(!row[column])row[column]=alphabet[Math.floor(Math.random()*alphabet.length)];
+    }
+    return {size:config.size,grid,words:shuffledItems(placed),selected:[],found:new Set(),status:''};
+  }
+  throw new Error(`Could not create word search activity ${activity+1}, level ${level+1}`);
+}
+function renderWordSearchGame(){
+  const puzzle=wordSearchPuzzle,foundCells=new Set();
+  for(const word of puzzle.words)if(puzzle.found.has(word.word))word.cells.forEach(cell=>foundCells.add(cell));
+  const progress=tr('wordSearchFound',{found:puzzle.found.size,total:puzzle.words.length});
+  const cells=puzzle.grid.flatMap(row=>row).map((letter,index)=>{
+    const selected=puzzle.selected.includes(index),found=foundCells.has(index);
+    return `<button class="word-search-cell${selected?' selected':''}${found?' found':''}" onclick="selectWordSearchCell(${index})" aria-label="${letter}" aria-pressed="${selected||found}">${letter}</button>`;
+  }).join('');
+  const words=puzzle.words.map(item=>`<li class="${puzzle.found.has(item.word)?'found':''}">${item.word}</li>`).join('');
+  const complete=puzzle.found.size===puzzle.words.length;
+  const completion=complete?selectedWordSearchLevel===5
+    ?`<button class="alt" onclick="renderGameLevels()">${tr('wordSearchFinishActivity')}</button>`
+    :`<button class="alt" onclick="renderWordSearchLevels()">${tr('wordSearchNextLevel')}</button>`:'';
+  $('#gameContent').innerHTML=`<h2>${tr('wordSearch')} - ${activityNames('wordSearch',currentLanguage)[selectedLevel]}</h2><p>${tr('wordSearchLevel',{n:selectedWordSearchLevel+1})} · ${tr('wordSearchGrid',{size:puzzle.size,cols:puzzle.size,words:puzzle.words.length})}</p><p data-i18n="wordSearchPrompt">${tr('wordSearchPrompt')}</p><ul class="word-search-words">${words}</ul><div class="word-search-board" style="--word-grid-size:${puzzle.size}" aria-label="${tr('wordSearch')}">${cells}</div><p class="play-status" aria-live="polite">${complete?tr('wordSearchComplete'):puzzle.status||progress}</p><div class="puzzle-controls"><button class="ghost" onclick="clearWordSearchSelection()" data-i18n="wordSearchClear">${tr('wordSearchClear')}</button>${completion}</div>`;
+}
+function selectWordSearchCell(index){
+  const puzzle=wordSearchPuzzle;
+  if(!puzzle||puzzle.found.size===puzzle.words.length)return;
+  if(puzzle.selected.includes(index)){puzzle.selected=[];puzzle.status='';renderWordSearchGame();return}
+  if(puzzle.selected.length){
+    const previous=puzzle.selected[puzzle.selected.length-1],size=puzzle.size;
+    if(Math.max(Math.abs(index%size-previous%size),Math.abs(Math.floor(index/size)-Math.floor(previous/size)))!==1)return;
+  }
+  puzzle.selected.push(index);
+  const spelling=puzzle.selected.map(cell=>puzzle.grid[Math.floor(cell/puzzle.size)][cell%puzzle.size]).join('');
+  const matched=puzzle.words.find(item=>!puzzle.found.has(item.word)&&(item.word===spelling||Array.from(item.word).reverse().join('')===spelling));
+  if(matched){
+    puzzle.found.add(matched.word);puzzle.selected=[];puzzle.status='';
+    if(puzzle.found.size===puzzle.words.length)awardWordSearchStar();
+  }else{
+    const canContinue=puzzle.words.some(item=>{
+      if(puzzle.found.has(item.word))return false;
+      const reversed=Array.from(item.word).reverse().join('');
+      return item.word.startsWith(spelling)||reversed.startsWith(spelling);
+    });
+    if(!canContinue){puzzle.selected=[];puzzle.status=tr('wordSearchTryAgain')}
+    else puzzle.status=tr('wordSearchFound',{found:puzzle.found.size,total:puzzle.words.length});
+  }
+  renderWordSearchGame();
+}
+function clearWordSearchSelection(){
+  if(!wordSearchPuzzle)return;
+  wordSearchPuzzle.selected=[];wordSearchPuzzle.status='';renderWordSearchGame();
+}
+function awardWordSearchStar(){
+  const key=wordSearchStarKey(selectedLevel,selectedWordSearchLevel);
+  if(S.completedPuzzleStars.includes(key))return false;
+  S.completedPuzzleStars.push(key);S.stars++;sv();
+  $('#hStars').textContent='⭐ '+S.stars+(S.vip?' 👑':'');
+  return true;
+}
 const STORY_MATH_ITEMS=[
   ['marble','marbles','גולות','шарики','шариков'],['apple','apples','תפוחים','яблоки','яблок'],['pencil','pencils','עפרונות','карандаши','карандашей'],
   ['bird','birds','ציפורים','птицы','птиц'],['balloon','balloons','בלונים','шары','шаров'],['shell','shells','צדפים','ракушки','ракушек'],
@@ -2086,13 +2623,13 @@ function getWordQuestion(activityIndex,questionIndex){
 }
 function getPatternQuestion(activityIndex,questionIndex){
   const theme=PATTERN_THEMES[activityIndex];
-  const permutations=theme.flatMap((first,index)=>theme.filter((_,secondIndex)=>secondIndex!==index).map(second=>[first,second]));
-  const answer=permutations[questionIndex];
-  const sequence=[...answer,...answer,...answer].slice(0,6).join(' ')+'  ? ?';
-  const otherPairs=permutations.filter(pair=>pair[0]!==answer[0]||pair[1]!==answer[1]);
-  const distractors=Array.from({length:3},(_,offset)=>otherPairs[(questionIndex+offset)%otherPairs.length]);
-  const options=[answer,...distractors].map(pair=>pair.join(' ')).sort(()=>Math.random()-.5);
-  return {answer:answer.join(' '),question:sequence,options};
+  const rules=[
+    [0,0,1],[0,1,1],[0,1,2],[0,0,1,2],[0,1,1,2],[0,1,2,2],
+    [0,1,0,2],[0,1,2,0],[0,0,1,1,2,2],[0,1,2,0,1,2],[0,1,0,2,1,2],[0,1,1,2,0,2]
+  ];
+  const rule=rules[(activityIndex+questionIndex)%rules.length],sequence=Array.from({length:8},(_,index)=>theme[rule[index%rule.length]]);
+  const answer=theme[rule[8%rule.length]],options=theme.slice().sort(()=>Math.random()-.5);
+  return {answer,question:`${sequence.join(' ')}  ?`,options};
 }
 function getLogicQuestion(activityIndex,questionIndex){
   const items=LOGIC_ICON_SETS[activityIndex];
@@ -2376,8 +2913,18 @@ const LEGACY_SCIENCE_QUESTIONS=[
   {question:{en:'You tap one end of a long string while a friend holds the other end. Your friend hears the sound. What traveled along the string?',he:'אתם מקישים בקצה אחד של חוט ארוך וחבר מחזיק בקצה השני ושומע. מה עבר לאורך החוט?',ru:'Ты постучал по одному концу длинной нити, а друг держит другой конец и слышит звук. Что прошло по нити?'},options:{en:['Vibrations','A beam of light','A shadow','Warm air'],he:['רעידות','קרן אור','צל','אוויר חם'],ru:['Вибрации','Луч света','Тень','Тёплый воздух']},answer:0}
 ];
 const TRACE_LETTERS={en:Array.from('ABCDEFGHIJKLMNOPQRSTUVWXYZ'),he:Array.from('אבגדהוזחטיכלמנסעפצקרשת'),ru:Array.from('АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ')};
+const TRACE_ACTIVITY_COUNT=12;
+function traceLetterGroups(language){
+  const letters=TRACE_LETTERS[language]||TRACE_LETTERS.en,base=Math.floor(letters.length/TRACE_ACTIVITY_COUNT),remainder=letters.length%TRACE_ACTIVITY_COUNT;
+  let offset=0;
+  return Array.from({length:TRACE_ACTIVITY_COUNT},(_,index)=>{
+    const count=base+(index<remainder?1:0),group=letters.slice(offset,offset+count);
+    offset+=count;
+    return group;
+  });
+}
 function activityNames(id,language){
-  if(id==='letters')return TRACE_LETTERS[language].map(letter=>language==='he'?`אות ${letter}`:language==='ru'?`Буква ${letter}`:`Letter ${letter}`);
+  if(id==='letters')return traceLetterGroups(language).map((group,index)=>language==='he'?`אותיות ${index+1} (${group.join(', ')})`:language==='ru'?`Буквы ${index+1} (${group.join(', ')})`:`Letters ${index+1} (${group.join(', ')})`);
   if(id==='coloring')return [];
   return ACTIVITY_NAMES[language][id];
 }
@@ -2653,7 +3200,7 @@ function playLearningGame(id,level){
   const game=MINI_GAMES.find(item=>item.id===id);
   const questionLabel=learningGameHasTenQuestions(id)?getLearningQuestionLabel(id,riddleQuestionIndex):tr('question',{n:level+1});
   const choiceLabels=currentLanguage==='he'?['א','ב','ג','ד']:currentLanguage==='ru'?['А','Б','В','Г']:['A','B','C','D'];
-  $('#gameContent').innerHTML=`<h2 data-i18n="${game.name}">${game.icon} ${tr(game.name)}</h2><p>${questionLabel}</p><p data-i18n="${promptKey}">${prompt}</p><div id="learningQuestion" class="quiz-swatch" style="width:auto;height:auto;min-height:60px;border:0;box-shadow:none;font-size:${['storyMath','scienceQuest','logicQuest'].includes(id)?'18':'32'}px">${question}</div><div class="answer-grid">${options.map((option,index)=>`<button data-answer="${encodeURIComponent(option)}" onclick="answerLearningGame(this)">${id==='riddles'?`${choiceLabels[index]}) `:''}${option}</button>`).join('')}</div><div class="learning-tools"><button class="ghost" onclick="revealLearningHint()" data-i18n="hintButton">${tr('hintButton')}</button></div><p id="learningHint" class="learning-hint" aria-live="polite"></p><p id="learningFeedback" class="play-status" aria-live="polite"></p>`;
+  $('#gameContent').innerHTML=`<h2 data-i18n="${game.name}">${game.icon} ${tr(game.name)}</h2><p>${questionLabel}</p><p data-i18n="${promptKey}">${prompt}</p><div id="learningQuestion" class="quiz-swatch" style="width:auto;height:auto;min-height:60px;border:0;box-shadow:none;font-size:${['storyMath','scienceQuest','logicQuest','riddles'].includes(id)?'18':'32'}px">${question}</div><div class="answer-grid">${options.map((option,index)=>`<button data-answer="${encodeURIComponent(option)}" onclick="answerLearningGame(this)">${id==='riddles'?`${choiceLabels[index]}) `:''}${option}</button>`).join('')}</div><div class="learning-tools"><button class="ghost" onclick="revealLearningHint()" data-i18n="hintButton">${tr('hintButton')}</button></div><p id="learningHint" class="learning-hint" aria-live="polite"></p><p id="learningFeedback" class="play-status" aria-live="polite"></p>`;
 }
 function revealLearningHint(){
   const question=$('#learningQuestion'),feedback=$('#learningHint');
@@ -2778,20 +3325,57 @@ function flipMemoryCard(index){
     }else setTimeout(()=>{if($(`#memory${a}`)&&$(`#memory${b}`)){$(`#memory${a}`).textContent='❔';$(`#memory${b}`).textContent='❔'}memoryOpen=[]},750);
   }
 }
+let traceLetterIndex=0,traceDistance=0;
 function renderLetterTrace(level){
-  const letters=TRACE_LETTERS[currentLanguage]||TRACE_LETTERS.en,letter=letters[level%letters.length];
-  traceHasInk=false;go('gameStage');
-  $('#gameContent').innerHTML=`<h2 data-i18n="letters">✍️ ${tr('letters')}</h2><p data-i18n="tracePrompt">${tr('tracePrompt')}</p><div style="position:relative;width:min(78vw,320px);margin:auto"><canvas id="traceCanvas" class="trace-canvas" width="320" height="320"></canvas><span style="position:absolute;inset:0;display:grid;place-items:center;font-size:220px;color:#ddd;pointer-events:none">${letter}</span></div><p><span data-i18n="traceLetter">${tr('traceLetter')}</span>: ${letter}</p><button class="ghost" onclick="clearTrace()" data-i18n="clear">${tr('clear')}</button> <button class="alt" onclick="finishTrace()" data-i18n="check">${tr('check')}</button><p id="traceStatus" aria-live="polite"></p>`;
-  const canvas=$('#traceCanvas'),context=canvas.getContext('2d');let drawing=false;
-  canvas.addEventListener('pointerdown',event=>{drawing=true;canvas.setPointerCapture(event.pointerId);const rect=canvas.getBoundingClientRect();context.beginPath();context.moveTo((event.clientX-rect.left)*320/rect.width,(event.clientY-rect.top)*320/rect.height);context.strokeStyle='#7c4dff';context.lineWidth=12;context.lineCap='round'});
-  canvas.addEventListener('pointermove',event=>{if(!drawing)return;const rect=canvas.getBoundingClientRect();context.lineTo((event.clientX-rect.left)*320/rect.width,(event.clientY-rect.top)*320/rect.height);context.stroke();traceHasInk=true});
+  const letters=traceLetterGroups(currentLanguage)[level],letter=letters[traceLetterIndex];
+  if(!letter)throw new Error(`Missing letter ${traceLetterIndex+1} in activity ${level+1}`);
+  traceHasInk=false;traceDistance=0;go('gameStage');
+  $('#gameContent').innerHTML=`<h2 data-i18n="letters">✍️ ${tr('letters')}</h2><p>${tr('traceProgress',{n:traceLetterIndex+1,total:letters.length})}</p><p data-i18n="tracePrompt">${tr('tracePrompt')}</p><div style="position:relative;width:min(78vw,320px);margin:auto"><canvas id="traceCanvas" class="trace-canvas" width="320" height="320"></canvas><span style="position:absolute;inset:0;display:grid;place-items:center;font-size:220px;color:#ddd;pointer-events:none">${letter}</span></div><p><span data-i18n="traceLetter">${tr('traceLetter')}</span>: ${letter}</p><button class="ghost" onclick="clearTrace()" data-i18n="clear">${tr('clear')}</button> <button class="alt" onclick="finishTrace()" data-i18n="check">${tr('check')}</button><p id="traceStatus" aria-live="polite"></p>`;
+  const canvas=$('#traceCanvas'),context=canvas.getContext('2d',{willReadFrequently:true});let drawing=false;
+  if(!context)throw new Error('Could not prepare the letter tracing canvas.');
+  canvas.addEventListener('pointerdown',event=>{
+    drawing=true;canvas.setPointerCapture(event.pointerId);
+    const rect=canvas.getBoundingClientRect(),x=(event.clientX-rect.left)*320/rect.width,y=(event.clientY-rect.top)*320/rect.height;
+    context.currentX=x;context.currentY=y;context.beginPath();context.moveTo(x,y);context.strokeStyle='#7c4dff';context.lineWidth=12;context.lineCap='round';
+  });
+  canvas.addEventListener('pointermove',event=>{
+    if(!drawing)return;
+    const rect=canvas.getBoundingClientRect(),x=(event.clientX-rect.left)*320/rect.width,y=(event.clientY-rect.top)*320/rect.height;
+    traceDistance+=Math.hypot(x-context.currentX,y-context.currentY);
+    context.currentX=x;context.currentY=y;context.lineTo(x,y);context.stroke();traceHasInk=true;
+  });
   canvas.addEventListener('pointerup',()=>drawing=false);canvas.addEventListener('pointercancel',()=>drawing=false);
 }
-function clearTrace(){const canvas=$('#traceCanvas');canvas.getContext('2d').clearRect(0,0,320,320);traceHasInk=false}
+function clearTrace(){const canvas=$('#traceCanvas');canvas.getContext('2d').clearRect(0,0,320,320);traceHasInk=false;traceDistance=0;$('#traceStatus').textContent=''}
+function traceMatchesLetter(letter){
+  const canvas=$('#traceCanvas'),context=canvas.getContext('2d',{willReadFrequently:true}),reference=document.createElement('canvas');
+  reference.width=reference.height=320;
+  const referenceContext=reference.getContext('2d',{willReadFrequently:true});
+  if(!context||!referenceContext)throw new Error('Could not verify the traced letter.');
+  referenceContext.font='220px system-ui,Arial,sans-serif';referenceContext.textAlign='center';referenceContext.textBaseline='middle';
+  referenceContext.fillStyle='#000';referenceContext.fillText(letter,160,160);
+  const target=referenceContext.getImageData(0,0,320,320).data,ink=context.getImageData(0,0,320,320).data;
+  let targetPixels=0,inkPixels=0,overlap=0;
+  for(let pixel=3;pixel<target.length;pixel+=4){
+    const isTarget=target[pixel]>20,isInk=ink[pixel]>20;
+    if(isTarget)targetPixels++;
+    if(isInk)inkPixels++;
+    if(isTarget&&isInk)overlap++;
+  }
+  return traceDistance>=28&&inkPixels>0&&overlap/inkPixels>=0.15&&overlap/targetPixels>=0.025;
+}
 function finishTrace(){
   const status=$('#traceStatus');
-  if(!traceHasInk){status.textContent=tr('tryAgain');return}
-  status.innerHTML=`<span data-i18n="traceDone">${tr('traceDone')}</span><br><button class="alt" onclick="renderGameLevels()" data-i18n="next">${tr('next')}</button>`;
+  const letters=traceLetterGroups(currentLanguage)[selectedLevel];
+  if(!traceHasInk||!traceMatchesLetter(letters[traceLetterIndex])){status.textContent=tr('tryAgain');return}
+  const hasNextLetter=traceLetterIndex+1<letters.length;
+  status.innerHTML=`<span data-i18n="traceDone">${tr('traceDone')}</span><br><button class="alt" onclick="${hasNextLetter?'nextTraceLetter()':'renderGameLevels()'}" data-i18n="next">${tr('next')}</button>`;
+}
+function nextTraceLetter(){
+  const letters=traceLetterGroups(currentLanguage)[selectedLevel];
+  if(traceLetterIndex+1>=letters.length)return;
+  traceLetterIndex++;
+  renderLetterTrace(selectedLevel);
 }
 
 /* ---------- parental gate & VIP ---------- */
@@ -3698,11 +4282,19 @@ if('serviceWorker' in navigator&&location.protocol!=='file:'){
   navigator.serviceWorker.register('./sw.js').catch(error=>console.error('Service worker registration failed:',error));
 }
 
-/* ===== Megical Fun additions: zoom/pan, share, hint, celebration, daily bonus ===== */
+/* ===== Magical Fun additions: zoom/pan, share, hint, celebration, daily bonus ===== */
 Object.assign(TEXT.en,{download:'💾 Save to device',hintBtn:'💡 Hint',hintNone:'Everything is colored! 🎉',hintYes:'Try coloring the flashing part!',shareFail:'Add some color first!',dailyTitle:'Daily bonus!',dailyDay:'Day {n} in a row',dailyBtn:'Collect ⭐'});
 Object.assign(TEXT.he,{download:'💾 שמירה למכשיר',hintBtn:'💡 רמז',hintNone:'הכול צבוע! 🎉',hintYes:'נסו לצבוע את החלק המהבהב!',shareFail:'קודם צבעו קצת!',dailyTitle:'בונוס יומי!',dailyDay:'יום {n} ברצף',dailyBtn:'קבלו ⭐'});
 Object.assign(TEXT.ru,{download:'💾 Сохранить',hintBtn:'💡 Подсказка',hintNone:'Всё раскрашено! 🎉',hintYes:'Раскрасьте мигающую часть!',shareFail:'Сначала раскрасьте!',dailyTitle:'Бонус дня!',dailyDay:'Дней подряд: {n}',dailyBtn:'Забрать ⭐'});
-
+Object.assign(TEXT.en,{miniGames:'🎮 19 Mini Games',unlockAll:'Subscribe to all 19 games - $14.90/month',shopGame:'Monthly subscription: {game} for $1.90/month, or all 19 games for $14.90/month.',wordSearchFinishActivity:'Back to activities',magneticMaze:'Magnetic Maze',magneticInstruction:'Place a magnet around the edge, choose attract or repel, then activate it to move the steel ball. Avoid walls and holes, and reach the finish.',magneticStagesInstruction:'Each activity has 6 stages. Complete a stage to unlock the next; each stage has a larger board and more hazards.',magneticStageLabel:'Stage {n} · {difficulty}',magneticDifficulty1:'Easy',magneticDifficulty2:'Easy+',magneticDifficulty3:'Medium',magneticDifficulty4:'Tricky',magneticDifficulty5:'Hard',magneticDifficulty6:'Expert',magneticAttract:'Attract',magneticRepel:'Repel',magneticActivate:'Activate magnet',magneticBackToActivities:'Back to activities',magneticBackToStages:'Back to stages',magneticNextStage:'Next stage',magneticComplete:'Brilliant! You reached the finish.',magneticRestart:'Try again',magneticTurns:'Moves: {n}',magneticEdge:'The ball cannot roll off the board. Try another magnet.',magneticBlocked:'A wall blocks the ball. Choose another magnet.',magneticFall:'Oh no! The ball fell into a hole. Try the maze again.',magneticBall:'Steel ball',magneticGoal:'Finish',magneticHole:'Hole',magneticWall:'Wall',magneticNorth:'North edge',magneticEast:'East edge',magneticSouth:'South edge',magneticWest:'West edge',magneticPlace:'Place magnet on {side}, position {n}'});
+Object.assign(TEXT.he,{miniGames:'🎮 19 משחקי מיני',unlockAll:'מנוי לכל 19 המשחקים - $14.90 לחודש',shopGame:'תשלום חודשי: {game} ב־$1.90 לחודש, או כל 19 המשחקים ב־$14.90 לחודש.',wordSearchFinishActivity:'חזרה לפעילויות',magneticMaze:'מבוך מגנטי',magneticInstruction:'בחרו מיקום למגנט מסביב ללוח, בחרו משיכה או דחייה והפעילו אותו כדי להזיז את כדור המתכת. הימנעו מקירות ומבורות והגיעו לסיום.',magneticStagesInstruction:'בכל פעילות יש 6 שלבים. השלימו שלב כדי לפתוח את הבא; הלוח והאתגרים גדלים בכל שלב.',magneticStageLabel:'שלב {n} · {difficulty}',magneticDifficulty1:'קל',magneticDifficulty2:'קל+',magneticDifficulty3:'בינוני',magneticDifficulty4:'מאתגר',magneticDifficulty5:'קשה',magneticDifficulty6:'מומחים',magneticAttract:'משיכה',magneticRepel:'דחייה',magneticActivate:'הפעלת המגנט',magneticBackToActivities:'חזרה לפעילויות',magneticBackToStages:'חזרה לשלבים',magneticNextStage:'לשלב הבא',magneticComplete:'כל הכבוד! הגעתם לנקודת הסיום.',magneticRestart:'נסו שוב',magneticTurns:'צעדים: {n}',magneticEdge:'הכדור לא יכול לצאת מהלוח. נסו מגנט אחר.',magneticBlocked:'הכדור נתקל בקיר. בחרו מגנט אחר.',magneticFall:'אוי לא! הכדור נפל לבור. נסו שוב את המבוך.',magneticBall:'כדור מתכת',magneticGoal:'נקודת סיום',magneticHole:'בור',magneticWall:'קיר',magneticNorth:'הצד הצפוני',magneticEast:'הצד המזרחי',magneticSouth:'הצד הדרומי',magneticWest:'הצד המערבי',magneticPlace:'הנחת מגנט: {side}, מיקום {n}'});
+Object.assign(TEXT.ru,{miniGames:'🎮 19 мини-игр',unlockAll:'Подписка на все 19 игр - $14.90 в месяц',shopGame:'Ежемесячная подписка: игра «{game}» за $1.90 в месяц или все 19 игр за $14.90 в месяц.',wordSearchFinishActivity:'К заданиям',magneticMaze:'Магнитный лабиринт',magneticInstruction:'Выбери место для магнита у края поля, выбери притяжение или отталкивание и включи магнит, чтобы переместить стальной шарик. Избегай стен и ям и доберись до финиша.',magneticStagesInstruction:'В каждом задании 6 этапов. Пройди этап, чтобы открыть следующий; поле и число опасностей увеличиваются.',magneticStageLabel:'Этап {n} · {difficulty}',magneticDifficulty1:'Лёгкий',magneticDifficulty2:'Лёгкий+',magneticDifficulty3:'Средний',magneticDifficulty4:'Сложный',magneticDifficulty5:'Трудный',magneticDifficulty6:'Эксперт',magneticAttract:'Притянуть',magneticRepel:'Оттолкнуть',magneticActivate:'Включить магнит',magneticBackToActivities:'К заданиям',magneticBackToStages:'К этапам',magneticNextStage:'Следующий этап',magneticComplete:'Отлично! Ты добрался до финиша.',magneticRestart:'Попробовать ещё',magneticTurns:'Ходы: {n}',magneticEdge:'Шарик не может выкатиться за поле. Попробуй другой магнит.',magneticBlocked:'Шарик упёрся в стену. Выбери другой магнит.',magneticFall:'Ой! Шарик упал в яму. Попробуй лабиринт ещё раз.',magneticBall:'Стальной шарик',magneticGoal:'Финиш',magneticHole:'Яма',magneticWall:'Стена',magneticNorth:'Северный край',magneticEast:'Восточный край',magneticSouth:'Южный край',magneticWest:'Западный край',magneticPlace:'Поставить магнит: {side}, позиция {n}'});
+Object.assign(TEXT.en,{magneticHowToTitle:'How to play',magneticHowTo1:'Tap a dot on the edge of the board to place the magnet there.',magneticHowTo2:'Choose Attract to pull the ball one space toward the magnet, or Repel to push it one space away.',magneticHowTo3:'Follow the arrow to see the next move, then tap Activate. Avoid walls and holes and reach the flag.',magneticMovePreview:'Ball moves one space:'});
+Object.assign(TEXT.he,{magneticHowToTitle:'איך משחקים?',magneticHowTo1:'לחצו על נקודה בשולי הלוח כדי למקם שם את המגנט.',magneticHowTo2:'בחרו משיכה כדי להזיז את הכדור צעד אחד אל המגנט, או דחייה כדי להזיז אותו צעד אחד בכיוון ההפוך.',magneticHowTo3:'החץ מראה את הצעד הבא. לחצו על הפעלה, הימנעו מקירות ומבורות והגיעו לדגל.',magneticMovePreview:'הכדור יזוז צעד אחד:'});
+Object.assign(TEXT.ru,{magneticHowToTitle:'Как играть',magneticHowTo1:'Нажми на точку у края поля, чтобы поставить туда магнит.',magneticHowTo2:'Выбери притяжение, чтобы шарик сдвинулся на клетку к магниту, или отталкивание, чтобы сдвинуть его на клетку в обратную сторону.',magneticHowTo3:'Стрелка показывает следующий ход. Нажми «Включить», избегай стен и ям и доберись до флага.',magneticMovePreview:'Шарик сдвинется на клетку:'});
+Object.assign(TEXT.en,{magneticHowTo1:'Use the four arrow buttons to choose which way to move the ball.',magneticHowTo2:'The magnet pulls the ball one space in the selected direction.',magneticHowTo3:'Follow the preview arrow, then tap Activate. Avoid walls and holes and reach the flag.',magneticChooseDirection:'Choose a direction',magneticMoveUp:'Move up',magneticMoveDown:'Move down',magneticMoveLeft:'Move left',magneticMoveRight:'Move right'});
+Object.assign(TEXT.he,{magneticHowTo1:'בחרו באחד מארבעת החצים כדי לקבוע לאיזה כיוון להזיז את הכדור.',magneticHowTo2:'המגנט ימשוך את הכדור צעד אחד בכיוון שנבחר.',magneticHowTo3:'בדקו את חץ התצוגה המקדימה ולחצו על הפעלה. הימנעו מקירות ומבורות והגיעו לדגל.',magneticChooseDirection:'בחירת כיוון',magneticMoveUp:'למעלה',magneticMoveDown:'למטה',magneticMoveLeft:'שמאלה',magneticMoveRight:'ימינה'});
+Object.assign(TEXT.ru,{magneticHowTo1:'Выбери одно из четырёх направлений, чтобы переместить шарик.',magneticHowTo2:'Магнит притянет шарик на одну клетку в выбранном направлении.',magneticHowTo3:'Проверь стрелку предпросмотра и нажми «Включить». Избегай стен и ям и доберись до флага.',magneticChooseDirection:'Выбери направление',magneticMoveUp:'Вверх',magneticMoveDown:'Вниз',magneticMoveLeft:'Влево',magneticMoveRight:'Вправо'});
 /* zoom + pan: pinch, mouse wheel, +/- buttons, hand tool */
 var pendFill=null;
 const zm=(()=>{

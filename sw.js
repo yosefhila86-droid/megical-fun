@@ -1,6 +1,6 @@
 'use strict';
 
-const CACHE_NAME='megical-fun-shell-v1';
+const CACHE_NAME='magical-fun-shell-v4';
 const APP_ROOT=new URL('./',self.registration.scope);
 const APP_SHELL=[
   APP_ROOT.href,
@@ -27,7 +27,7 @@ self.addEventListener('install',event=>{
 
 self.addEventListener('activate',event=>{
   event.waitUntil(caches.keys().then(keys=>Promise.all(
-    keys.filter(key=>key.startsWith('megical-fun-')&&key!==CACHE_NAME).map(key=>caches.delete(key))
+    keys.filter(key=>(key.startsWith('megical-fun-')||key.startsWith('magical-fun-'))&&key!==CACHE_NAME).map(key=>caches.delete(key))
   )).then(()=>self.clients.claim()));
 });
 
