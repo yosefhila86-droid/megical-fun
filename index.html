@@ -311,7 +311,7 @@ video{width:100%;max-width:420px;border-radius:16px;background:#222;display:bloc
 <div class="modal" id="parentM"><div class="box">
   <div style="font-size:40px">👪</div><h3 data-i18n="parentDashboard">Parent dashboard</h3>
   <section class="parent-section"><h4 data-i18n="timeLimitTitle">Daily play-time limit</h4><p id="parentUsage"></p><label for="dailyLimit" data-i18n="dailyLimitLabel">Daily limit</label><select id="dailyLimit" onchange="saveDailyLimit(this.value)" style="width:100%;margin-top:8px"><option value="0" data-i18n="unlimited">No limit</option><option value="15" data-i18n="limit15">15 minutes</option><option value="30" data-i18n="limit30">30 minutes</option><option value="45" data-i18n="limit45">45 minutes</option><option value="60" data-i18n="limit60">60 minutes</option><option value="90" data-i18n="limit90">90 minutes</option><option value="120" data-i18n="limit120">120 minutes</option></select></section>
-  <section class="parent-section"><h4 data-i18n="purchaseManagement">Purchase management</h4><p id="parentPurchases"></p><button class="alt" onclick="openParentPurchaseOptions()" data-i18n="viewPurchaseOptions">View purchase options</button></section>
+  <section class="parent-section"><h4 data-i18n="purchaseManagement">Purchase management</h4><p id="parentPurchases"></p><button class="alt" onclick="openParentPurchaseOptions()" data-i18n="viewPurchaseOptions">View purchase options</button><button id="restorePurchasesButton" class="ghost" hidden onclick="restorePurchases()"></button><button id="managePurchasesButton" class="ghost" hidden onclick="managePurchases()"></button></section>
   <p><a id="parentPrivacyLink" href="./privacy.html?lang=en" data-i18n="privacyPolicyLink">Privacy policy</a> · <a id="parentDeleteAccountLink" href="./delete-account.html?lang=en" data-i18n="deleteAccountLink">Request account deletion</a></p>
   <button class="ghost" onclick="closeParentDashboard()" data-i18n="close">✖ Close</button>
 </div></div>
@@ -330,9 +330,9 @@ video{width:100%;max-width:420px;border-radius:16px;background:#222;display:bloc
 <div class="modal" id="vipM"><div class="box">
   <div style="font-size:48px">👑</div><h3 data-i18n="parentsOnly">Parents only</h3>
   <p id="shopText"></p>
-  <button class="alt" onclick="purchaseUnavailable()" data-i18n="purchase">Purchase</button>
-  <button class="ghost" onclick="purchaseAllUnavailable()" data-i18n="unlockAll">Subscribe to all games - $14.90/month</button>
-  <p data-i18n="paymentPending">Payments are not set up yet. No charge will be made.</p>
+  <button id="purchaseGameButton" class="alt" onclick="purchaseUnavailable()" data-i18n="purchase">Purchase</button>
+  <button id="purchaseAllButton" class="ghost" onclick="purchaseAllUnavailable()" data-i18n="unlockAll">Subscribe to all games - $14.90/month</button>
+  <p id="purchaseMessage" data-i18n="paymentPending">Payments are not set up yet. No charge will be made.</p>
   <button class="ghost" onclick="closeM('vipM')" data-i18n="cancel">Cancel</button>
 </div></div>
 
@@ -655,6 +655,7 @@ function setLanguage(language){
   if($('#games').classList.contains('on'))renderMiniGames();
   if($('#profile').classList.contains('on'))renderProfile();
   if($('#parentM').classList.contains('on'))renderParentDashboard();
+  if(typeof BILLING_ENABLED!=='undefined'&&BILLING_ENABLED&&$('#vipM').classList.contains('on'))loadBillingPrices();
   if($('#drawIdea')&&miniGameScene==='play')$('#drawIdea').textContent=DRAWING_IDEAS[currentLanguage][selectedLevel%DRAWING_IDEAS[currentLanguage].length];
   if($('#paint').classList.contains('on'))refreshTools();
   if($('#items').classList.contains('on'))openCat(curCat);
@@ -677,6 +678,8 @@ let currentUserId = 'guest';
 let S = {name:'Guest',av:'🐶',stars:0,vip:false,art:[],custom:[],music:true,track:'auto',vol:0.6,language:currentLanguage,unlockedGames:[],allGamesUnlocked:false,completedEscapeRooms:[],completedPuzzleStars:[],dailyUsageDate:'',dailyUsageSeconds:0,dailyLimitMinutes:0};
 let supabaseClient=null,authBusy=false,currentAuthUserId=null,authChoiceMade=false;
 let usageTimer=null,usageStartedAt=null,pendingParentAction=null;
+const BILLING_ENABLED=false;
+let billingAccess=[],billingVerifiedAt=0,billingRefreshTimer=null,billingBusy=false,billingPrices={};
 function defaultUserData(name){
   return {name,av:'🐶',stars:0,vip:false,art:[],custom:[],music:true,track:'auto',vol:0.6,language:currentLanguage,unlockedGames:[],allGamesUnlocked:false,completedEscapeRooms:[],completedPuzzleStars:[],dailyUsageDate:'',dailyUsageSeconds:0,dailyLimitMinutes:0};
 }
@@ -1031,6 +1034,7 @@ function setAuthError(field,key){
   if(field==='both')$('#aEmail').focus();
 }
 function guest(){
+  clearBillingAccess();
   authChoiceMade=true;currentAuthUserId=null;loadUserData('Guest');
   S.vip=false;S.allGamesUnlocked=false;S.unlockedGames=[];sv();go('games');
 }
@@ -1046,6 +1050,7 @@ async function enterAccount(user){
   S.allGamesUnlocked=data.all_games===true;
   S.unlockedGames=Array.isArray(data.unlocked_games)?data.unlocked_games:[];
   currentAuthUserId=user.id;sv();go('games');
+  if(BILLING_ENABLED)restorePurchases(true);
 }
 async function authGo(){
   if(authBusy)return;
@@ -1091,7 +1096,7 @@ async function logout(){
     const {error}=await supabaseClient.auth.signOut();
     if(error){console.error('Could not sign out:',error);toast(error.message);return}
   }
-  currentAuthUserId=null;loadUserData('Guest');go('welcome');
+  clearBillingAccess();currentAuthUserId=null;loadUserData('Guest');go('welcome');
 }
 function loadSupabaseLibrary(){
   if(window.supabase&&typeof window.supabase.createClient==='function')return Promise.resolve();
@@ -1451,7 +1456,11 @@ const ACTIVITY_NAMES={
   }
 };
 let selectedMiniGame=null,selectedLevel=0,miniGameScene='menu',pendingPurchaseGame=null,coloringLaunch=false;
-function gameUnlocked(id){return S.allGamesUnlocked===true||S.vip===true||S.unlockedGames.includes(id)}
+function gameUnlocked(id){
+  return S.allGamesUnlocked===true||S.vip===true||S.unlockedGames.includes(id)
+    || (BILLING_ENABLED&&currentAuthUserId&&Date.now()-billingVerifiedAt<300000
+      &&billingAccess.some(item=>item.expiresAt>Date.now()&&(item.gameId===null||item.gameId===id)));
+}
 function renderMiniGames(){
   renderMiniGameCards($('#miniGameGrid'));
 }
@@ -3252,7 +3261,9 @@ function renderParentDashboard(){
   const used=Math.floor(S.dailyUsageSeconds/60),limit=S.dailyLimitMinutes;
   $('#parentUsage').textContent=limit?tr('minutesUsed',{used,limit}):tr('minutesUnlimited',{used});
   $('#dailyLimit').value=String(limit);
-  $('#parentPurchases').textContent=`${tr('purchaseStatus',{vip:S.vip?tr('active'):tr('freeLabel'),games:S.unlockedGames.length,all:S.allGamesUnlocked?tr('active'):tr('notUnlocked')})} ${tr('purchaseUnavailableNote')}`;
+  $('#parentPurchases').textContent=`${tr('purchaseStatus',{vip:S.vip?tr('active'):tr('freeLabel'),games:S.unlockedGames.length,all:S.allGamesUnlocked?tr('active'):tr('notUnlocked')})} ${BILLING_ENABLED?billingText('status'):tr('purchaseUnavailableNote')}`;
+  $('#restorePurchasesButton').hidden=!BILLING_ENABLED;$('#managePurchasesButton').hidden=!BILLING_ENABLED;
+  $('#restorePurchasesButton').textContent=billingText('restore');$('#managePurchasesButton').textContent=billingText('manage');
 }
 function openParentDashboard(){
   renderParentDashboard();$('#parentM').classList.add('on');
@@ -3287,6 +3298,7 @@ function selectParentPurchaseGame(id){
   $('#shopText').textContent=tr('shopGame',{game:tr(game.name)});
   closeM('gamePurchaseM');
   $('#vipM').classList.add('on');
+  if(BILLING_ENABLED)loadBillingPrices();
 }
 function makeChoices(answer,min,max){
   min=Math.max(0,Math.min(min,answer-3));
@@ -3410,6 +3422,175 @@ function nextTraceLetter(){
 }
 
 /* ---------- parental gate & VIP ---------- */
+const BILLING_PRODUCTS={
+  coloring:'game_coloring_monthly',puzzle:'game_puzzle_monthly',logicQuest:'game_logic_quest_monthly',
+  differences:'game_differences_monthly',memory:'game_memory_monthly',math:'game_math_monthly',
+  words:'game_words_monthly',letters:'game_letters_monthly',storyMath:'game_story_math_monthly',
+  patterns:'game_patterns_monthly',riddles:'game_riddles_monthly',scienceQuest:'game_science_quest_monthly',
+  escapeRoom:'game_escape_room_monthly',physicsPaths:'game_physics_paths_monthly',
+  gridSokoban:'game_grid_sokoban_monthly',codeBreaker:'game_code_breaker_monthly',
+  railwayControl:'game_railway_control_monthly',wordSearch:'game_word_search_monthly',
+  magneticMaze:'game_magnetic_maze_monthly'
+};
+const BILLING_TEXT={
+  en:{restore:'Restore purchases',manage:'Manage subscriptions',status:'Subscriptions are verified with Google Play.',
+    selection:'Select a subscription for {game} or all games.',
+    loading:'Checking prices in Google Play…',signIn:'Sign in with a registered account before subscribing.',
+    unavailable:'Google Play purchases are unavailable. Try again on Android.',error:'Could not verify purchases. Check your connection and try again.',
+    restored:'Purchases checked.',pending:'Payment is pending. Access starts after Google confirms it.',
+    purchased:'Purchase verified.',changed:'Price or subscription status changed. Please check and try again.',
+    monthly:'{price} per month',single:'Subscribe to this game: {price} per month',
+    all:'Subscribe to all games: {price} per month',
+    terms:'Renews monthly until canceled. Manage or cancel in Google Play. A switch from one game may charge a prorated difference immediately. If you have multiple game subscriptions, manage them first; access already paid for remains until expiry.',
+    mismatch:'Your app account has subscriptions not found in this Google Play account. Switch to the Google Play account used for the purchase and restore.',
+    multiple:'Cancel renewal of the other game subscriptions in Google Play before upgrading. Paid access remains until each subscription expires.'},
+  he:{restore:'שחזור רכישות',manage:'ניהול מינויים',status:'המינויים מאומתים מול Google Play.',
+    selection:'בחרו מינוי למשחק {game} או לכל המשחקים.',
+    loading:'בודקים מחירים ב־Google Play…',signIn:'יש להירשם או להתחבר לחשבון לפני רכישה.',
+    unavailable:'הרכישות אינן זמינות. נסו שוב באפליקציית Android.',error:'לא ניתן לאמת את הרכישות. בדקו את החיבור ונסו שוב.',
+    restored:'בדיקת הרכישות הסתיימה.',pending:'התשלום ממתין לאישור. הגישה תיפתח אחרי אישור Google.',
+    purchased:'הרכישה אומתה.',changed:'המחיר או מצב המינוי השתנו. בדקו ונסו שוב.',
+    monthly:'{price} לחודש',single:'מינוי למשחק הזה: {price} לחודש',
+    all:'מינוי לכל המשחקים: {price} לחודש',
+    terms:'המינוי מתחדש מדי חודש עד לביטול דרך Google Play. מעבר ממינוי למשחק אחד עשוי לחייב מיד את ההפרש היחסי. אם יש כמה מינויים למשחקים, יש לנהל אותם תחילה; הגישה ששולמה נשארת עד תום התקופה.',
+    mismatch:'בחשבון האפליקציה יש מינויים שלא נמצאו בחשבון Google Play הנוכחי. עברו לחשבון שביצע את הרכישה ושחזרו.',
+    multiple:'לפני השדרוג יש לבטל את החידוש של שאר המינויים למשחקים ב־Google Play. הגישה ששולמה תישאר עד סוף כל תקופה.'},
+  ru:{restore:'Восстановить покупки',manage:'Управлять подписками',status:'Подписки проверяются через Google Play.',
+    selection:'Выберите подписку на игру «{game}» или на все игры.',
+    loading:'Проверяем цены в Google Play…',signIn:'Перед покупкой войдите в зарегистрированный аккаунт.',
+    unavailable:'Покупки Google Play недоступны. Попробуйте в приложении Android.',error:'Не удалось проверить покупки. Проверьте подключение и повторите.',
+    restored:'Покупки проверены.',pending:'Платёж ожидает подтверждения Google; доступ откроется после подтверждения.',
+    purchased:'Покупка подтверждена.',changed:'Цена или состояние подписки изменились. Проверьте и повторите.',
+    monthly:'{price} в месяц',single:'Подписка на эту игру: {price} в месяц',
+    all:'Подписка на все игры: {price} в месяц',
+    terms:'Подписка продлевается ежемесячно до отмены в Google Play. При переходе с одной игры разница может быть списана сразу. Если у вас несколько подписок, сначала управляйте ими; оплаченный доступ сохраняется до конца периода.',
+    mismatch:'В аккаунте приложения есть подписки, которых нет в текущем аккаунте Google Play. Переключитесь на исходный аккаунт и восстановите покупки.',
+    multiple:'Перед переходом отключите продление остальных подписок на игры в Google Play. Оплаченный доступ сохранится до конца периода.'}
+};
+function billingText(key,values={}){
+  return (BILLING_TEXT[currentLanguage][key]||BILLING_TEXT.en[key]).replace(/\{(\w+)\}/g,(_,name)=>values[name]??'');
+}
+function billingPlugins(){
+  const c=window.Capacitor;
+  return c&&c.getPlatform&&c.getPlatform()==='android'&&c.Plugins?c.Plugins:null;
+}
+function clearBillingAccess(){
+  billingAccess=[];billingVerifiedAt=0;billingPrices={};
+  if(billingRefreshTimer!==null)clearTimeout(billingRefreshTimer);
+  billingRefreshTimer=null;
+}
+function repaintBilling(){
+  if($('#parentM').classList.contains('on'))renderParentDashboard();
+  if($('#gameStage').classList.contains('on')&&miniGameScene==='levels')renderGameLevels();
+}
+async function callBillingServer(body,userId){
+  const {data,error}=await supabaseClient.functions.invoke('verify-play-purchase',{body});
+  if(error)throw error;
+  if(userId!==currentAuthUserId)throw new Error('Account changed while checking subscriptions.');
+  return data;
+}
+async function refreshBillingAccess(userId){
+  const data=await callBillingServer({action:'sync'},userId);
+  if(!data||!Array.isArray(data.subscriptions))throw new Error('Invalid subscription response.');
+  const access=[];
+  for(const subscription of data.subscriptions){
+    if(!Array.isArray(subscription.items))throw new Error('Invalid subscription items.');
+    for(const item of subscription.items){
+      if(item.grantsAccess===true&&Number.isFinite(item.expiresAt)&&item.expiresAt>Date.now()
+        &&(item.gameId===null||Object.hasOwn(BILLING_PRODUCTS,item.gameId)))access.push(item);
+    }
+  }
+  billingAccess=access;billingVerifiedAt=Date.now();
+  if(billingRefreshTimer!==null)clearTimeout(billingRefreshTimer);
+  billingRefreshTimer=setTimeout(()=>restorePurchases(true),240000);
+  repaintBilling();
+}
+async function restorePurchases(quiet=false){
+  if(!BILLING_ENABLED||billingBusy)return false;
+  const plugins=billingPlugins(),userId=currentAuthUserId;
+  if(!userId||!supabaseClient){if(!quiet)toast(billingText('signIn'));return false}
+  if(!plugins||!plugins.BillingCatalog){if(!quiet)toast(billingText('unavailable'));return false}
+  billingBusy=true;
+  try{
+    const owned=await plugins.BillingCatalog.queryOwnedSubscriptions();
+    if(!owned||!Array.isArray(owned.subscriptions))throw new Error('Invalid Google Play response.');
+    for(const purchase of owned.subscriptions){
+      if(typeof purchase.purchaseToken!=='string')throw new Error('Invalid Google Play purchase.');
+      await callBillingServer({purchaseToken:purchase.purchaseToken},userId);
+    }
+    await refreshBillingAccess(userId);
+    if(!quiet)toast(billingText('restored'));
+    return true;
+  }catch(error){
+    if(userId===currentAuthUserId){
+      clearBillingAccess();repaintBilling();toast(billingText('error'));
+      billingRefreshTimer=setTimeout(()=>restorePurchases(true),30000);
+    }
+    console.error('Subscription verification failed:',error);return false;
+  }finally{billingBusy=false}
+}
+async function managePurchases(){
+  const plugins=billingPlugins();
+  if(!BILLING_ENABLED||!plugins||!plugins.BillingPurchase){toast(billingText('unavailable'));return}
+  try{await plugins.BillingPurchase.manageSubscriptions()}catch(error){console.error('Subscription management failed:',error);toast(billingText('unavailable'))}
+}
+async function loadBillingPrices(){
+  const plugins=billingPlugins(),gameId=pendingPurchaseGame;
+  billingPrices={};$('#purchaseGameButton').disabled=true;$('#purchaseAllButton').disabled=true;
+  const game=MINI_GAMES.find(item=>item.id===gameId);
+  $('#shopText').textContent=billingText('selection',{game:game?tr(game.name):''});
+  $('#purchaseGameButton').textContent=billingText('loading');$('#purchaseAllButton').textContent=billingText('loading');
+  $('#purchaseMessage').textContent=billingText('loading');
+  if(!currentAuthUserId){$('#purchaseMessage').textContent=billingText('signIn');return}
+  if(!plugins||!plugins.BillingCatalog||!plugins.BillingPurchase){$('#purchaseMessage').textContent=billingText('unavailable');return}
+  const ids=[BILLING_PRODUCTS[gameId],'all_games_monthly'].filter(Boolean);
+  try{
+    const result=await plugins.BillingCatalog.querySubscriptions({productIds:ids});
+    if(gameId!==pendingPurchaseGame||!$('#vipM').classList.contains('on'))return;
+    for(const product of result.products){
+      const offers=product.offers.filter(offer=>offer.basePlanId==='monthly'&&offer.offerId==null
+        &&offer.pricingPhases.length===1&&offer.pricingPhases[0].billingPeriod==='P1M'
+        &&offer.pricingPhases[0].recurrenceMode===1);
+      if(offers.length===1){
+        const phase=offers[0].pricingPhases[0];
+        if(typeof phase.formattedPrice==='string'&&typeof phase.currencyCode==='string'
+          &&Number.isSafeInteger(phase.priceAmountMicros)&&phase.priceAmountMicros>=0)billingPrices[product.productId]=phase;
+      }
+    }
+    const gamePrice=billingPrices[BILLING_PRODUCTS[gameId]],allPrice=billingPrices.all_games_monthly;
+    $('#purchaseGameButton').disabled=!gamePrice;$('#purchaseAllButton').disabled=!allPrice;
+    $('#purchaseGameButton').textContent=gamePrice?billingText('single',{price:gamePrice.formattedPrice}):billingText('unavailable');
+    $('#purchaseAllButton').textContent=allPrice?billingText('all',{price:allPrice.formattedPrice}):billingText('unavailable');
+    $('#purchaseMessage').textContent=billingText('terms');
+  }catch(error){console.error('Could not load Google Play prices:',error);$('#purchaseMessage').textContent=billingText('unavailable')}
+}
+async function startSubscription(gameId){
+  if(billingBusy)return;
+  const userId=currentAuthUserId,plugins=billingPlugins(),productId=gameId===null?'all_games_monthly':BILLING_PRODUCTS[gameId];
+  if(!userId||!supabaseClient){toast(billingText('signIn'));return}
+  if(!plugins||!plugins.BillingPurchase||!billingPrices[productId]){toast(billingText('unavailable'));return}
+  if(!await restorePurchases(true))return;
+  billingBusy=true;
+  try{
+    const owned=await plugins.BillingCatalog.queryOwnedSubscriptions();
+    if(userId!==currentAuthUserId)throw new Error('Account changed.');
+    const ownedProducts=new Set(owned.subscriptions.flatMap(purchase=>purchase.productIds));
+    if(billingAccess.some(item=>!ownedProducts.has(item.productId))){toast(billingText('mismatch'));return}
+    const price=billingPrices[productId];
+    const result=await plugins.BillingPurchase.purchase({productId,userId,expectedPrice:price.formattedPrice,
+      expectedCurrency:price.currencyCode,expectedMicros:price.priceAmountMicros});
+    if(userId!==currentAuthUserId)throw new Error('Account changed.');
+    await callBillingServer({purchaseToken:result.purchaseToken},userId);
+    await refreshBillingAccess(userId);
+    toast(result.purchaseState===2?billingText('pending'):billingText('purchased'));
+    closeM('vipM');
+  }catch(error){
+    console.error('Subscription purchase failed:',error);
+    if(error.code==='MULTIPLE_SUBSCRIPTIONS')toast(billingText('multiple'));
+    else if(error.code==='ACCOUNT_MISMATCH')toast(billingText('mismatch'));
+    else if(error.code!=='PURCHASE_CANCELED')toast(billingText('changed'));
+  }finally{billingBusy=false}
+}
 function gateOk(){
   const y=parseInt($('#gYear').value,10);
   if(!(y>=1900&&y<=new Date().getFullYear()-18)){$('#gErr').textContent=tr('adultError');return}
@@ -3420,9 +3601,10 @@ function gateOk(){
   const game=MINI_GAMES.find(item=>item.id===pendingPurchaseGame);
   $('#shopText').textContent=tr('shopGame',{game:game?tr(game.name):tr('coloring')});
   $('#vipM').classList.add('on');
+  if(BILLING_ENABLED)loadBillingPrices();
 }
-function purchaseUnavailable(){toast(tr('paymentUnavailable'))}
-function purchaseAllUnavailable(){toast(tr('paymentUnavailable'))}
+function purchaseUnavailable(){if(BILLING_ENABLED)startSubscription(pendingPurchaseGame);else toast(tr('paymentUnavailable'))}
+function purchaseAllUnavailable(){if(BILLING_ENABLED)startSubscription(null);else toast(tr('paymentUnavailable'))}
 
 /* ---------- line-art engine ---------- */
 function blurPlane(a,r){
