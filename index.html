@@ -71,9 +71,9 @@ video{width:100%;max-width:420px;border-radius:16px;background:#222;display:bloc
 .err{color:#d00;min-height:20px;font-size:14px}
 #paint{position:relative;overflow-y:auto;max-height:calc(100vh - 120px);padding-bottom:60px}
 #cv{max-width:320px;max-height:320px;width:100%;height:auto;margin:0 auto;display:block}
-.nav-btn{position:absolute;top:50%;transform:translateY(-50%);direction:ltr;unicode-bidi:isolate;background:#7c4dff;color:#fff;border:0;border-radius:50%;width:44px;height:44px;font-size:20px;font-weight:bold;cursor:pointer;box-shadow:0 4px 10px rgba(0,0,0,.2);z-index:100}
-.prev-btn{left:10px}
-.next-btn{right:10px}
+.paint-item-nav{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:12px auto;max-width:400px}
+.paint-item-nav[hidden]{display:none}
+.paint-item-nav button{flex:1 1 140px;min-width:0}
 .snd-grid{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:6px 0}
 .snd-opt{background:#ece6ff;color:#3b2a66;padding:10px 14px;border-radius:16px}
 .snd-opt.on{background:#7c4dff;color:#fff;box-shadow:0 0 0 3px #c9b8ff}
@@ -263,8 +263,11 @@ video{width:100%;max-width:420px;border-radius:16px;background:#222;display:bloc
   <div class="sizes dim" id="sizes"></div>
   <div class="hint" id="hint"></div>
 <div id="cvWrap" style="width:min(92vw,400px);margin:0 auto;overflow:hidden;border-radius:16px;touch-action:none"><canvas id="cv" width="512" height="512" style="display:block;width:100%;height:auto;transform-origin:0 0;touch-action:none"></canvas></div>
-<div class="tools" style="margin:6px auto"><button class="ghost" onclick="zm.by(1.4)" aria-label="Zoom in">＋</button><button class="ghost" onclick="zm.by(1/1.4)" aria-label="Zoom out">－</button><button class="ghost" id="bPan" onclick="zm.togglePan()" aria-label="Move">✋</button><button class="ghost" onclick="zm.reset()" aria-label="Reset zoom">↺</button></div>  <button id="paintPrevItem" class="nav-btn prev-btn" onclick="navItem(-1)">❮</button>
-<button id="paintNextItem" class="nav-btn next-btn" onclick="navItem(1)">❯</button>
+  <div id="paintItemNav" class="paint-item-nav">
+    <button id="paintPrevItem" class="ghost" onclick="navItem(-1)" data-i18n="previousColoringPicture">Previous picture</button>
+    <button id="paintNextItem" class="ghost" onclick="navItem(1)" data-i18n="nextColoringPicture">Next picture</button>
+  </div>
+  <div class="tools" style="margin:6px auto"><button class="ghost" onclick="zm.by(1.4)" aria-label="Zoom in">＋</button><button class="ghost" onclick="zm.by(1/1.4)" aria-label="Zoom out">－</button><button class="ghost" id="bPan" onclick="zm.togglePan()" aria-label="Move">✋</button><button class="ghost" onclick="zm.reset()" aria-label="Reset zoom">↺</button></div>
   <div>
     <button class="ghost" onclick="undo()" data-i18n="undo">↩️ Undo</button>
     <button class="ghost" onclick="clearArt()">🗑️ <span data-i18n="clear">Clear</span></button>
@@ -639,7 +642,7 @@ Object.assign(TEXT.en,{chooseGameToUnlock:'Choose a game to unlock',purchaseGame
   purchaseOptionsTitle:'Game access and purchase options',purchaseOptionsAll:'All games are unlocked. The list below shows your access; no game needs to be purchased.',
   purchaseOptionsSome:'Choose a locked game to see its purchase options. Games marked as unlocked are already available.',
   codeActivityIntro:'The activities use the same board and rules. Each activity has a different secret color sequence to solve.',
-  coloringCategories:'Coloring Categories'});
+  coloringCategories:'Coloring Categories',previousColoringPicture:'Previous picture',nextColoringPicture:'Next picture'});
 Object.assign(TEXT.he,{chooseGameToUnlock:'בחרו משחק לפתיחה',purchaseGameAlreadyUnlocked:'כבר פתוח',
   purchaseAreaIntro:'זהו אזור הגישה למשחקים ואפשרויות המינוי. סמל מנעול מציין שיש במשחק תוכן שעדיין לא פתוח.',
   vipAccessNotice:'הרשאת VIP פעילה בחשבון הזה: כל המשחקים והפעילויות פתוחים. אין צורך ברכישה נוספת כדי לשחק. הרשאת VIP אינה מעידה אם קיים מינוי נפרד ב־Google Play; לניהול או ביטול מינוי יש לבדוק ב־Google Play.',
@@ -647,7 +650,7 @@ Object.assign(TEXT.he,{chooseGameToUnlock:'בחרו משחק לפתיחה',purch
   purchaseOptionsTitle:'גישה למשחקים ואפשרויות רכישה',purchaseOptionsAll:'כל המשחקים פתוחים. הרשימה מציגה את הגישה שלכם; אין צורך לרכוש משחק.',
   purchaseOptionsSome:'בחרו משחק נעול כדי לראות את אפשרויות הרכישה שלו. משחקים המסומנים כפתוחים כבר זמינים.',
   codeActivityIntro:'בכל הפעילויות הלוח וכללי המשחק זהים. בכל פעילות יש רצף צבעים סודי שונה לפיצוח.',
-  coloringCategories:'קטגוריות צביעה'});
+  coloringCategories:'קטגוריות צביעה',previousColoringPicture:'לתמונה הקודמת',nextColoringPicture:'לתמונה הבאה'});
 Object.assign(TEXT.ru,{chooseGameToUnlock:'Выберите игру для открытия',purchaseGameAlreadyUnlocked:'Уже открыта',
   purchaseAreaIntro:'Здесь показан доступ к играм и варианты подписки. Замок означает, что часть содержимого игры ещё не открыта.',
   vipAccessNotice:'VIP активен в этом аккаунте приложения: все игры и задания открыты. Для доступа дополнительная покупка не нужна. Статус VIP не показывает, есть ли отдельная подписка Google Play; проверьте её управление или отмену в Google Play.',
@@ -655,7 +658,7 @@ Object.assign(TEXT.ru,{chooseGameToUnlock:'Выберите игру для от
   purchaseOptionsTitle:'Доступ к играм и варианты покупки',purchaseOptionsAll:'Все игры открыты. Ниже показан ваш доступ; покупать игры не нужно.',
   purchaseOptionsSome:'Выберите закрытую игру, чтобы увидеть варианты покупки. Игры с отметкой «Уже открыта» доступны.',
   codeActivityIntro:'Во всех заданиях одинаковые поле и правила. В каждом нужно разгадать свою секретную последовательность цветов.',
-  coloringCategories:'Категории раскрасок'});
+  coloringCategories:'Категории раскрасок',previousColoringPicture:'Предыдущая картинка',nextColoringPicture:'Следующая картинка'});
 let currentLanguage='en';
 try{currentLanguage=localStorage.getItem('megical_language')||'en'}catch(e){console.error('Could not read language preference:',e)}
 function tr(key,values={}){
@@ -4281,9 +4284,8 @@ function showPaintResult(r,from){
   setMode('fill');go('paint');
 }
 function setPhotoPaintControls(isPhoto){
-  ['#paintPrevItem','#paintNextItem','#downloadPaint'].forEach(selector=>{
-    $(selector).style.display=isPhoto?'none':'';
-  });
+  $('#paintItemNav').hidden=isPhoto;
+  $('#downloadPaint').style.display=isPhoto?'none':'';
 }
 async function startPaint(src,opt,from){
   toast('✨ Making magic…');
