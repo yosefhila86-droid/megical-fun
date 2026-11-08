@@ -210,6 +210,8 @@ video{width:100%;max-width:420px;border-radius:16px;background:#222;display:bloc
 .parent-section{background:#f8f5ff;border-radius:16px;padding:12px;margin:12px 0;text-align:start}
 .parent-section h4{margin:4px 0 8px}
 .parent-section p{margin:6px 0}
+.access-notice{background:#e2f8e9;border:2px solid #65b77d;border-radius:14px;padding:10px;font-weight:700}
+.parent-section button{max-width:100%;overflow-wrap:anywhere}
 [dir=rtl] .lock{right:auto;left:6px}
 </style>
 </head>
@@ -316,7 +318,7 @@ video{width:100%;max-width:420px;border-radius:16px;background:#222;display:bloc
 <div class="modal" id="parentM"><div class="box">
   <div style="font-size:40px">👪</div><h3 data-i18n="parentDashboard">Parent dashboard</h3>
   <section class="parent-section"><h4 data-i18n="timeLimitTitle">Daily play-time limit</h4><p id="parentUsage"></p><label for="dailyLimit" data-i18n="dailyLimitLabel">Daily limit</label><select id="dailyLimit" onchange="saveDailyLimit(this.value)" style="width:100%;margin-top:8px"><option value="0" data-i18n="unlimited">No limit</option><option value="15" data-i18n="limit15">15 minutes</option><option value="30" data-i18n="limit30">30 minutes</option><option value="45" data-i18n="limit45">45 minutes</option><option value="60" data-i18n="limit60">60 minutes</option><option value="90" data-i18n="limit90">90 minutes</option><option value="120" data-i18n="limit120">120 minutes</option></select></section>
-  <section class="parent-section"><h4 data-i18n="purchaseManagement">Purchase management</h4><p id="parentPurchases"></p><button class="alt" onclick="openParentPurchaseOptions()" data-i18n="viewPurchaseOptions">View purchase options</button><button id="restorePurchasesButton" class="ghost" hidden onclick="restorePurchases()"></button><button id="managePurchasesButton" class="ghost" hidden onclick="managePurchases()"></button></section>
+  <section class="parent-section"><h4 data-i18n="purchaseManagement">Purchase management</h4><p data-i18n="purchaseAreaIntro"></p><p id="parentAccessNotice" class="access-notice" role="status" hidden></p><p id="parentPurchases"></p><button class="alt" onclick="openParentPurchaseOptions()" data-i18n="viewPurchaseOptions">View purchase options</button><button id="restorePurchasesButton" class="ghost" hidden onclick="restorePurchases()"></button><button id="managePurchasesButton" class="ghost" hidden onclick="managePurchases()"></button></section>
   <p><a id="parentPrivacyLink" href="./privacy.html?lang=en" data-i18n="privacyPolicyLink">Privacy policy</a> · <a id="parentDeleteAccountLink" href="./delete-account.html?lang=en" data-i18n="deleteAccountLink">Request account deletion</a></p>
   <button class="ghost" onclick="closeParentDashboard()" data-i18n="close">✖ Close</button>
 </div></div>
@@ -327,13 +329,14 @@ video{width:100%;max-width:420px;border-radius:16px;background:#222;display:bloc
 </div></div>
 
 <div class="modal" id="gamePurchaseM"><div class="box">
-  <div style="font-size:40px">🎮</div><h3 data-i18n="chooseGameToUnlock">Choose a game to unlock</h3>
+  <div style="font-size:40px">🎮</div><h3 data-i18n="purchaseOptionsTitle">Purchase options and access</h3>
+  <p id="purchaseOptionsNotice" aria-live="polite"></p>
   <div id="purchaseGameList" class="level-grid"></div>
   <button class="ghost" onclick="closeM('gamePurchaseM')" data-i18n="cancel">Cancel</button>
 </div></div>
 
 <div class="modal" id="vipM"><div class="box">
-  <div style="font-size:48px">👑</div><h3 data-i18n="parentsOnly">Parents only</h3>
+  <div style="font-size:48px">👑</div><h3 data-i18n="purchaseManagement">Purchase management</h3>
   <p id="shopText"></p>
   <button id="purchaseGameButton" class="alt" onclick="purchaseUnavailable()" data-i18n="purchase">Purchase</button>
   <button id="purchaseAllButton" class="ghost" onclick="purchaseAllUnavailable()" data-i18n="unlockAll">Subscribe to all games - $14.90/month</button>
@@ -629,9 +632,30 @@ Object.assign(TEXT.ru,{privacyPolicyLink:'Политика конфиденци�
 Object.assign(TEXT.en,{deleteAccountLink:'Request account deletion'});
 Object.assign(TEXT.he,{deleteAccountLink:'בקשה למחיקת חשבון'});
 Object.assign(TEXT.ru,{deleteAccountLink:'Запросить удаление аккаунта'});
-Object.assign(TEXT.en,{chooseGameToUnlock:'Choose a game to unlock',purchaseGameAlreadyUnlocked:'Already unlocked'});
-Object.assign(TEXT.he,{chooseGameToUnlock:'בחרו משחק לפתיחה',purchaseGameAlreadyUnlocked:'כבר פתוח'});
-Object.assign(TEXT.ru,{chooseGameToUnlock:'Выберите игру для открытия',purchaseGameAlreadyUnlocked:'Уже открыта'});
+Object.assign(TEXT.en,{chooseGameToUnlock:'Choose a game to unlock',purchaseGameAlreadyUnlocked:'Already unlocked',
+  purchaseAreaIntro:'This section shows access to games and subscription options. A lock means that some content is not yet unlocked.',
+  vipAccessNotice:'VIP is active on this app account: all games and activities are unlocked. You do not need another purchase for access. VIP access does not tell you whether you have a separate Google Play subscription; check Google Play to manage or cancel one.',
+  allAccessNotice:'All games and activities are currently unlocked on this account. You do not need another purchase for access. Check Google Play separately to manage any subscription.',
+  purchaseOptionsTitle:'Game access and purchase options',purchaseOptionsAll:'All games are unlocked. The list below shows your access; no game needs to be purchased.',
+  purchaseOptionsSome:'Choose a locked game to see its purchase options. Games marked as unlocked are already available.',
+  codeActivityIntro:'The activities use the same board and rules. Each activity has a different secret color sequence to solve.',
+  coloringCategories:'Coloring Categories'});
+Object.assign(TEXT.he,{chooseGameToUnlock:'בחרו משחק לפתיחה',purchaseGameAlreadyUnlocked:'כבר פתוח',
+  purchaseAreaIntro:'זהו אזור הגישה למשחקים ואפשרויות המינוי. סמל מנעול מציין שיש במשחק תוכן שעדיין לא פתוח.',
+  vipAccessNotice:'הרשאת VIP פעילה בחשבון הזה: כל המשחקים והפעילויות פתוחים. אין צורך ברכישה נוספת כדי לשחק. הרשאת VIP אינה מעידה אם קיים מינוי נפרד ב־Google Play; לניהול או ביטול מינוי יש לבדוק ב־Google Play.',
+  allAccessNotice:'כל המשחקים והפעילויות פתוחים כרגע בחשבון הזה. אין צורך ברכישה נוספת כדי לשחק. לניהול מינוי קיים יש לבדוק בנפרד ב־Google Play.',
+  purchaseOptionsTitle:'גישה למשחקים ואפשרויות רכישה',purchaseOptionsAll:'כל המשחקים פתוחים. הרשימה מציגה את הגישה שלכם; אין צורך לרכוש משחק.',
+  purchaseOptionsSome:'בחרו משחק נעול כדי לראות את אפשרויות הרכישה שלו. משחקים המסומנים כפתוחים כבר זמינים.',
+  codeActivityIntro:'בכל הפעילויות הלוח וכללי המשחק זהים. בכל פעילות יש רצף צבעים סודי שונה לפיצוח.',
+  coloringCategories:'קטגוריות צביעה'});
+Object.assign(TEXT.ru,{chooseGameToUnlock:'Выберите игру для открытия',purchaseGameAlreadyUnlocked:'Уже открыта',
+  purchaseAreaIntro:'Здесь показан доступ к играм и варианты подписки. Замок означает, что часть содержимого игры ещё не открыта.',
+  vipAccessNotice:'VIP активен в этом аккаунте приложения: все игры и задания открыты. Для доступа дополнительная покупка не нужна. Статус VIP не показывает, есть ли отдельная подписка Google Play; проверьте её управление или отмену в Google Play.',
+  allAccessNotice:'Все игры и задания сейчас открыты в этом аккаунте. Для доступа дополнительная покупка не нужна. Чтобы управлять подпиской, проверьте Google Play отдельно.',
+  purchaseOptionsTitle:'Доступ к играм и варианты покупки',purchaseOptionsAll:'Все игры открыты. Ниже показан ваш доступ; покупать игры не нужно.',
+  purchaseOptionsSome:'Выберите закрытую игру, чтобы увидеть варианты покупки. Игры с отметкой «Уже открыта» доступны.',
+  codeActivityIntro:'Во всех заданиях одинаковые поле и правила. В каждом нужно разгадать свою секретную последовательность цветов.',
+  coloringCategories:'Категории раскрасок'});
 let currentLanguage='en';
 try{currentLanguage=localStorage.getItem('megical_language')||'en'}catch(e){console.error('Could not read language preference:',e)}
 function tr(key,values={}){
@@ -660,6 +684,7 @@ function setLanguage(language){
   if($('#games').classList.contains('on'))renderMiniGames();
   if($('#profile').classList.contains('on'))renderProfile();
   if($('#parentM').classList.contains('on'))renderParentDashboard();
+  if($('#gamePurchaseM').classList.contains('on'))renderParentPurchaseOptions();
   if(typeof BILLING_ENABLED!=='undefined'&&BILLING_ENABLED&&$('#vipM').classList.contains('on'))loadBillingPrices();
   if($('#drawIdea')&&miniGameScene==='play')$('#drawIdea').textContent=DRAWING_IDEAS[currentLanguage][selectedLevel%DRAWING_IDEAS[currentLanguage].length];
   if($('#paint').classList.contains('on'))refreshTools();
@@ -1487,7 +1512,7 @@ function renderGameLevels(){
     return;
   }
   const names=activityNames(game.id,currentLanguage);
-  $('#gameContent').innerHTML=`<h2>${game.icon} ${tr(game.name)}</h2><div class="level-grid">${Array.from({length:names.length},(_,i)=>{
+  $('#gameContent').innerHTML=`<h2>${game.icon} ${tr(game.name)}</h2>${game.id==='codeBreaker'?`<p>${tr('codeActivityIntro')}</p>`:''}<div class="level-grid">${Array.from({length:names.length},(_,i)=>{
     const paid=i>=6&&!gameUnlocked(game.id);
     const name=names[i];
     const label=name;
@@ -2010,13 +2035,14 @@ function sokobanHasSolution(size,player,box,goal,walls){
 }
 function setupCodeBreaker(){
   const start=selectedLevel%6;
-  interactivePuzzle.secret=[0,1,2,3].map(offset=>(start+offset*2+Math.floor(offset/2))%6);
-  if(new Set(interactivePuzzle.secret).size!==4)interactivePuzzle.secret=[start,(start+1)%6,(start+3)%6,(start+4)%6];
+  const offsets=selectedLevel<6?[0,2,5,1]:[2,0,5,1];
+  interactivePuzzle.secret=offsets.map(offset=>(start+offset)%6);
   interactivePuzzle.guess=Array(4).fill(-1);interactivePuzzle.guesses=[];interactivePuzzle.activePeg=0;interactivePuzzle.maxGuesses=8;
 }
 function interactiveGamePrompt(id){
   const keys={physicsPaths:'pathInstruction',gridSokoban:'sokobanInstruction',codeBreaker:'codeInstruction',railwayControl:'railwayInstruction'};
-  return id==='physicsPaths'?tr(keys[id],{n:interactivePuzzle.maxTurns}):tr(keys[id]);
+  return id==='physicsPaths'?tr(keys[id],{n:interactivePuzzle.maxTurns})
+    :id==='codeBreaker'?`${tr('codeActivityIntro')} ${tr(keys[id])}`:tr(keys[id]);
 }
 function renderInteractivePuzzle(){
   if(!interactivePuzzle)return;
@@ -3267,7 +3293,10 @@ function renderParentDashboard(){
   const used=Math.floor(S.dailyUsageSeconds/60),limit=S.dailyLimitMinutes;
   $('#parentUsage').textContent=limit?tr('minutesUsed',{used,limit}):tr('minutesUnlimited',{used});
   $('#dailyLimit').value=String(limit);
-  $('#parentPurchases').textContent=`${tr('purchaseStatus',{vip:S.vip?tr('active'):tr('freeLabel'),games:S.unlockedGames.length,all:S.allGamesUnlocked?tr('active'):tr('notUnlocked')})} ${BILLING_ENABLED?billingText('status'):tr('purchaseUnavailableNote')}`;
+  const allUnlocked=MINI_GAMES.every(game=>gameUnlocked(game.id));
+  const notice=$('#parentAccessNotice');
+  notice.hidden=!allUnlocked;notice.textContent=allUnlocked?tr(S.vip?'vipAccessNotice':'allAccessNotice'):'';
+  $('#parentPurchases').textContent=`${tr('purchaseStatus',{vip:S.vip?tr('active'):tr('freeLabel'),games:S.unlockedGames.length,all:allUnlocked?tr('active'):tr('notUnlocked')})} ${BILLING_ENABLED?billingText('status'):tr('purchaseUnavailableNote')}`;
   $('#restorePurchasesButton').hidden=!BILLING_ENABLED;$('#managePurchasesButton').hidden=!BILLING_ENABLED;
   $('#restorePurchasesButton').textContent=billingText('restore');$('#managePurchasesButton').textContent=billingText('manage');
 }
@@ -3290,11 +3319,16 @@ function saveDailyLimit(value){
   toast(tr('timeLimitSaved'));
 }
 function openParentPurchaseOptions(){
+  renderParentPurchaseOptions();
+  $('#gamePurchaseM').classList.add('on');
+}
+function renderParentPurchaseOptions(){
+  const allUnlocked=MINI_GAMES.every(game=>gameUnlocked(game.id));
+  $('#purchaseOptionsNotice').textContent=tr(allUnlocked?'purchaseOptionsAll':'purchaseOptionsSome');
   $('#purchaseGameList').innerHTML=MINI_GAMES.map(game=>{
     const unlocked=gameUnlocked(game.id);
     return `<button class="level-choice" ${unlocked?'disabled':''} onclick="selectParentPurchaseGame('${game.id}')">${game.icon} ${tr(game.name)}${unlocked?` - ${tr('purchaseGameAlreadyUnlocked')}`:''}</button>`;
   }).join('');
-  $('#gamePurchaseM').classList.add('on');
 }
 function selectParentPurchaseGame(id){
   const game=MINI_GAMES.find(item=>item.id===id);
@@ -3521,6 +3555,7 @@ function clearBillingAccess(){
 }
 function repaintBilling(){
   if($('#parentM').classList.contains('on'))renderParentDashboard();
+  if($('#gamePurchaseM').classList.contains('on'))renderParentPurchaseOptions();
   if($('#gameStage').classList.contains('on')&&miniGameScene==='levels')renderGameLevels();
 }
 async function callBillingServer(body,userId){
