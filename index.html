@@ -711,7 +711,7 @@ let currentUserId = 'guest';
 let S = {name:'Guest',av:'🐶',stars:0,vip:false,art:[],custom:[],music:true,track:'auto',vol:0.6,language:currentLanguage,unlockedGames:[],allGamesUnlocked:false,completedEscapeRooms:[],completedPuzzleStars:[],dailyUsageDate:'',dailyUsageSeconds:0,dailyLimitMinutes:0};
 let supabaseClient=null,authBusy=false,currentAuthUserId=null,authChoiceMade=false;
 let usageTimer=null,usageStartedAt=null,pendingParentAction=null;
-const BILLING_ENABLED=false;
+let BILLING_ENABLED=false;
 let billingAccess=[],billingVerifiedAt=0,billingRefreshTimer=null,billingBusy=false,billingPrices={};
 function defaultUserData(name){
   return {name,av:'🐶',stars:0,vip:false,art:[],custom:[],music:true,track:'auto',vol:0.6,language:currentLanguage,unlockedGames:[],allGamesUnlocked:false,completedEscapeRooms:[],completedPuzzleStars:[],dailyUsageDate:'',dailyUsageSeconds:0,dailyLimitMinutes:0};
@@ -3551,6 +3551,19 @@ function billingPlugins(){
   const c=window.Capacitor;
   return c&&c.getPlatform&&c.getPlatform()==='android'&&c.Plugins?c.Plugins:null;
 }
+async function initializeBilling(){
+  const plugins=billingPlugins();
+  if(!plugins||!plugins.BillingPurchase)return;
+  try{
+    const result=await plugins.BillingPurchase.getAvailability();
+    if(!result||typeof result.enabled!=='boolean')throw new Error('Invalid billing availability response.');
+    BILLING_ENABLED=result.enabled;
+    repaintBilling();
+    if(BILLING_ENABLED&&currentAuthUserId)await restorePurchases(true);
+  }catch(error){
+    console.error('Could not determine whether purchases are available:',error);
+  }
+}
 function clearBillingAccess(){
   billingAccess=[];billingVerifiedAt=0;billingPrices={};
   if(billingRefreshTimer!==null)clearTimeout(billingRefreshTimer);
@@ -4576,6 +4589,7 @@ renderPalette();refreshTools();
 loadUserData('Guest');
 go('welcome');
 void initializeAuth();
+void initializeBilling();
 if('serviceWorker' in navigator&&location.protocol!=='file:'){
   navigator.serviceWorker.register('./sw.js').catch(error=>console.error('Service worker registration failed:',error));
 }
