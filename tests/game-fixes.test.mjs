@@ -84,6 +84,7 @@ test('story math uses varied scenarios and keeps bird questions observational', 
       assert.ok(result.question.he);
       assert.ok(result.question.ru);
       assert.ok(result.options.includes(result.answer));
+      assert.doesNotMatch(result.question.he, /[A-Za-zА-Яа-яЁё־—]/u, `activity ${activity}, question ${question}`);
       prompts.push(result.question.en);
     }
     assert.equal(new Set(prompts).size, 10, `activity ${activity} repeats a story`);
@@ -236,26 +237,107 @@ test('coloring palette stays docked above navigation and scrolls horizontally', 
   const paint = html.slice(html.indexOf('<div id="paint"'), html.indexOf('<div id="camera"'));
   assert.ok(paint.indexOf('class="paint-workspace"') < paint.indexOf('id="cvWrap"'));
   assert.ok(paint.indexOf('id="cvWrap"') < paint.indexOf('id="pal"'));
-  assert.match(paint, /id="pal"[^>]*role="toolbar"[^>]*data-i18n-aria="colorPalette"/);
+  assert.match(paint, /id="pal"[^>]*role="group"[^>]*data-i18n-aria="colorPalette"/);
   assert.doesNotMatch(html, /paintPaletteM|paintPaletteOpen/);
   assert.match(html, /#paint\.screen\.on\{[^}]*display:flex[^}]*width:100%[^}]*max-width:none[^}]*overflow:hidden/);
   assert.match(html, /\.paint-workspace\{[^}]*overflow-y:auto/);
-  assert.match(html, /#paint>\.paint-palette\{[^}]*flex-wrap:nowrap[^}]*justify-content:safe center[^}]*overflow-x:auto/);
+  assert.match(html, /#paint>\.paint-palette\{[^}]*flex-direction:column[^}]*overflow-y:auto/);
+  assert.match(html, /\.paint-color-swatches\{[^}]*flex-wrap:nowrap[^}]*justify-content:safe center[^}]*overflow-x:auto/);
   assert.match(html, /\.paint-canvas-wrap\{[^}]*width:min\(92vw,400px\)[^}]*height:min\(92vw,400px\)/);
   assert.doesNotMatch(html, /\.paint-canvas-wrap\{[^}]*52dvh/);
   assert.match(html, /@media\(min-width:760px\)\{[\s\S]*grid-template-columns:minmax\(0,400px\) minmax\(150px,180px\)[\s\S]*\.paint-actions\{grid-column:2;grid-row:4\/span 3;flex-direction:column/);
 
   const palette = { innerHTML: '' };
   const context = vm.createContext({
-    COLORS: ['#ff0000', '#00ff00'], S: { custom: [] }, cur: '#ff0000',
+    COLORS: ['#ff0000', '#00ff00'], S: { custom: ['#0000ff'] }, cur: '#ff0000',
+    tr: key => key,
     $: selector => selector === '#pal' ? palette : null,
   });
   vm.runInContext(slice('function renderPalette()', 'function hsv2rgb('), context);
   context.renderPalette();
   assert.match(palette.innerHTML, /onclick="pickC\('#00ff00'\)"/);
+  assert.match(palette.innerHTML, /basicColors/);
+  assert.match(palette.innerHTML, /createdColors/);
+  context.S.custom = [];
+  context.renderPalette();
+  assert.match(palette.innerHTML, /noCreatedColors/);
+  context.S.custom = ['#0000ff'];
   context.pickC('#00ff00');
   assert.equal(context.cur, '#00ff00');
   assert.match(palette.innerHTML, /class="sw on" style="background:#00ff00"/);
+  assert.match(palette.innerHTML, /onclick="pickC\('#0000ff'\)"/);
+});
+
+test('created coloring colors have no count limit', () => {
+  const context = vm.createContext({
+    COLORS: ['#ff0000'],
+    S: { custom: Array.from({ length: 19 }, (_, index) => `#${(index + 1).toString(16).padStart(6, '0')}`) },
+    mixHex: '#abcdef',
+    hexRgb: () => [0, 0, 0],
+    rgb2hsv: () => [0, 0, 0],
+    hsv2rgb: () => [0, 0, 0],
+    toHex: () => '#000000',
+    updMix() {},
+    renderPalette() {},
+    renderDrawTools() {},
+    closeM() {},
+    toast() {},
+    sv() {},
+  });
+  vm.runInContext(slice('function addMix(){', '/* ---------- Magic Camera ---------- */'), context);
+  context.addMix();
+  assert.equal(context.S.custom.length, 20);
+  assert.equal(context.S.custom.at(-1), '#abcdef');
+});
+
+test('coloring progress is saved per user and restored for the same picture', async () => {
+  const stored = new Map();
+  const pixelData = new Uint8ClampedArray(512 * 512 * 4);
+  let restored = false;
+  const context = vm.createContext({
+    N: 512, P: 512 * 512, currentUserId: 'parent@example.com', curScreen: 'paint',
+    paintDraftKey: 'animals:0', paintDraftReady: true, paintDraftSaveTimer: null,
+    img: { data: new Uint8ClampedArray(512 * 512 * 4) },
+    baseImg: new Uint8ClampedArray(512 * 512 * 4), savedImg: null,
+    cv: { toDataURL: () => 'data:image/png;base64,progress' },
+    ctx: {
+      drawImage() { restored = true; },
+      getImageData: () => ({ data: pixelData }),
+    },
+    localStorage: {
+      getItem: key => stored.get(key) || null,
+      setItem: (key, value) => stored.set(key, value),
+      removeItem: key => stored.delete(key),
+    },
+    document: {
+      createElement: () => ({ width: 0, height: 0, getContext: () => ({
+        createImageData: () => ({ data: new Uint8ClampedArray(512 * 512 * 4) }),
+        putImageData() {},
+        drawImage() {},
+        getImageData: () => ({ data: new Uint8ClampedArray(512 * 512 * 4) }),
+      }) }),
+    },
+    window: { addEventListener() {} },
+    clearTimeout() {},
+    flush() {},
+    loadPhotoSource: async source => ({ source }),
+    toast() {},
+    tr: key => key,
+    console: { error: (...args) => { throw new Error(args.join(' ')); } },
+  });
+  context.img.data[0] = 255;
+  vm.runInContext(slice('function changedPixels(', 'function coloringDraftStorageKey()'), context);
+  vm.runInContext(slice('function coloringDraftStorageKey()', 'function saveArt(){'), context);
+
+  context.savePaintDraft();
+  assert.ok(stored.has('megical_coloring_drafts_parent@example.com'));
+  const draft = JSON.parse(stored.get('megical_coloring_drafts_parent@example.com'));
+  assert.equal(draft['animals:0'].image, 'data:image/png;base64,progress');
+
+  pixelData[0] = 255;
+  await context.restorePaintDraft();
+  assert.equal(restored, true);
+  assert.equal(context.img.data[0], 255);
 });
 
 test('coloring picture navigation is below the canvas and translated', () => {
@@ -270,6 +352,9 @@ test('coloring picture navigation is below the canvas and translated', () => {
   vm.runInContext(slice('const TEXT=', "let currentLanguage='en';") + '\nglobalThis.TEXT=TEXT;', translations);
   for (const language of ['en', 'he', 'ru']) {
     for (const key of ['previousColoringPicture', 'nextColoringPicture']) {
+      assert.ok(translations.TEXT[language][key]);
+    }
+    for (const key of ['basicColors', 'createdColors', 'noCreatedColors']) {
       assert.ok(translations.TEXT[language][key]);
     }
   }
