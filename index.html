@@ -203,10 +203,13 @@ video{width:100%;max-width:420px;border-radius:16px;background:#222;display:bloc
 @media(prefers-reduced-motion:reduce){.code-demo-video:after{animation:none;transform:scaleX(1)}.code-demo-frame{animation:none;display:none}.code-demo-frame:nth-child(3){display:flex;opacity:1;transform:none}}
 .game-intro{max-width:620px;margin:0 auto;text-align:center}
 .game-demo-video{position:relative;width:min(100%,560px);aspect-ratio:16/10;margin:16px auto;padding:18px;overflow:hidden;border:5px solid #fff;border-radius:24px;background:linear-gradient(145deg,#36205a,#6041a2);box-shadow:0 5px 16px #36205a45;color:#fff}
-.game-demo-video:after{content:"";position:absolute;left:0;bottom:0;width:100%;height:5px;background:#ffffff35;transform:scaleX(0);transform-origin:left;animation:code-demo-progress 15s linear infinite}
-.game-demo-frame{position:absolute;inset:16px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:clamp(4px,1.5vh,12px);opacity:0;animation:code-demo-scene 15s infinite}
-.game-demo-frame:nth-child(2){animation-delay:5s}
-.game-demo-frame:nth-child(3){animation-delay:10s}
+.game-demo-video:after{content:"";position:absolute;left:0;bottom:0;width:100%;height:5px;background:#ffffff35;transform:scaleX(0);transform-origin:left;animation:code-demo-progress 9s linear infinite}
+.game-demo-frame{position:absolute;inset:16px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:clamp(4px,1.5vh,12px);opacity:0;animation:game-demo-scene-one 9s linear infinite both}
+.game-demo-frame:nth-child(2){animation-name:game-demo-scene-two}
+.game-demo-frame:nth-child(3){animation-name:game-demo-scene-three}
+.game-demo-frame.escape-room-final{gap:4px}
+.game-demo-frame.escape-room-final .game-demo-board{width:min(100%,160px);gap:3px}
+.game-demo-frame.escape-room-final .game-demo-token{font-size:clamp(18px,5vw,27px);border-radius:9px}
 .game-demo-board{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(4px,1.5vw,9px);width:min(100%,300px);direction:ltr}
 .game-demo-token{display:grid;place-items:center;min-width:0;aspect-ratio:1;border:2px solid #ffffffa8;border-radius:14px;background:#ffffff24;font-size:clamp(20px,7vw,38px);animation:demo-token-pop .5s both}
 .game-demo-token:nth-child(2){animation-delay:.15s}
@@ -217,6 +220,9 @@ video{width:100%;max-width:420px;border-radius:16px;background:#222;display:bloc
 .game-intro-rules{max-width:520px;margin:10px auto 16px;padding-inline-start:24px;text-align:start}
 .game-intro-rules li{margin:5px 0}
 @keyframes demo-token-pop{from{opacity:.35;transform:scale(.75)}to{opacity:1;transform:scale(1)}}
+@keyframes game-demo-scene-one{0%,30%{opacity:1;transform:translateY(0)}32%,100%{opacity:0;transform:translateY(-5px)}}
+@keyframes game-demo-scene-two{0%,32%{opacity:0;transform:translateY(8px)}34%,64%{opacity:1;transform:translateY(0)}66%,100%{opacity:0;transform:translateY(-5px)}}
+@keyframes game-demo-scene-three{0%,66%{opacity:0;transform:translateY(8px)}68%,98%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-5px)}}
 @media(prefers-reduced-motion:reduce){.game-demo-video:after{animation:none;transform:scaleX(1)}.game-demo-frame{animation:none;display:none}.game-demo-frame:nth-child(3){display:flex;opacity:1;transform:none}.game-demo-token{animation:none}}
 .puzzle-controls{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
 .escape-scene{position:relative;isolation:isolate;overflow:hidden;max-width:520px;min-height:180px;aspect-ratio:2.4/1;margin:12px auto;border:5px solid #fff;border-radius:22px;background:linear-gradient(to bottom,#c4e7ff 0 70%,#b9815c 70% 74%,#e8c89c 74%);box-shadow:0 4px 12px #36205a26}
@@ -231,6 +237,27 @@ video{width:100%;max-width:420px;border-radius:16px;background:#222;display:bloc
 .escape-progress span.done{background:#00b894;color:#fff;box-shadow:0 2px 6px #00b89455}
 .escape-riddle{margin:14px auto;padding:18px;background:#fff;border:2px solid #d8c8ff;border-radius:18px;text-align:start;line-height:1.6;box-shadow:inset 0 2px 8px #36205a0a}
 .escape-explanation{display:block;margin:8px auto;padding:10px;background:#fff;border-radius:12px;font-weight:500;line-height:1.5}
+.escape-key-room{position:relative;isolation:isolate;width:min(100%,560px);height:clamp(280px,68vw,370px);margin:14px auto;overflow:hidden;border:5px solid #fff;border-radius:22px;background:linear-gradient(to bottom,var(--escape-wall) 0 72%,#a86d50 72% 75%,var(--escape-floor) 75%);box-shadow:0 4px 12px #36205a26}
+.escape-key-room:before{content:"";position:absolute;z-index:-1;inset:0 0 27%;background:repeating-linear-gradient(90deg,transparent 0 68px,#ffffff20 69px,#ffffff20 71px,transparent 72px),linear-gradient(135deg,var(--escape-wall),#ffffff22)}
+.escape-room-window{position:absolute;top:7%;left:42%;width:24%;height:34%;display:grid;place-items:center;border:8px solid #fff4d6;border-radius:48% 48% 8px 8px;background:linear-gradient(#82d8ff 0 54%,#b5e7a2 55%);font-size:clamp(24px,7vw,40px);box-shadow:0 3px 7px #44315b35}
+.escape-room-object{position:absolute;z-index:1;display:grid;place-items:center;min-height:0;padding:2px;border:2px solid #fff9;border-radius:12px;background:#fff5;color:#3b2a66;font-size:clamp(12px,3.2vw,16px);font-weight:800;line-height:1.15;text-shadow:0 1px #fff;box-shadow:0 3px 8px #36205a25;cursor:pointer}
+.escape-room-object span:first-child{font-size:clamp(34px,10vw,58px);line-height:1}
+.escape-room-object:active{transform:scale(.94)}
+.escape-room-object:disabled{opacity:1;cursor:default}
+.escape-object-slot-0{left:3%;top:27%;width:23%;height:36%;border:8px solid #8e583d;border-bottom-width:12px;border-radius:10px 10px 5px 5px;background:repeating-linear-gradient(to bottom,#b9815c 0 6px,#6f4939 7px 10px,#c99965 11px 54px);color:#fff}
+.escape-object-slot-1{right:7%;top:11%;width:15%;height:19%;border-radius:50%;background:#fff4d6;font-size:clamp(31px,9vw,50px)}
+.escape-object-slot-2{left:31%;top:12%;width:17%;height:20%;border:6px solid #9a684b;border-radius:5px;background:linear-gradient(#98dcff 0 60%,#97c77a 61%);font-size:clamp(28px,8vw,44px)}
+.escape-object-slot-3{left:3%;bottom:17%;width:22%;height:22%;border:5px solid #77503c;border-radius:8px;background:linear-gradient(#bd8053 0 38%,#845638 39% 48%,#bd8053 49%);font-size:clamp(30px,8vw,44px)}
+.escape-object-slot-4{left:34%;bottom:17%;width:34%;height:28%;border:5px solid #8e583d;border-radius:8px;background:linear-gradient(#d49a68 0 16%,#9e6548 17% 21%,#c88a5b 22% 78%,#9e6548 79% 84%,#b8784e 85%);color:#fff}
+.escape-object-slot-4:after{content:"";position:absolute;top:47%;left:45%;width:10%;height:5px;border-radius:4px;background:#f4d18c}
+.escape-object-slot-5{left:27%;bottom:22%;width:14%;height:23%;background:#fff8;font-size:clamp(28px,8vw,44px)}
+.escape-object-slot-6{right:3%;bottom:17%;width:22%;height:38%;background:#fff8}
+.escape-object-slot-7{left:20%;bottom:1%;width:60%;height:15%;border:3px solid #8c587d;border-radius:50%;background:repeating-linear-gradient(0deg,#d99bc0 0 9px,#eab6d0 10px 18px);font-size:clamp(11px,3vw,15px)}
+.escape-object-slot-7 span:first-child{font-size:clamp(21px,6vw,34px)}
+.escape-key-found{position:absolute;top:2%;right:3%;z-index:2;display:grid;place-items:center;width:44px;height:44px;border:3px solid #fff;border-radius:50%;background:#fff5ce;font-size:32px;animation:demo-token-pop .5s both}
+.escape-key-clues{margin:0 auto 14px;padding:12px 30px;border:2px solid #d8c8ff;border-radius:16px;background:#fff;text-align:start}
+.escape-key-clues li{margin:5px 0}
+.escape-key-feedback{min-height:28px;margin:10px auto;font-weight:800}
 .game-board{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));gap:4px;width:min(78vw,320px);aspect-ratio:1;margin:14px auto;direction:ltr}
 .word-search-board{direction:ltr;display:grid;grid-template-columns:repeat(var(--word-grid-size),minmax(0,1fr));gap:3px;width:min(94vw,480px);margin:14px auto;padding:8px;background:#eee8ff;border-radius:16px}
 .word-search-cell{display:grid;place-items:center;min-width:0;aspect-ratio:1;padding:0;border:2px solid #ded5f5;border-radius:8px;background:#fff;color:#3b2a66;font-size:clamp(14px,5vw,25px);font-weight:800;line-height:1}
@@ -467,15 +494,15 @@ Object.assign(TEXT.ru,{scienceQuestion:'Вопрос {n} из {total}',scienceCo
 Object.assign(TEXT.en,{learningQuestion:'Question {n} of {total}',learningComplete:'You completed all 10 questions in this activity!'});
 Object.assign(TEXT.he,{learningQuestion:'שאלה {n} מתוך {total}',learningComplete:'השלמתם את כל 10 השאלות בפעילות!'});
 Object.assign(TEXT.ru,{learningQuestion:'Вопрос {n} из {total}',learningComplete:'Ты выполнил все 10 заданий в этом занятии!'});
-Object.assign(TEXT.en,{miniGames:'🎮 17 Mini Games',freeDrawButton:'✏️ Free Drawing',escapeRooms:'Escape Rooms',escapePrompt:'Solve each riddle to unlock the exit!',escapeRoomProgress:'Riddle {n} of 5 - {room}',escapeRoomCleared:'Riddle solved! The way out is getting closer.',escapeComplete:'You solved all five riddles and escaped!',escapeNextRoom:'Next riddle',starEarned:'⭐ Star earned!',escapeRoomNames:['The Three Switches','The Sheep Puzzle','The Number Pattern','Three Generations','The Clock']});
-Object.assign(TEXT.he,{miniGames:'🎮 17 משחקי מיני',freeDrawButton:'✏️ ציור חופשי',escapeRooms:'משחק בריחה',escapePrompt:'פתרו כל חידה כדי לפתוח את היציאה!',escapeRoomProgress:'חידה {n} מתוך 5 - {room}',escapeRoomCleared:'פתרתם את החידה! אתם מתקרבים ליציאה.',escapeComplete:'פתרתם את כל חמש החידות וברחתם!',escapeNextRoom:'לחידה הבאה',starEarned:'⭐ קיבלתם כוכב!',escapeRoomNames:['שלושת המתגים','חידת הכבשים','סדרת המספרים','שלושה דורות','השעון']});
-Object.assign(TEXT.ru,{miniGames:'🎮 17 мини-игр',freeDrawButton:'✏️ Свободное рисование',escapeRooms:'Комнаты-квесты',escapePrompt:'Реши каждую загадку, чтобы открыть выход!',escapeRoomProgress:'Загадка {n} из 5 - {room}',escapeRoomCleared:'Загадка решена! Выход уже ближе.',escapeComplete:'Ты решил все пять загадок и выбрался!',escapeNextRoom:'Следующая загадка',starEarned:'⭐ Звезда получена!',escapeRoomNames:['Три выключателя','Задача про овец','Числовая последовательность','Три поколения','Часы']});
+Object.assign(TEXT.en,{miniGames:'🎮 17 Mini Games',freeDrawButton:'✏️ Free Drawing',escapeRooms:'Escape Rooms',escapePrompt:'Solve each riddle to reveal a clue to the hidden key!',escapeRoomProgress:'Riddle {n} of 5 - {room}',escapeRoomCleared:'Riddle solved! The way out is getting closer.',escapeComplete:'You solved all five riddles and escaped!',escapeNextRoom:'Next riddle',starEarned:'⭐ Star earned!',escapeRoomNames:['The Three Switches','The Sheep Puzzle','The Number Pattern','Three Generations','The Clock']});
+Object.assign(TEXT.he,{miniGames:'🎮 17 משחקי מיני',freeDrawButton:'✏️ ציור חופשי',escapeRooms:'משחק בריחה',escapePrompt:'פתרו כל חידה כדי לקבל רמז למפתח הנסתר!',escapeRoomProgress:'חידה {n} מתוך 5 - {room}',escapeRoomCleared:'פתרתם את החידה! אתם מתקרבים ליציאה.',escapeComplete:'פתרתם את כל חמש החידות וברחתם!',escapeNextRoom:'לחידה הבאה',starEarned:'⭐ קיבלתם כוכב!',escapeRoomNames:['שלושת המתגים','חידת הכבשים','סדרת המספרים','שלושה דורות','השעון']});
+Object.assign(TEXT.ru,{miniGames:'🎮 17 мини-игр',freeDrawButton:'✏️ Свободное рисование',escapeRooms:'Комнаты-квесты',escapePrompt:'Реши загадку и получи подсказку к спрятанному ключу!',escapeRoomProgress:'Загадка {n} из 5 - {room}',escapeRoomCleared:'Загадка решена! Выход уже ближе.',escapeComplete:'Ты решил все пять загадок и выбрался!',escapeNextRoom:'Следующая загадка',starEarned:'⭐ Звезда получена!',escapeRoomNames:['Три выключателя','Задача про овец','Числовая последовательность','Три поколения','Часы']});
 Object.assign(TEXT.en,{wordSearch:'Word Search',wordSearchPrompt:'Find each hidden word. Tap its letters in order, then continue through all six levels.',wordSearchLevel:'Level {n} of 6',wordSearchActivity:'Activity {n} of 12',wordSearchGrid:'{size} × {cols} grid · {words} words',wordSearchClear:'Clear selection',wordSearchFound:'Found: {found} of {total}',wordSearchTryAgain:'Those letters do not spell a hidden word. Try again.',wordSearchComplete:'All words found! Great searching!',wordSearchNextLevel:'Next level',wordSearchLevels:['Warm-up','Getting started','More directions','Twists and turns','Word explorer','Master search']});
 Object.assign(TEXT.he,{miniGames:'🎮 18 משחקי מיני',wordSearch:'תפזורת מילים',wordSearchPrompt:'מצאו כל מילה שהוחבאה. לחצו על אותיותיה לפי הסדר והמשיכו דרך כל ששת השלבים.',wordSearchLevel:'שלב {n} מתוך 6',wordSearchActivity:'פעילות {n} מתוך 12',wordSearchGrid:'לוח {size} × {cols} · {words} מילים',wordSearchClear:'ניקוי הבחירה',wordSearchFound:'נמצאו: {found} מתוך {total}',wordSearchTryAgain:'האותיות האלה לא יוצרות מילה חבויה. נסו שוב.',wordSearchComplete:'מצאתם את כל המילים! כל הכבוד!',wordSearchNextLevel:'לשלב הבא',wordSearchLevels:['חימום','מתחילים','עוד כיוונים','פניות ואתגרים','חוקרי מילים','אלופי התפזורת']});
 Object.assign(TEXT.ru,{miniGames:'🎮 18 мини-игр',wordSearch:'Поиск слов',wordSearchPrompt:'Найди все спрятанные слова. Нажимай буквы по порядку и пройди все шесть уровней.',wordSearchLevel:'Уровень {n} из 6',wordSearchActivity:'Задание {n} из 12',wordSearchGrid:'Поле {size} × {cols} · слов: {words}',wordSearchClear:'Сбросить выбор',wordSearchFound:'Найдено: {found} из {total}',wordSearchTryAgain:'Эти буквы не составляют спрятанное слово. Попробуй ещё.',wordSearchComplete:'Все слова найдены! Отличный поиск!',wordSearchNextLevel:'Следующий уровень',wordSearchLevels:['Разминка','Начинаем','Больше направлений','Повороты и загадки','Исследователь слов','Мастер поиска']});
-Object.assign(TEXT.en,{escapeRoomNames:['Supply Count','Sequence Lock','Storage Room','Departure Gate','Code Lock']});
-Object.assign(TEXT.he,{escapeRoomNames:['ספירת ציוד','מנעול הסדרה','מחסן','שער היציאה','מנעול הקוד']});
-Object.assign(TEXT.ru,{escapeRoomNames:['Подсчёт запасов','Числовой замок','Склад','Ворота отправления','Кодовый замок']});
+Object.assign(TEXT.en,{escapeRoomNames:['Supply Count','Sequence Lock','Storage Room','Departure Gate','Code Lock'],escapeKeyClues:['A patch of daylight reaches the hiding place.','The key is close to something that needs water.','Look for something living that brings a little green into the room.','It grows in a container filled with soil.','Look by the window, where green leaves grow in their own little patch of earth.'],escapeKeyClueLabel:'Clue to the hidden key:',escapeKeyRoomTitle:'The hidden-key room',escapeKeyRoomPrompt:'Use the five clues, then click objects in the room to search for the key.',escapeKeyBooks:'Bookcase',escapeKeyRug:'Rug',escapeKeyDrawer:'Desk',escapeKeyPlant:'Plant',escapeSearchObject:'Search object',escapeKeyWrong:'Not here. Check the clues and try another place.',escapeKeyFound:'You found the key! The door is open.',escapeKeyEnter:'Enter the room',escapeKeyFinish:'Unlock the door'});
+Object.assign(TEXT.he,{escapeRoomNames:['ספירת ציוד','מנעול הסדרה','מחסן','שער היציאה','מנעול הקוד'],escapeKeyClues:['קרן אור יום מגיעה אל מקום המסתור.','המפתח נמצא ליד משהו שזקוק למים מדי פעם.','חפשו משהו חי שמוסיף מעט ירוק לחדר.','הוא צומח בתוך כלי ובו אדמה.','חפשו ליד החלון, במקום שבו עלים ירוקים צומחים באדמה.'],escapeKeyClueLabel:'רמז למפתח הנסתר:',escapeKeyRoomTitle:'החדר עם המפתח הנסתר',escapeKeyRoomPrompt:'היעזרו בחמשת הרמזים ואז לחצו על חפצים בחדר כדי לחפש את המפתח.',escapeKeyBooks:'כוננית ספרים',escapeKeyRug:'שטיח',escapeKeyDrawer:'שולחן',escapeKeyPlant:'עציץ',escapeSearchObject:'בדיקת חפץ',escapeKeyWrong:'לא כאן. בדקו את הרמזים ונסו מקום אחר.',escapeKeyFound:'מצאתם את המפתח! הדלת נפתחה.',escapeKeyEnter:'כניסה לחדר',escapeKeyFinish:'פתיחת הדלת'});
+Object.assign(TEXT.ru,{escapeRoomNames:['Подсчёт запасов','Числовой замок','Склад','Ворота отправления','Кодовый замок'],escapeKeyClues:['Солнечный луч достигает места, где спрятан ключ.','Ключ рядом с тем, кому время от времени нужна вода.','Ищи что-то живое, что добавляет комнате немного зелени.','Оно растёт в ёмкости с землёй.','Ищи у окна, где зелёные листья растут в земле.'],escapeKeyClueLabel:'Подсказка к спрятанному ключу:',escapeKeyRoomTitle:'Комната со спрятанным ключом',escapeKeyRoomPrompt:'Используй пять подсказок и нажимай на предметы в комнате, чтобы найти ключ.',escapeKeyBooks:'Книжный шкаф',escapeKeyRug:'Ковёр',escapeKeyDrawer:'Стол',escapeKeyPlant:'Растение',escapeSearchObject:'Осмотреть предмет',escapeKeyWrong:'Здесь ключа нет. Проверь подсказки и попробуй ещё.',escapeKeyFound:'Ты нашёл ключ! Дверь открыта.',escapeKeyEnter:'Войти в комнату',escapeKeyFinish:'Открыть дверь'});
 const ESCAPE_RIDDLE_BANK={
  en:[
   [['What must you break before you can use it?','An egg','An egg has to be cracked before it can be cooked.'],['What is always behind you but can never be in front of you?','The past','The past has already happened, so it is always behind you.'],['What has pages and a spine but cannot stand or speak?','A book','A book has pages and a spine, but it is not alive.'],['What can travel around the world while staying in one corner?','A postage stamp','A stamp stays in the corner of an envelope while the envelope travels.'],['What gets wetter the more it dries?','A towel','A towel absorbs the water it is drying.']],
@@ -767,7 +794,7 @@ const MINI_GAME_INTRO_COPY={
     patterns:['Look at the pattern.','Find what is missing.','Continue the pattern!','Notice how the pictures or colors repeat.','Choose the item that comes next.'],
     riddles:['Read the clue.','Think about what it describes.','Choose your answer!','Use the clue to figure out what it describes.','Answer each riddle to finish the activity.'],
     scienceQuest:['Look closely at the question.','Think like a scientist.','Choose what fits!','Use observation and what you know about science.','Tap the answer that best explains the question.'],
-    escapeRoom:['Find the first clue.','Solve a riddle to unlock the way.','The room opens!','Solve the riddles one by one to escape.','Complete each room to move on to the next.'],
+    escapeRoom:['Solve a riddle.','Earn a clue to the hidden key.','Search the room for the key!','Each solved riddle reveals one clue to the hidden key.','After five riddles, use the clues and click room objects to find the key.'],
     physicsPaths:['Look at the path.','Turn the track pieces.','Connect start to finish!','Rotate the tiles to join the open path ends.','Connect the green start to the finish before turns run out.'],
     gridSokoban:['Plan a move.','Push the box toward the goal.','Box delivered!','Move around the board and push the box.','You can push it, but cannot pull it.'],
     railwayControl:['Check the train colors.','Set the track switches.','Guide each train to its station!','Choose each switch direction before trains move.','Match every train to the station of the same color.'],
@@ -786,7 +813,7 @@ const MINI_GAME_INTRO_COPY={
     patterns:['התבוננו בדוגמה.','מצאו מה חסר.','המשיכו את הדוגמה!','שימו לב לחזרה של התמונות או הצבעים.','בחרו את הפריט הבא ברצף.'],
     riddles:['קראו את הרמז.','חשבו למה הוא מתכוון.','בחרו את התשובה!','היעזרו ברמז כדי להבין מה הוא מתאר.','ענו על החידות כדי לסיים את הפעילות.'],
     scienceQuest:['קראו את השאלה היטב.','חשבו כמו מדענים.','בחרו בתשובה המתאימה!','היעזרו בתצפית ובידע שלכם במדע.','לחצו על התשובה שמסבירה את השאלה בצורה הטובה ביותר.'],
-    escapeRoom:['מצאו את הרמז הראשון.','פתרו חידה כדי לפתוח את הדרך.','החדר נפתח!','פתרו את החידות בזו אחר זו כדי לצאת.','השלימו כל חדר כדי לעבור לחדר הבא.'],
+    escapeRoom:['פתרו חידה.','קבלו רמז למפתח הנסתר.','חפשו את המפתח בחדר!','כל חידה שתפתרו תעניק רמז נוסף למפתח הנסתר.','אחרי חמש החידות, היעזרו ברמזים ולחצו על חפצים בחדר כדי למצוא את המפתח.'],
     physicsPaths:['התבוננו במסלול.','סובבו את חלקי הדרך.','חברו בין ההתחלה לסיום!','סובבו את האריחים כדי לחבר בין קצות המסלול.','חברו בין ההתחלה הירוקה לסיום לפני שייגמרו הסיבובים.'],
     gridSokoban:['תכננו את הצעד.','דחפו את הקופסה אל היעד.','הקופסה הגיעה!','נועו בלוח ודחפו את הקופסה.','אפשר לדחוף אותה, אך אי אפשר למשוך.'],
     railwayControl:['בדקו את צבעי הרכבות.','כוונו את המסילות.','הובילו כל רכבת לתחנה שלה!','בחרו את כיוון המסילה לפני שהרכבות נוסעות.','התאימו כל רכבת לתחנה בצבע שלה.'],
@@ -805,7 +832,7 @@ const MINI_GAME_INTRO_COPY={
     patterns:['Посмотри на узор.','Найди пропуск.','Продолжи узор!','Заметь, как повторяются картинки или цвета.','Выбери следующий элемент.'],
     riddles:['Прочитай подсказку.','Подумай, что она описывает.','Выбери ответ!','Используй подсказку, чтобы разгадать загадку.','Реши загадки, чтобы закончить задание.'],
     scienceQuest:['Внимательно прочитай вопрос.','Подумай как учёный.','Выбери подходящий ответ!','Используй наблюдения и знания о науке.','Нажми на ответ, который лучше всего объясняет вопрос.'],
-    escapeRoom:['Найди первую подсказку.','Реши загадку, чтобы открыть путь.','Комната открыта!','Решай загадки одну за другой, чтобы выбраться.','Пройди каждую комнату, чтобы перейти дальше.'],
+    escapeRoom:['Реши загадку.','Получи подсказку к спрятанному ключу.','Ищи ключ в комнате!','За каждую решённую загадку ты получаешь подсказку к спрятанному ключу.','После пяти загадок используй подсказки и нажимай на предметы в комнате, чтобы найти ключ.'],
     physicsPaths:['Посмотри на путь.','Поворачивай плитки.','Соедини старт и финиш!','Поворачивай плитки, соединяя открытые концы пути.','Соедини зелёный старт с финишем, пока не закончились ходы.'],
     gridSokoban:['Продумай ход.','Толкай ящик к цели.','Ящик доставлен!','Передвигай героя и толкай ящик по полю.','Ящик можно толкать, но нельзя тянуть.'],
     railwayControl:['Проверь цвета поездов.','Переключай стрелки.','Отправь каждый поезд на свою станцию!','Выбери направление стрелок до движения поездов.','Каждый поезд должен приехать на станцию своего цвета.'],
@@ -825,7 +852,7 @@ const MINI_GAME_INTRO_VISUALS={
   patterns:[['🔴','🔵','🔴','❔'],['🔴','🔵','🔴','🔵'],['🔁','✅','🔴','🔵']],
   riddles:[['💭','🔎','❔','❔'],['🦁','🐾','🌳','❔'],['🦁','✅','✨','✨']],
   scienceQuest:[['🌱','☀️','💧','❔'],['🌱','☀️','💧','🌿'],['🌿','✅','🔬','✨']],
-  escapeRoom:[['🚪','🔒','🗝️','❔'],['🧩','🔍','🗝️','🔒'],['🚪','🔓','✨','✅']],
+  escapeRoom:[['🧩','❓','💭','✅'],['💡','💡','💡','💡','💡','🔑'],['🕰️','📚','🖼️','🧰','🗄️','🏺','🪴','🟪','🗝️']],
   physicsPaths:[['🟢','╱','╲','🏁'],['🟢','╱','╱','🏁'],['🟢','➰','➰','🏁']],
   gridSokoban:[['🧱','🙂','📦','⭐'],['🧱','➡️','📦','⭐'],['🧱','⬜','🙂','📦','⭐']],
   railwayControl:[['🚂','↔️','🚉','🎨'],['🚂','↗️','🚉','🎨'],['🚂','✅','🚉','🎨']],
@@ -1993,7 +2020,7 @@ function renderMiniGameIntro(){
   if(!copy||copy.length!==5||!visuals||visuals.length!==3)throw new Error(`Incomplete mini-game introduction: ${game.id}`);
   miniGameScene='gameIntro';
   $('#gameContent').classList.remove('railway-game');
-  const frames=visuals.map((frame,index)=>`<div class="game-demo-frame"><b class="code-demo-video-title">${game.icon} ${tr(game.name)} · ${index+1}/3</b><div class="game-demo-board">${frame.map((token,tokenIndex)=>`<span class="game-demo-token" style="animation-delay:${tokenIndex*.15}s">${token}</span>`).join('')}</div><div class="game-demo-caption">${copy[index]}</div></div>`).join('');
+  const frames=visuals.map((frame,index)=>`<div class="game-demo-frame${game.id==='escapeRoom'&&index===2?' escape-room-final':''}"><b class="code-demo-video-title">${game.icon} ${tr(game.name)} · ${index+1}/3</b><div class="game-demo-board">${frame.map((token,tokenIndex)=>`<span class="game-demo-token" style="animation-delay:${tokenIndex*.15}s">${token}</span>`).join('')}</div><div class="game-demo-caption">${copy[index]}</div></div>`).join('');
   $('#gameContent').innerHTML=`<section class="game-intro"><h2>${game.icon} ${tr(game.name)}</h2><p>${tr('gameDemoIntro')}</p><div class="game-demo-video" role="img" aria-label="${copy.slice(0,3).join(' ')}">${frames}<span class="game-demo-play" aria-hidden="true">▶</span></div><h3>${tr('gameDemoRulesTitle')}</h3><ul class="game-intro-rules"><li>${copy[3]}</li><li>${copy[4]}</li></ul><button class="alt" onclick="continueMiniGameIntro()">${tr('gameDemoGotIt')}</button><button class="ghost" onclick="go('games')">${tr('back')}</button></section>`;
 }
 function continueMiniGameIntro(){
@@ -2663,11 +2690,28 @@ function submitCodeGuess(){
   }
   interactivePuzzle.guess=Array(4).fill(-1);interactivePuzzle.activePeg=0;interactivePuzzle.feedback='';renderInteractivePuzzle();
 }
-let escapeRoomIndex=0,escapeRoomSolved=false,escapeRoomStarEarned=false,escapeRoomAnswer='',escapeRoomAnswerIndex=-1,escapeRoomExplanation='';
+const ESCAPE_KEY_ROOMS=[
+  {objects:['📚','🕰️','🗺️','🧰','🪑','🏺','🪴','🟪'],target:6,window:'☀️',wall:'#f9dfbb',floor:'#d4a47b',clues:{en:['A narrow beam reaches one quiet corner of the library.','The hiding place is close to the window.','Look near something that needs a little care every day.','It is alive, green, and grows in a small container.','Find the small garden growing beside the library window.'],he:['קרן אור צרה מגיעה לפינה שקטה בספרייה.','מקום המסתור קרוב לחלון.','חפשו ליד משהו שזקוק לטיפול מדי יום.','זהו דבר חי וירוק שגדל בכלי קטן.','מצאו את הגינה הקטנה שצומחת ליד חלון הספרייה.'],ru:['Узкий луч света достигает тихого уголка библиотеки.','Тайник находится рядом с окном.','Ищи то, о чём нужно заботиться каждый день.','Это живое зелёное растение в небольшом горшке.','Найди маленький садик у библиотечного окна.']}},
+  {objects:['🦕','🥚','🖼️','🦴','🪨','🧪','🦖','🟫'],target:3,window:'🌋',wall:'#d9c6a5',floor:'#a97554',clues:{en:['The museum tells stories of creatures from long ago.','Some clues are buried in the earth.','Look for a piece that once belonged to a living animal.','It is hard, pale, and part of an ancient skeleton.','Find the fossil fragment displayed among the dinosaur finds.'],he:['המוזיאון מספר על יצורים שחיו לפני זמן רב.','חלק מהרמזים קבורים באדמה.','חפשו חלק שהיה פעם שייך לבעל חיים.','הוא קשה ובהיר, ושייך לשלד עתיק.','מצאו את שריד השלד שמוצג בין ממצאי הדינוזאורים.'],ru:['Музей рассказывает о существах далёкого прошлого.','Некоторые следы скрыты в земле.','Ищи часть, которая когда-то принадлежала животному.','Она твёрдая, светлая и часть древнего скелета.','Найди окаменевший фрагмент среди находок динозавров.']}},
+  {objects:['🪐','🛰️','🌌','☄️','👨‍🚀','🪨','🔭','🌑'],target:5,window:'🌠',wall:'#343257',floor:'#56486c',clues:{en:['A visitor arrived from far beyond our world.','It traveled through the darkness above the planets.','Look for something that fell from the sky.','It is a small, scorched piece of space rock.','Find the meteorite sample among the station’s space discoveries.'],he:['אורח הגיע ממרחקים, מעבר לעולם שלנו.','הוא עבר בחשכה שמעל כוכבי הלכת.','חפשו משהו שנפל מהשמיים.','זו חתיכה קטנה וכהה של סלע מהחלל.','מצאו את דגימת המטאוריט בין ממצאי החלל של התחנה.'],ru:['Гость прибыл издалека, из-за пределов нашего мира.','Он пролетел в темноте над планетами.','Ищи то, что упало с неба.','Это небольшой обугленный кусочек космического камня.','Найди образец метеорита среди космических находок станции.']}},
+  {objects:['🐠','🪸','🐙','🫧','🧪','🦪','🪼','🐚'],target:5,window:'🌊',wall:'#83c8d0',floor:'#8b6955',clues:{en:['The secret is hidden where the ocean keeps its treasures.','A small sea creature once guarded it.','Look for something that can close tightly underwater.','Inside, something smooth and bright was formed.','Find the shell that may hold a little shining treasure.'],he:['הסוד חבוי במקום שבו הים שומר על אוצרותיו.','יצור ימי קטן שמר עליו פעם.','חפשו משהו שיכול להיסגר היטב מתחת למים.','בתוכו נוצר דבר חלק ומבריק.','מצאו את הקונכייה שעשויה להסתיר אוצר קטן ונוצץ.'],ru:['Секрет спрятан там, где океан хранит свои сокровища.','Когда-то его охраняло маленькое морское существо.','Ищи то, что может плотно закрываться под водой.','Внутри образовалось нечто гладкое и блестящее.','Найди раковину, в которой может скрываться маленькое сокровище.']}},
+  {objects:['🍬','🎂','🍫','🍭','🍪','🍡','🧁','🎀'],target:3,window:'🍭',wall:'#f4b7cf',floor:'#d79b71',clues:{en:['A sweet surprise is tucked away in the candy factory.','It is attached to something small and easy to hold.','The treat is made of sugar and comes in bright colors.','It has a handle, and it slowly disappears as you enjoy it.','Find the swirly sweet on a stick near the candy-making tools.'],he:['הפתעה מתוקה הוחבאה במפעל הממתקים.','היא מחוברת למשהו קטן שקל להחזיק.','הממתק עשוי מסוכר ומגיע בצבעים עליזים.','יש לו מקל, והוא הולך ונעלם בזמן שאוכלים אותו.','מצאו את הממתק הצבעוני שעל מקל ליד כלי ההכנה.'],ru:['Сладкий сюрприз спрятан на конфетной фабрике.','Он прикреплён к чему-то небольшому, что удобно держать.','Лакомство сделано из сахара и бывает ярких цветов.','У него есть палочка, а само оно постепенно тает во рту.','Найди яркую сладость на палочке рядом с инструментами кондитера.']}},
+  {objects:['🛕','🌿','🐒','🗿','🪔','🦜','🌺','🪵'],target:3,window:'🌴',wall:'#c8d6a0',floor:'#8b684b',clues:{en:['The old temple has watched the jungle grow for centuries.','Its guardians were carved by careful hands.','Look for a face made from stone, not a living creature.','It stands still and keeps watch over the temple path.','Find the carved stone guardian beneath the jungle leaves.'],he:['המקדש העתיק צופה בג׳ונגל כבר מאות שנים.','השומרים שלו נחצבו בידיים מיומנות.','חפשו פנים מאבן, לא של יצור חי.','הוא עומד בשקט ומשגיח על שביל המקדש.','מצאו את שומר האבן המגולף מתחת לעלי הג׳ונגל.'],ru:['Древний храм веками наблюдал за джунглями.','Его стражей вырезали умелые мастера.','Ищи каменное лицо, а не живое существо.','Оно неподвижно охраняет тропу у храма.','Найди резного каменного стража под листьями джунглей.']}},
+  {objects:['🧭','🦜','⚓','🧰','🏴‍☠️','🗺️','🛟','🪙'],target:3,window:'🌅',wall:'#a9c5c6',floor:'#95694e',clues:{en:['The captain hid a prize before the ship set sail.','It is stowed in a sturdy container.','The hiding place is made for keeping valuables safe.','Look for the box with a heavy lid and a lock.','Find the captain’s locked chest among the ship’s gear.'],he:['הקפטן החביא פרס לפני שהספינה הפליגה.','הוא מאוחסן בתוך מכל חזק.','מקום המסתור נועד לשמור על חפצי ערך.','חפשו ארגז עם מכסה כבד ומנעול.','מצאו את תיבת האוצר הנעולה בין חפצי הספינה.'],ru:['Капитан спрятал добычу перед отплытием.','Она лежит в прочной ёмкости.','Тайник предназначен для хранения ценностей.','Ищи ящик с тяжёлой крышкой и замком.','Найди запертый сундук капитана среди корабельных вещей.']}},
+  {objects:['🤖','⚙️','💻','🔌','🔋','🧲','🛠️','🧰'],target:4,window:'🌃',wall:'#b8c5d5',floor:'#77758b',clues:{en:['A small power source was misplaced in the robot workshop.','It helps a machine work without staying plugged in.','Look for a compact object that stores energy.','It has two ends that connect to a device.','Find the cell that gives the little robot its power.'],he:['מקור כוח קטן אבד בסדנת הרובוטים.','הוא עוזר למכונה לפעול בלי להיות מחוברת לחשמל.','חפשו חפץ קטן שאוגר אנרגיה.','יש לו שני קצוות שמתחברים למכשיר.','מצאו את הסוללה שמספקת כוח לרובוט הקטן.'],ru:['В мастерской роботов потерялся небольшой источник энергии.','Он помогает устройству работать без провода.','Ищи компактный предмет, который хранит энергию.','У него два конца, которые соединяются с устройством.','Найди элемент питания для маленького робота.']}},
+  {objects:['🧚','🦋','🌸','🍄','✨','🪄','🌱','🪷'],target:3,window:'🌈',wall:'#e9c8e8',floor:'#aa7a69',clues:{en:['A tiny woodland visitor left something behind in the fairy garden.','It appeared after a gentle shower.','Look low to the ground beneath the flowers.','It has a rounded cap and a short stem.','Find the little forest growth with a spotted cap.'],he:['אורחת קטנה מהיער השאירה משהו בגן הפיות.','הוא הופיע אחרי גשם עדין.','חפשו קרוב לקרקע, מתחת לפרחים.','יש לו כובע מעוגל וגבעול קצר.','מצאו את הפטרייה הקטנה עם הכובע המנוקד.'],ru:['Маленькая лесная гостья что-то оставила в саду фей.','Это появилось после лёгкого дождя.','Ищи у земли под цветами.','У находки круглая шляпка и короткая ножка.','Найди маленький гриб в пятнистой шляпке.']}},
+  {objects:['🧤','🧊','🐻‍❄️','🛷','🧣','❄️','🧪','🧥'],target:1,window:'🌨️',wall:'#c8e4f2',floor:'#9aafbd',clues:{en:['A tiny piece of winter is hiding at the Arctic base.','It is colder than the snow around it.','Look for clear frozen water shaped into a point.','It glitters when the light catches its icy edges.','Find the small shard of ice near the frosted window.'],he:['חתיכה קטנה של חורף מסתתרת בתחנה הארקטית.','היא קרה יותר מהשלג שסביבה.','חפשו מים קפואים ושקופים שצורתם מחודדת.','הם נוצצים כשהאור פוגע בקצוות הקפואים.','מצאו את שבב הקרח הקטן ליד החלון המכוסה כפור.'],ru:['Маленькая частичка зимы спрятана на арктической базе.','Она холоднее окружающего снега.','Ищи прозрачную замёрзшую воду с острым кончиком.','Она блестит, когда свет касается ледяных краёв.','Найди маленькую льдинку у покрытого инеем окна.']}},
+  {objects:['🐉','🔥','💎','🥚','🪨','🕯️','🦇','🧰'],target:3,window:'🌋',wall:'#6b4c58',floor:'#755546',clues:{en:['Something precious is carefully guarded in the dragon’s cave.','It has not hatched yet.','Look for a smooth oval shape tucked somewhere warm.','A young dragon is waiting inside its shell.','Find the speckled treasure that may soon crack open.'],he:['דבר יקר נשמר בקפידה במערת הדרקון.','הוא עדיין לא בקע.','חפשו צורה סגלגלה וחלקה שמונחת במקום חמים.','דרקון צעיר מחכה בתוך הקליפה שלו.','מצאו את האוצר המנוקד שעשוי להיסדק בקרוב.'],ru:['В пещере дракона бережно охраняют нечто ценное.','Оно ещё не вылупилось.','Ищи гладкую овальную вещь в тёплом месте.','Внутри скорлупы ждёт маленький дракон.','Найди пятнистое сокровище, которое скоро может треснуть.']}},
+  {objects:['📅','⏳','🕰️','🌀','🧭','⚙️','🚪','📜'],target:1,window:'🌀',wall:'#b8add7',floor:'#897a9c',clues:{en:['A keepsake slipped out of its place during the time jump.','It measures something that never stands still.','Look for an object with two glass chambers.','Tiny grains fall from one side to the other.','Find the timer that marks time with falling sand.'],he:['מזכרת נשמטה ממקומה בזמן הקפיצה בזמן.','היא מודדת דבר שאינו עוצר לרגע.','חפשו חפץ עם שני חלקי זכוכית.','גרגרים קטנים נופלים מחלק אחד לאחר.','מצאו את כלי המדידה שבו החול זורם ומסמן את הזמן.'],ru:['Во время прыжка во времени с места выпала памятная вещь.','Она измеряет то, что никогда не останавливается.','Ищи предмет с двумя стеклянными камерами.','Мелкие крупинки пересыпаются из одной части в другую.','Найди прибор, который отсчитывает время падающим песком.']}}
+];
+let escapeRoomIndex=0,escapeRoomSolved=false,escapeRoomStarEarned=false,escapeRoomAnswer='',escapeRoomAnswerIndex=-1,escapeRoomExplanation='',escapeRoomPhase='riddles',escapeKeyFound=false,escapeKeyFeedback='';
 function startEscapeRoom(){
   escapeRoomIndex=0;
   escapeRoomSolved=false;
   escapeRoomStarEarned=false;
+  escapeRoomPhase='riddles';
+  escapeKeyFound=false;
+  escapeKeyFeedback='';
   go('gameStage');
   renderEscapeRoom();
 }
@@ -2682,6 +2726,8 @@ function getEscapeRoomPuzzle(){
   return {prompt:puzzle.prompt,answerIndex:puzzle.answer,answer:puzzle.options[puzzle.answer],explanation:puzzle.explanation,options:puzzle.options};
 }
 function renderEscapeRoom(){
+  if(escapeRoomPhase==='keyRoom'){renderEscapeKeyRoom();return}
+  if(escapeRoomPhase==='complete'){renderEscapeComplete();return}
   const activity=activityNames('escapeRoom',currentLanguage)[selectedLevel];
   const roomNames=tr('escapeRoomNames');
   const puzzle=getEscapeRoomPuzzle();
@@ -2691,8 +2737,43 @@ function renderEscapeRoom(){
   genericAnswer=escapeRoomAnswer;
   questionHintCount=0;
   const progress=Array.from({length:5},(_,index)=>`<span class="${index<escapeRoomIndex?'done':''}">${index+1}</span>`).join('');
-  $('#gameContent').innerHTML=`<h2>${tr('escapeRooms')}</h2><h3>${activity}</h3><div class="escape-scene" aria-hidden="true"><div class="scene-window">🌙</div><div class="scene-shelf">📚 🧪</div><div class="scene-door">🚪🔒</div><div class="scene-desk">🔍 🗝️ 📦</div></div><div class="escape-progress" aria-label="${tr('escapeRoomProgress',{n:escapeRoomIndex+1,room:roomNames[escapeRoomIndex]})}">${progress}</div><section class="escape-room"><b>${tr('escapeRoomProgress',{n:escapeRoomIndex+1,room:roomNames[escapeRoomIndex]})}</b><p>${tr('escapePrompt')}</p><div id="learningQuestion" class="escape-riddle">${puzzle.prompt}</div><div class="answer-grid">${puzzle.options.map((option,index)=>`<button data-answer-index="${index}" onclick="answerEscapeRoom(this)">${option}</button>`).join('')}</div><div class="learning-tools"><button class="ghost" onclick="revealLearningHint()" data-i18n="hintButton">${tr('hintButton')}</button></div><p id="learningHint" class="learning-hint" aria-live="polite"></p><p id="learningFeedback" class="play-status" aria-live="polite"></p></section><button class="ghost" onclick="backFromGame()" data-i18n="back">${tr('back')}</button>`;
+  $('#gameContent').innerHTML=`<h2>${tr('escapeRooms')}</h2><h3>${activity}</h3><div class="escape-scene" aria-hidden="true"><div class="scene-window">🌙</div><div class="scene-shelf">📚 🧪</div><div class="scene-door">🚪🔒</div><div class="scene-desk">🔍 📦 🕯️</div></div><div class="escape-progress" aria-label="${tr('escapeRoomProgress',{n:escapeRoomIndex+1,room:roomNames[escapeRoomIndex]})}">${progress}</div><section class="escape-room"><b>${tr('escapeRoomProgress',{n:escapeRoomIndex+1,room:roomNames[escapeRoomIndex]})}</b><p>${tr('escapePrompt')}</p><div id="learningQuestion" class="escape-riddle">${puzzle.prompt}</div><div class="answer-grid">${puzzle.options.map((option,index)=>`<button data-answer-index="${index}" onclick="answerEscapeRoom(this)">${option}</button>`).join('')}</div><div class="learning-tools"><button class="ghost" onclick="revealLearningHint()" data-i18n="hintButton">${tr('hintButton')}</button></div><p id="learningHint" class="learning-hint" aria-live="polite"></p><p id="learningFeedback" class="play-status" aria-live="polite"></p></section><button class="ghost" onclick="backFromGame()" data-i18n="back">${tr('back')}</button>`;
   if(escapeRoomSolved)renderEscapeRoomSuccess();
+}
+function getEscapeKeyRoom(){
+  if(!Number.isInteger(selectedLevel)||selectedLevel<0||selectedLevel>=ESCAPE_KEY_ROOMS.length)throw new Error(`Invalid escape-room activity for hidden-key room: ${selectedLevel}`);
+  const room=ESCAPE_KEY_ROOMS[selectedLevel],clues=room.clues[currentLanguage];
+  if(!room||!Array.isArray(room.objects)||room.objects.length!==8||new Set(room.objects).size!==8||!Number.isInteger(room.target)||room.target<0||room.target>=room.objects.length||!Array.isArray(clues)||clues.length!==5||clues.some(clue=>!clue)){
+    throw new Error(`Incomplete hidden-key room for activity ${selectedLevel+1}, language ${currentLanguage}`);
+  }
+  return room;
+}
+function renderEscapeKeyRoom(completed=false){
+  const room=getEscapeKeyRoom(),clues=room.clues[currentLanguage];
+  const clueList=clues.map(clue=>`<li>${clue}</li>`).join('');
+  const activity=activityNames('escapeRoom',currentLanguage)[selectedLevel];
+  const objects=room.objects.map((icon,index)=>`<button class="escape-room-object escape-object-slot-${index}" aria-label="${tr('escapeSearchObject')} ${index+1}" onclick="searchEscapeKey(${index})" ${escapeKeyFound?'disabled':''}><span aria-hidden="true">${escapeKeyFound&&index===room.target?'🗝️':icon}</span></button>`).join('');
+  const style=`--escape-wall:${room.wall};--escape-floor:${room.floor}`;
+  const message=completed?tr('escapeComplete'):escapeKeyFound?tr('escapeKeyFound'):escapeKeyFeedback;
+  const action=completed?`<button class="alt" onclick="renderGameLevels()" data-i18n="next">${tr('next')}</button>`:escapeKeyFound?`<button class="alt" onclick="finishEscapeRoom()">${tr('escapeKeyFinish')}</button>`:'';
+  $('#gameContent').innerHTML=`<h2>${activity} · ${tr('escapeKeyRoomTitle')}</h2>${completed?'':`<p>${tr('escapeKeyRoomPrompt')}</p><ol class="escape-key-clues">${clueList}</ol>`}<section class="escape-key-room" style="${style}" aria-label="${activity}"><div class="escape-room-window" aria-hidden="true">${room.window}</div>${objects}</section><p class="escape-key-feedback" aria-live="polite">${message}</p>${action}<button class="ghost" onclick="backFromGame()" data-i18n="back">${tr('back')}</button>`;
+}
+function searchEscapeKey(place){
+  if(escapeRoomPhase!=='keyRoom'||escapeKeyFound)return;
+  const room=getEscapeKeyRoom();
+  if(!Number.isInteger(place)||place<0||place>=room.objects.length)throw new Error(`Unknown escape-room hiding place: ${place}`);
+  if(place!==room.target){escapeKeyFeedback=tr('escapeKeyWrong');renderEscapeKeyRoom();return}
+  escapeKeyFound=true;
+  escapeKeyFeedback='';
+  renderEscapeKeyRoom();
+}
+function finishEscapeRoom(){
+  if(escapeRoomPhase!=='keyRoom'||!escapeKeyFound)return;
+  escapeRoomPhase='complete';
+  renderEscapeRoom();
+}
+function renderEscapeComplete(){
+  renderEscapeKeyRoom(true);
 }
 function awardEscapeRoomStar(){
   if(!Array.isArray(S.completedEscapeRooms))S.completedEscapeRooms=[];
@@ -2707,12 +2788,20 @@ function renderEscapeRoomSuccess(){
   if(!feedback)return;
   document.querySelectorAll('#gameContent .answer-grid button').forEach(button=>button.disabled=true);
   const reward=escapeRoomStarEarned?` ${tr('starEarned')}`:'';
-  const explanation=`<span class="escape-explanation">${escapeRoomExplanation}</span>`;
+  const clue=getEscapeKeyRoom().clues[currentLanguage][escapeRoomIndex];
+  const explanation=`<span class="escape-explanation">${escapeRoomExplanation}</span><span class="escape-explanation"><b>${tr('escapeKeyClueLabel')}</b> ${clue}</span>`;
   if(escapeRoomIndex<4){
     feedback.innerHTML=`<span>${tr('correct')} ${reward}</span><br><span>${tr('escapeRoomCleared')}</span>${explanation}<button class="alt" onclick="nextEscapeRoom()" data-i18n="escapeNextRoom">${tr('escapeNextRoom')}</button>`;
     return;
   }
-  feedback.innerHTML=`<span>${tr('correct')} ${reward}</span><br><span>${tr('escapeComplete')}</span>${explanation}<button class="alt" onclick="renderGameLevels()" data-i18n="next">${tr('next')}</button>`;
+  feedback.innerHTML=`<span>${tr('correct')} ${reward}</span><br><span>${tr('escapeRoomCleared')}</span>${explanation}<button class="alt" onclick="enterEscapeKeyRoom()">${tr('escapeKeyEnter')}</button>`;
+}
+function enterEscapeKeyRoom(){
+  if(!escapeRoomSolved||escapeRoomIndex!==4||escapeRoomPhase!=='riddles')return;
+  escapeRoomPhase='keyRoom';
+  escapeKeyFound=false;
+  escapeKeyFeedback='';
+  renderEscapeRoom();
 }
 function clearLearningHint(){
   const hint=$('#learningHint');
