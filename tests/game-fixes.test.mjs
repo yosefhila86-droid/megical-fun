@@ -296,6 +296,24 @@ test('all other mini games have localized animated demos and continue to activit
     assert.equal(dataContext.introVisuals[id].length, 3, `${id} demo scenes`);
     assert.ok(dataContext.introVisuals[id].every((scene) => scene.length >= 4), `${id} demo visuals`);
   }
+  for (const [language, copy] of Object.entries(dataContext.introCopy)) {
+    assert.match(copy.escapeRoom[1], /key|מפתח|ключ/i, `${language} explains the hidden-key clue`);
+    assert.match(copy.escapeRoom[3], /key|מפתח|ключ/i, `${language} explains that riddles reveal key clues`);
+    assert.match(copy.escapeRoom[4], /click|לחצו|нажимай/i, `${language} explains clicking room objects`);
+  }
+  assert.ok(dataContext.introVisuals.escapeRoom[1].filter((token) => token === '💡').length >= 5, 'demo shows clues accumulating across five riddles');
+  for (const object of ['🕰️', '📚', '🖼️', '🧰', '🗄️', '🏺', '🪴', '🟪']) {
+    assert.ok(dataContext.introVisuals.escapeRoom[2].includes(object), `demo room includes ${object}`);
+  }
+  assert.ok(dataContext.introVisuals.escapeRoom[2].includes('🗝️'), 'demo shows finding the key after searching');
+  assert.match(html, /\.game-demo-frame\.escape-room-final \.game-demo-board\{width:min\(100%,160px\)/);
+  assert.match(html, /game\.id==='escapeRoom'&&index===2\?' escape-room-final':''/);
+  assert.match(html, /@keyframes game-demo-scene-one\{0%,30%\{opacity:1/);
+  assert.match(html, /@keyframes game-demo-scene-two\{0%,32%\{opacity:0/);
+  assert.match(html, /@keyframes game-demo-scene-three\{0%,66%\{opacity:0/);
+  assert.match(html, /\.game-demo-frame\{[^}]*animation:game-demo-scene-one 9s linear infinite both/);
+  assert.match(html, /\.game-demo-video:after\{[^}]*animation:code-demo-progress 9s linear infinite/);
+  assert.doesNotMatch(html, /\.game-demo-frame:nth-child\(2\)\{animation-delay|\.game-demo-frame:nth-child\(3\)\{animation-delay/);
   assert.match(html, /@keyframes code-demo-scene/);
   assert.match(html, /@keyframes demo-token-pop/);
 

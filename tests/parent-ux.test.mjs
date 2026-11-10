@@ -30,6 +30,55 @@ test('translation keys and interpolation placeholders are consistent across lang
   }
 });
 
+test('each escape-room activity has its own themed room and five localized key clues', () => {
+  for (const language of ['en', 'he', 'ru']) {
+    const rooms = vm.createContext({});
+    vm.runInContext(source('const ESCAPE_KEY_ROOMS=', 'let escapeRoomIndex=0') + '\nglobalThis.escapeRooms=ESCAPE_KEY_ROOMS;', rooms);
+    const roomData = rooms.escapeRooms;
+    assert.equal(roomData.length, 12, 'all escape activities have their own room');
+    assert.equal(new Set(roomData.map((room) => room.objects.join(''))).size, 12, `${language} rooms use distinct object sets`);
+    assert.equal(new Set(roomData.map((room) => room.target)).size > 1, true, 'the key is not always hidden in the same place');
+    for (let activity = 0; activity < roomData.length; activity++) {
+      const content = { innerHTML: '' };
+      const context = vm.createContext({
+        currentLanguage: language,
+        selectedLevel: activity,
+        activityNames: () => Array.from({ length: 12 }, (_, index) => `Activity ${index + 1}`),
+        $: () => content,
+        tr: (key) => text[language][key] ?? key,
+      });
+      vm.runInContext(source('const ESCAPE_KEY_ROOMS=', 'const GAME_WORDS='), context);
+      vm.runInContext("escapeRoomIndex=4;escapeRoomSolved=true;escapeRoomPhase='keyRoom';renderEscapeKeyRoom()", context);
+      assert.equal(vm.runInContext('escapeRoomPhase', context), 'keyRoom', `${language} activity ${activity+1} opens its room`);
+      assert.equal((content.innerHTML.match(/<li>/g) || []).length, 5, `${language} activity ${activity+1} shows five clues`);
+      assert.equal((content.innerHTML.match(/class="escape-room-object /g) || []).length, 8, `${language} activity ${activity+1} has eight clickable objects`);
+      assert.ok(content.innerHTML.includes(`escape-object-slot-${roomData[activity].target}`), `${language} activity ${activity+1} uses its target position`);
+      assert.ok(content.innerHTML.includes(roomData[activity].window), `${language} activity ${activity+1} uses its themed window`);
+      assert.ok(content.innerHTML.includes(`aria-label="Activity ${activity+1}"`));
+      assert.doesNotMatch(content.innerHTML, /🗝️/, `${language} activity ${activity+1} keeps the key hidden`);
+      const clues = roomData[activity].clues[language];
+      assert.equal(clues.length, 5, `${language} activity ${activity+1} has five clues`);
+      assert.equal(new Set(clues).size, 5, `${language} activity ${activity+1} clues are distinct`);
+      for (const clue of clues) assert.ok(content.innerHTML.includes(clue), `${language} activity ${activity+1} shows clue: ${clue}`);
+      assert.ok(!/Bookcase|Plant|Книжный шкаф|Растение|כוננית ספרים|עציץ/.test(content.innerHTML), `${language} room does not label objects`);
+
+      context.searchEscapeKey((roomData[activity].target + 1) % 8);
+      assert.ok(content.innerHTML.includes(text[language].escapeKeyWrong), `${language} activity ${activity+1} gives wrong-location feedback`);
+      context.searchEscapeKey(roomData[activity].target);
+      assert.ok(content.innerHTML.includes('🗝️'), `${language} activity ${activity+1} reveals the key on its target`);
+      context.finishEscapeRoom();
+      assert.equal(vm.runInContext('escapeRoomPhase', context), 'complete');
+      assert.ok(content.innerHTML.includes(text[language].escapeComplete), `${language} activity ${activity+1} confirms escape`);
+    }
+    for (let left = 0; left < roomData.length; left++) for (let right = left + 1; right < roomData.length; right++) {
+      assert.notDeepEqual(roomData[left].clues[language], roomData[right].clues[language], `${language} activities ${left+1} and ${right+1} clues differ`);
+    }
+  }
+  assert.match(source('function renderEscapeRoomSuccess()', 'function enterEscapeKeyRoom()'), /getEscapeKeyRoom\(\)\.clues\[currentLanguage\]\[escapeRoomIndex\]/);
+  assert.match(source('function renderEscapeRoomSuccess()', 'function enterEscapeKeyRoom()'), /<b>\$\{tr\('escapeKeyClueLabel'\)\}<\/b>/);
+  for (const language of ['en', 'he', 'ru']) assert.ok(text[language].escapeKeyClueLabel, `${language} labels each clue as a hidden-key hint`);
+});
+
 function dashboard({ vip = false, unlocked = [] } = {}) {
   const elements = new Map();
   const get = (selector) => {
