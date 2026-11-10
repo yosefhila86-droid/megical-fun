@@ -96,8 +96,12 @@ video{width:100%;max-width:420px;border-radius:16px;background:#222;display:bloc
  .paint-actions{grid-column:2;grid-row:4/span 3;flex-direction:column;align-self:center}
  .paint-actions button{width:100%}
 }
-#paint>.paint-palette{display:flex;flex:0 0 auto;flex-wrap:nowrap;justify-content:safe center;gap:10px;width:calc(100% + 16px);min-height:54px;margin:0 -8px;padding:8px 14px calc(8px + env(safe-area-inset-bottom));overflow-x:auto;overflow-y:hidden;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;background:#fff7e6;border-top:2px solid #ece6ff;scrollbar-width:thin}
-#paint>.paint-palette .sw{flex:0 0 36px}
+#paint>.paint-palette{display:flex;flex:0 0 auto;flex-direction:column;gap:4px;width:calc(100% + 16px);max-height:132px;margin:0 -8px;padding:6px 14px calc(6px + env(safe-area-inset-bottom));overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;background:#fff7e6;border-top:2px solid #ece6ff;scrollbar-width:thin}
+.paint-color-section{flex:0 0 auto;min-width:0}
+.paint-color-section-title{margin:0 0 4px;font-size:12px;font-weight:700;text-align:start}
+.paint-color-swatches{display:flex;flex-wrap:nowrap;justify-content:safe center;gap:10px;min-height:38px;overflow-x:auto;overflow-y:hidden;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;scrollbar-width:thin}
+.paint-color-swatches .sw{flex:0 0 36px}
+.paint-empty-colors{margin:0;font-size:12px;opacity:.75}
 .snd-grid{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:6px 0}
 .snd-opt{background:#ece6ff;color:#3b2a66;padding:10px 14px;border-radius:16px}
 .snd-opt.on{background:#7c4dff;color:#fff;box-shadow:0 0 0 3px #c9b8ff}
@@ -311,7 +315,7 @@ video{width:100%;max-width:420px;border-radius:16px;background:#222;display:bloc
   </div>
   <div class="tools paint-zoom-tools"><button class="ghost" onclick="zm.by(1.4)" aria-label="Zoom in">＋</button><button class="ghost" onclick="zm.by(1/1.4)" aria-label="Zoom out">－</button><button class="ghost" id="bPan" onclick="zm.togglePan()" aria-label="Move">✋</button><button class="ghost" onclick="zm.reset()" aria-label="Reset zoom">↺</button></div>
   </div>
-  <div class="pal paint-palette" id="pal" role="toolbar" aria-label="Color palette" data-i18n-aria="colorPalette"></div>
+  <div class="paint-palette" id="pal" role="group" aria-label="Color palette" data-i18n-aria="colorPalette"></div>
 </div>
 
 <div id="camera" class="screen center">
@@ -697,6 +701,9 @@ Object.assign(TEXT.ru,{chooseGameToUnlock:'Выберите игру для от
   purchaseOptionsSome:'Выберите закрытую игру, чтобы увидеть варианты покупки.',
   codeActivityIntro:'Во всех заданиях одинаковые поле и правила. В каждом нужно разгадать свою секретную последовательность цветов.',
   coloringCategories:'Категории раскрасок',previousColoringPicture:'Предыдущая картинка',nextColoringPicture:'Следующая картинка'});
+Object.assign(TEXT.en,{basicColors:'Basic colors',createdColors:'My colors',noCreatedColors:'Colors you create will appear here.',draftSaveFailed:'Could not save this coloring progress. Please free up device storage and try again.'});
+Object.assign(TEXT.he,{basicColors:'צבעים בסיסיים',createdColors:'הצבעים שלי',noCreatedColors:'הצבעים שתיצרו יופיעו כאן.',draftSaveFailed:'שמירת ההתקדמות נכשלה. פנו מקום באחסון המכשיר ונסו שוב.'});
+Object.assign(TEXT.ru,{basicColors:'Основные цвета',createdColors:'Мои цвета',noCreatedColors:'Созданные цвета появятся здесь.',draftSaveFailed:'Не удалось сохранить раскрашивание. Освободите место на устройстве и попробуйте ещё раз.'});
 let currentLanguage='en';
 try{currentLanguage=localStorage.getItem('megical_language')||'en'}catch(e){console.error('Could not read language preference:',e)}
 function tr(key,values={}){
@@ -967,7 +974,7 @@ const COLORS=["#ff4d4d","#ff9f1c","#ffd60a","#7ed957","#00b894","#4dc3ff","#3a6b
 const SIZES=[["Small",4],["Medium",8],["Large",16],["Extra Large",28],["Jumbo",44]];
 const OPT_EMOJI={blur:1,passes:1,levels:4,minArea:90,thick:1};
 const OPT_PHOTO={photo:true};
-let curCat = 0, curItem = 0;
+let curCat = 0, curItem = 0,paintDraftKey=null,paintDraftReady=false,paintDraftSaveTimer=null;
 let cur=COLORS[0],back='games',L=null,reg=null,img=null,hist=[],stream=null,cameraFacing='environment';
 let mode='fill',sizeIdx=1,drawing=false,lx=0,ly=0,brad=3,dirty=null;
 const cv=$('#cv'),ctx=cv.getContext('2d',{willReadFrequently:true});
@@ -1248,6 +1255,7 @@ window.addEventListener('pagehide',flushDailyUsage);
 
 /* ---------- navigation ---------- */
 function go(id){
+  if(curScreen==='paint'&&id!=='paint')savePaintDraft();
   if(id!=='camera')stopCam();
   if(id==='welcome')stopDailyUsageTracking();
   else if(!document.hidden)startDailyUsageTracking();
@@ -1505,10 +1513,13 @@ function openCat(ci){
 }
 function backFromItems(){coloringLaunch=false;go(back==='gameStage'?'gameStage':'games')}
 function openItem(ci,i){
+  if(curScreen==='paint')savePaintDraft();
   const c=CATS[ci];curCat = ci;
   curItem = i;
   if(locked(c,i)){pendingPurchaseGame='coloring';$('#gYear').value='';$('#gErr').textContent='';$('#gate').classList.add('on');return}
   const paintFrom=coloringLaunch?'gameStage':'items';coloringLaunch=false;
+  const draftKey=`${c.id}:${i}`;
+  paintDraftKey=draftKey;paintDraftReady=false;
   const item = c.items[i];
   const isImg = item.includes('/') || item.includes('.');
 
@@ -1529,14 +1540,14 @@ function openItem(ci,i){
 
         const result = lineArtFromCanvas(t);
         if (result) {
-          showPaintResult(result, paintFrom);
+          showPaintResult(result, paintFrom,draftKey);
           return;
         }
-        startPaint(t, {blur:0, passes:1, levels:2, minArea:1, thick:0}, paintFrom);
+        startPaint(t, {blur:0, passes:1, levels:2, minArea:1, thick:0}, paintFrom,draftKey);
       } catch (error) {
         console.error('Could not open catalogue coloring page:', error);
         try {
-          startPaint(t,{blur:0,passes:1,levels:2,minArea:1,thick:0},paintFrom);
+          startPaint(t,{blur:0,passes:1,levels:2,minArea:1,thick:0},paintFrom,draftKey);
         } catch (fallbackError) {
           console.error('Could not recover catalogue coloring page:', fallbackError);
           toast('Sorry, this coloring page could not be opened. Please try another one.');
@@ -1550,7 +1561,7 @@ function openItem(ci,i){
     x.textAlign='center';x.textBaseline='middle';
     x.font='330px "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif';
     x.fillText(item,N/2,N/2+16);
-    startPaint(t,OPT_EMOJI,paintFrom);
+    startPaint(t,OPT_EMOJI,paintFrom,draftKey);
   }
 }
 function navItem(dir) {
@@ -4810,20 +4821,22 @@ async function detectFaces(c){
     return faces&&faces.length?faces.map(f=>f.boundingBox):null;
   }catch(e){return null}
 }
-function showPaintResult(r,from){
+function showPaintResult(r,from,draftKey=null){
   if(!r||!r.L||!r.reg)throw new Error('This picture could not be made into a coloring page.');
   $('#toast').style.display='none';
-  L=r.L;reg=r.reg;back=from;hist=[];editingArtIndex=-1;
+  L=r.L;reg=r.reg;back=from;hist=[];editingArtIndex=-1;paintDraftKey=draftKey;paintDraftReady=false;
   img=ctx.createImageData(N,N);resetImg();ctx.putImageData(img,0,0);
   baseImg=img.data.slice();savedImg=null;
   setPhotoPaintControls(false);
+  void restorePaintDraft();
   setMode('fill');go('paint');
 }
 function setPhotoPaintControls(isPhoto){
   $('#paintItemNav').hidden=isPhoto;
   $('#downloadPaint').style.display=isPhoto?'none':'';
 }
-async function startPaint(src,opt,from){
+async function startPaint(src,opt,from,draftKey=null){
+  paintDraftKey=draftKey;paintDraftReady=false;
   toast('✨ Making magic…');
   const run=(s,hints)=>{
     let r=null;
@@ -4834,6 +4847,7 @@ async function startPaint(src,opt,from){
     img=ctx.createImageData(N,N);resetImg();ctx.putImageData(img,0,0);
     baseImg=img.data.slice();savedImg=null;               /* remember the blank page and the last saved state */
     setPhotoPaintControls(!!opt.photo);
+    void restorePaintDraft();
     setMode('fill');go('paint');
   };
   const prep=opt.photo?loadPhotoSource(src):Promise.resolve(src);
@@ -4894,9 +4908,12 @@ cv.addEventListener('pointerdown',e=>{
   stamp(lx,ly,brad,hexRgb(cur));flush();
 });
 cv.addEventListener('pointermove',e=>{if(!drawing)return;e.preventDefault();const p=pos(e);strokeTo(p[0],p[1])});
-['pointerup','pointercancel','pointerleave'].forEach(t=>cv.addEventListener(t,()=>{drawing=false}));
-function undo(){if(hist.length&&img){img.data.set(hist.pop());ctx.putImageData(img,0,0)}}
-function clearArt(){if(!L)return;snapshot();resetImg();ctx.putImageData(img,0,0)}
+['pointerup','pointercancel','pointerleave'].forEach(t=>cv.addEventListener(t,()=>{
+  const finishedStroke=drawing;drawing=false;
+  if(finishedStroke)schedulePaintDraftSave();
+}));
+function undo(){if(hist.length&&img){img.data.set(hist.pop());ctx.putImageData(img,0,0);schedulePaintDraftSave()}}
+function clearArt(){if(!L)return;snapshot();resetImg();ctx.putImageData(img,0,0);schedulePaintDraftSave()}
 /* A picture earns stars only when it has real, NEW colouring since the last save */
 const MIN_CHANGE=150;                                     /* pixels (about one small brush stroke) */
 let baseImg=null,savedImg=null,editingArtIndex=-1;
@@ -4905,6 +4922,92 @@ function changedPixels(a,b,stopAt){
   for(let i=0,j=0;i<P;i++,j+=4)if(a[j]!==b[j]||a[j+1]!==b[j+1]||a[j+2]!==b[j+2]){if(++n>=stopAt)return n}
   return n;
 }
+function coloringDraftStorageKey(){return `megical_coloring_drafts_${currentUserId}`}
+function readColoringDrafts(){
+  try{
+    const raw=localStorage.getItem(coloringDraftStorageKey());
+    if(!raw)return {};
+    const drafts=JSON.parse(raw);
+    if(!drafts||typeof drafts!=='object'||Array.isArray(drafts))throw new Error('Invalid coloring drafts data.');
+    return drafts;
+  }catch(error){
+    console.error('Could not read coloring progress:',error);
+    return {};
+  }
+}
+function writeColoringDrafts(drafts){
+  try{
+    if(Object.keys(drafts).length)localStorage.setItem(coloringDraftStorageKey(),JSON.stringify(drafts));
+    else localStorage.removeItem(coloringDraftStorageKey());
+    return true;
+  }catch(error){
+    console.error('Could not save coloring progress:',error);
+    toast(tr('draftSaveFailed'));
+    return false;
+  }
+}
+function imageDataUrl(data){
+  const draftCanvas=document.createElement('canvas');
+  draftCanvas.width=draftCanvas.height=N;
+  const draftContext=draftCanvas.getContext('2d');
+  if(!draftContext)throw new Error('Could not prepare coloring progress for saving.');
+  const pixels=draftContext.createImageData(N,N);
+  pixels.data.set(data);
+  draftContext.putImageData(pixels,0,0);
+  return draftCanvas.toDataURL('image/png');
+}
+function savePaintDraft(){
+  if(curScreen!=='paint'||!paintDraftKey||!paintDraftReady||!img||!baseImg)return;
+  clearTimeout(paintDraftSaveTimer);paintDraftSaveTimer=null;flush();
+  const drafts=readColoringDrafts();
+  if(changedPixels(img.data,baseImg,1)===0&&!savedImg){
+    delete drafts[paintDraftKey];
+    writeColoringDrafts(drafts);
+    return;
+  }
+  try{
+    drafts[paintDraftKey]={image:cv.toDataURL('image/png'),savedImage:savedImg?imageDataUrl(savedImg):null};
+  }catch(error){
+    console.error('Could not encode coloring progress:',error);
+    toast(tr('draftSaveFailed'));
+    return;
+  }
+  writeColoringDrafts(drafts);
+}
+function schedulePaintDraftSave(){
+  if(curScreen!=='paint'||!paintDraftKey)return;
+  clearTimeout(paintDraftSaveTimer);
+  paintDraftSaveTimer=setTimeout(savePaintDraft,400);
+}
+async function restorePaintDraft(){
+  if(!paintDraftKey){paintDraftReady=true;return}
+  const draft=readColoringDrafts()[paintDraftKey];
+  if(!draft||typeof draft.image!=='string'){paintDraftReady=true;return}
+  const draftKey=paintDraftKey;
+  try{
+    const image=await loadPhotoSource(draft.image);
+    if(paintDraftKey!==draftKey||!img)return;
+    ctx.drawImage(image,0,0,N,N);
+    img=ctx.getImageData(0,0,N,N);
+    savedImg=null;
+    if(typeof draft.savedImage==='string'){
+      const saved=await loadPhotoSource(draft.savedImage);
+      if(paintDraftKey!==draftKey||!img)return;
+      const savedCanvas=document.createElement('canvas');
+      savedCanvas.width=savedCanvas.height=N;
+      const savedContext=savedCanvas.getContext('2d');
+      if(!savedContext)throw new Error('Could not restore the saved coloring baseline.');
+      savedContext.drawImage(saved,0,0,N,N);
+      savedImg=savedContext.getImageData(0,0,N,N).data;
+    }
+    hist=[];paintDraftReady=true;
+  }catch(error){
+    console.error('Could not restore coloring progress:',error);
+    toast(tr('draftSaveFailed'));
+    paintDraftReady=true;
+  }
+}
+window.addEventListener('pagehide',savePaintDraft);
 function saveArt(){
   if(!L||!img||!baseImg)return;
   flush();
@@ -4912,16 +5015,17 @@ function saveArt(){
     if(!savedImg||changedPixels(img.data,savedImg,MIN_CHANGE)<MIN_CHANGE){toast('No new changes to save yet.');return}
     S.art[editingArtIndex]=cv.toDataURL('image/jpeg',.85);
     savedImg=img.data.slice();
-    sv();renderProfile();toast('✅ Saved artwork updated!');return;
+    sv();savePaintDraft();renderProfile();toast('✅ Saved artwork updated!');return;
   }
   if(changedPixels(img.data,baseImg,MIN_CHANGE)<MIN_CHANGE){toast('🎨 Add some color first, then save!');return}
   if(savedImg&&changedPixels(img.data,savedImg,MIN_CHANGE)<MIN_CHANGE){toast('✅ Already saved! Color more to earn more ⭐');return}
   S.art.unshift(cv.toDataURL('image/jpeg',.85));S.art=S.art.slice(0,20);queueProfileStarReward(1,newProfileRewardId());
   savedImg=img.data.slice();
-  renderProfile();toast(tr('drawingSaved')+' '+tr('starEarned'));
+  savePaintDraft();renderProfile();toast(tr('drawingSaved')+' '+tr('starEarned'));
 }
 
 async function openSavedArt(index){
+  paintDraftKey=null;
   const src=S.art[index];
   if(typeof src!=='string'||!src){toast('This saved image could not be opened.');return}
   try{
@@ -4964,8 +5068,9 @@ function setSize(i){sizeIdx=i;mode='brush';refreshTools()}
 
 /* ---------- palette & color mixer ---------- */
 function renderPalette(){
-  $('#pal').innerHTML=COLORS.concat(S.custom).map(c=>`<button class="sw${c.toLowerCase()===cur.toLowerCase()?' on':''}" style="background:${c}" onclick="pickC('${c}')" aria-label="Color ${c}"></button>`).join('')
-    +'<button class="sw mix" onclick="openMixer()" aria-label="Rainbow color mixer">🌈</button>';
+  const swatch=color=>`<button class="sw${color.toLowerCase()===cur.toLowerCase()?' on':''}" style="background:${color}" onclick="pickC('${color}')" aria-label="Color ${color}"></button>`;
+  const customColors=S.custom.filter(color=>typeof color==='string'&&/^#[0-9a-f]{6}$/i.test(color));
+  $('#pal').innerHTML=`<section class="paint-color-section"><h3 class="paint-color-section-title">${tr('basicColors')}</h3><div class="paint-color-swatches">${COLORS.map(swatch).join('')}<button class="sw mix" onclick="openMixer()" aria-label="Rainbow color mixer">🌈</button></div></section><section class="paint-color-section"><h3 class="paint-color-section-title">${tr('createdColors')}</h3><div class="paint-color-swatches">${customColors.length?customColors.map(swatch).join(''):`<p class="paint-empty-colors">${tr('noCreatedColors')}</p>`}</div></section>`;
 }
 function pickC(c){cur=c;renderPalette()}
 function hsv2rgb(h,s,v){
@@ -5004,8 +5109,8 @@ function blendMix(){
   mx={h:h[0],s:h[1],v:h[2]};updMix();toast('🥣 Mixed with your color!');
 }
 function addMix(){
-  const hx=mixHex.toLowerCase(),all=COLORS.concat(S.custom).map(c=>c.toLowerCase());
-  if(!all.includes(hx)){S.custom.push(hx);if(S.custom.length>18)S.custom.shift()}
+  const hx=mixHex.toLowerCase(),all=COLORS.concat(S.custom).filter(c=>typeof c==='string').map(c=>c.toLowerCase());
+  if(!all.includes(hx))S.custom.push(hx);
   cur=hx;sv();renderPalette();renderDrawTools();closeM('mixM');toast('🌈 New color added!');
 }
 
@@ -5157,7 +5262,7 @@ const zm=(()=>{
 cv.addEventListener('pointerup',()=>{
   if(!pendFill)return;const p=pendFill;pendFill=null;
   if(zm.pinched||!img||!reg)return;
-  const r=nearRegion(p[0],p[1]);if(r>=0){snapshot();fillRegion(r)}
+  const r=nearRegion(p[0],p[1]);if(r>=0){snapshot();fillRegion(r);schedulePaintDraftSave()}
 });
 ['openItem','openSavedArt'].forEach(n=>{const f=window[n];if(typeof f==='function')window[n]=function(){zm.reset();return f.apply(this,arguments)}});
 
