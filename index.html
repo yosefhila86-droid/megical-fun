@@ -198,9 +198,26 @@ video{width:100%;max-width:420px;border-radius:16px;background:#222;display:bloc
 .code-demo-clues .absent{background:#aaa4b2}
 .code-demo-caption{max-width:90%;font-size:clamp(11px,3vw,16px);font-weight:700}
 .code-demo-play{position:absolute;right:10px;bottom:9px;font-size:11px;opacity:.8}
-@keyframes code-demo-scene{0%,3%{opacity:0;transform:translateY(8px)}6%,29%{opacity:1;transform:translateY(0)}33%,100%{opacity:0;transform:translateY(-5px)}}
+@keyframes code-demo-scene{0%{opacity:0;transform:translateY(8px)}2%,31%{opacity:1;transform:translateY(0)}33%,100%{opacity:0;transform:translateY(-5px)}}
 @keyframes code-demo-progress{to{transform:scaleX(1)}}
 @media(prefers-reduced-motion:reduce){.code-demo-video:after{animation:none;transform:scaleX(1)}.code-demo-frame{animation:none;display:none}.code-demo-frame:nth-child(3){display:flex;opacity:1;transform:none}}
+.game-intro{max-width:620px;margin:0 auto;text-align:center}
+.game-demo-video{position:relative;width:min(100%,560px);aspect-ratio:16/10;margin:16px auto;padding:18px;overflow:hidden;border:5px solid #fff;border-radius:24px;background:linear-gradient(145deg,#36205a,#6041a2);box-shadow:0 5px 16px #36205a45;color:#fff}
+.game-demo-video:after{content:"";position:absolute;left:0;bottom:0;width:100%;height:5px;background:#ffffff35;transform:scaleX(0);transform-origin:left;animation:code-demo-progress 15s linear infinite}
+.game-demo-frame{position:absolute;inset:16px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:clamp(4px,1.5vh,12px);opacity:0;animation:code-demo-scene 15s infinite}
+.game-demo-frame:nth-child(2){animation-delay:5s}
+.game-demo-frame:nth-child(3){animation-delay:10s}
+.game-demo-board{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(4px,1.5vw,9px);width:min(100%,300px);direction:ltr}
+.game-demo-token{display:grid;place-items:center;min-width:0;aspect-ratio:1;border:2px solid #ffffffa8;border-radius:14px;background:#ffffff24;font-size:clamp(20px,7vw,38px);animation:demo-token-pop .5s both}
+.game-demo-token:nth-child(2){animation-delay:.15s}
+.game-demo-token:nth-child(3){animation-delay:.3s}
+.game-demo-token:nth-child(4){animation-delay:.45s}
+.game-demo-caption{max-width:94%;font-size:clamp(12px,3.2vw,17px);font-weight:700}
+.game-demo-play{position:absolute;right:10px;bottom:9px;font-size:11px;opacity:.8}
+.game-intro-rules{max-width:520px;margin:10px auto 16px;padding-inline-start:24px;text-align:start}
+.game-intro-rules li{margin:5px 0}
+@keyframes demo-token-pop{from{opacity:.35;transform:scale(.75)}to{opacity:1;transform:scale(1)}}
+@media(prefers-reduced-motion:reduce){.game-demo-video:after{animation:none;transform:scaleX(1)}.game-demo-frame{animation:none;display:none}.game-demo-frame:nth-child(3){display:flex;opacity:1;transform:none}.game-demo-token{animation:none}}
 .puzzle-controls{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
 .escape-scene{position:relative;isolation:isolate;overflow:hidden;max-width:520px;min-height:180px;aspect-ratio:2.4/1;margin:12px auto;border:5px solid #fff;border-radius:22px;background:linear-gradient(to bottom,#c4e7ff 0 70%,#b9815c 70% 74%,#e8c89c 74%);box-shadow:0 4px 12px #36205a26}
 .escape-scene:after{content:"";position:absolute;z-index:-1;inset:auto 0 0;height:27%;background:repeating-linear-gradient(90deg,transparent 0 49px,#bd9970 50px,#bd9970 52px,transparent 53px)}
@@ -734,6 +751,87 @@ Object.assign(TEXT.ru,{chooseGameToUnlock:'Выберите игру для от
 Object.assign(TEXT.en,{basicColors:'Basic colors',createdColors:'My colors',noCreatedColors:'Colors you create will appear here.',draftSaveFailed:'Could not save this coloring progress. Please free up device storage and try again.'});
 Object.assign(TEXT.he,{basicColors:'צבעים בסיסיים',createdColors:'הצבעים שלי',noCreatedColors:'הצבעים שתיצרו יופיעו כאן.',draftSaveFailed:'שמירת ההתקדמות נכשלה. פנו מקום באחסון המכשיר ונסו שוב.'});
 Object.assign(TEXT.ru,{basicColors:'Основные цвета',createdColors:'Мои цвета',noCreatedColors:'Созданные цвета появятся здесь.',draftSaveFailed:'Не удалось сохранить раскрашивание. Освободите место на устройстве и попробуйте ещё раз.'});
+Object.assign(TEXT.en,{gameDemoIntro:'Watch the animated preview to learn the rules, then choose an activity.',gameDemoRulesTitle:'How to play',gameDemoGotIt:'Got it - choose an activity'});
+Object.assign(TEXT.he,{gameDemoIntro:'צפו בהדגמה המונפשת כדי ללמוד את הכללים, ואז בחרו פעילות.',gameDemoRulesTitle:'איך משחקים?',gameDemoGotIt:'הבנתי - לבחירת פעילות'});
+Object.assign(TEXT.ru,{gameDemoIntro:'Посмотри анимированную демонстрацию и узнай правила, затем выбери задание.',gameDemoRulesTitle:'Как играть?',gameDemoGotIt:'Понятно - выбрать задание'});
+const MINI_GAME_INTRO_COPY={
+  en:{
+    puzzle:['Choose a puzzle piece.','Move it toward its place.','The picture is complete!','Put every piece in its matching place.','Finish the picture to complete the puzzle.'],
+    logicQuest:['Look for the order.','Compare the choices.','Choose what comes next!','Use the clue or pattern to find the missing answer.','Tap the answer that completes the puzzle.'],
+    differences:['Look at both pictures.','Spot what changed.','Tap the difference!','Compare the two pictures carefully.','Find and tap each difference.'],
+    memory:['Turn over two cards.','Remember what you saw.','Find the matching pair!','Flip two cards on each turn.','Match all the pairs using your memory.'],
+    math:['Read the math question.','Work out the answer.','Choose the correct number!','Solve the calculation shown on screen.','Tap the number that answers it.'],
+    words:['Look at the letters.','Put them in the right order.','Find the word!','Use the letters and clues to solve the word task.','Choose or arrange the answer requested.'],
+    letters:['Follow the guide.','Trace the letter carefully.','Letter complete!','Trace along the letter guides.','Follow the stroke direction and cover the letter.'],
+    storyMath:['Listen to the story problem.','Count and work it out.','Choose the answer!','Use the details in the story to solve the math.','Tap the number that answers the question.'],
+    patterns:['Look at the pattern.','Find what is missing.','Continue the pattern!','Notice how the pictures or colors repeat.','Choose the item that comes next.'],
+    riddles:['Read the clue.','Think about what it describes.','Choose your answer!','Use the clue to figure out what it describes.','Answer each riddle to finish the activity.'],
+    scienceQuest:['Look closely at the question.','Think like a scientist.','Choose what fits!','Use observation and what you know about science.','Tap the answer that best explains the question.'],
+    escapeRoom:['Find the first clue.','Solve a riddle to unlock the way.','The room opens!','Solve the riddles one by one to escape.','Complete each room to move on to the next.'],
+    physicsPaths:['Look at the path.','Turn the track pieces.','Connect start to finish!','Rotate the tiles to join the open path ends.','Connect the green start to the finish before turns run out.'],
+    gridSokoban:['Plan a move.','Push the box toward the goal.','Box delivered!','Move around the board and push the box.','You can push it, but cannot pull it.'],
+    railwayControl:['Check the train colors.','Set the track switches.','Guide each train to its station!','Choose each switch direction before trains move.','Match every train to the station of the same color.'],
+    wordSearch:['Look for a listed word.','Select its letters in the grid.','Word found!','Find the words shown beside the letter grid.','Select each word in the correct direction.'],
+    magneticMaze:['Choose a magnet direction.','Guide the ball past obstacles.','Reach the goal!','Select and activate magnets to move the metal ball.','Avoid walls and holes on the way to the goal.'],
+  },
+  he:{
+    puzzle:['בחרו חלק מהפאזל.','הזיזו אותו למקום המתאים.','התמונה הושלמה!','מקמו כל חלק במקום המתאים לו.','השלימו את התמונה כדי לסיים את הפאזל.'],
+    logicQuest:['חפשו את הסדר.','השוו בין האפשרויות.','בחרו מה בא אחר כך!','היעזרו ברמז או בדוגמה כדי למצוא את התשובה החסרה.','לחצו על התשובה שמשלימה את החידה.'],
+    differences:['התבוננו בשתי התמונות.','מצאו מה השתנה.','לחצו על ההבדל!','השוו היטב בין שתי התמונות.','מצאו ולחצו על כל ההבדלים.'],
+    memory:['הפכו שני קלפים.','זכרו מה ראיתם.','מצאו זוג תואם!','בכל תור הפכו שני קלפים.','התאימו את כל הזוגות בעזרת הזיכרון.'],
+    math:['קראו את התרגיל.','חשבו את התשובה.','בחרו במספר הנכון!','פתרו את התרגיל שמופיע על המסך.','לחצו על המספר שעונה עליו.'],
+    words:['התבוננו באותיות.','סדרו אותן בסדר הנכון.','מצאו את המילה!','היעזרו באותיות וברמזים כדי לפתור את משימת המילים.','בחרו או סדרו את התשובה המבוקשת.'],
+    letters:['עקבו אחר הקווים.','ציירו את האות בזהירות.','האות הושלמה!','עקבו אחר קווי ההנחיה של האות.','ציירו בכיוון המסומן וכסו את האות.'],
+    storyMath:['קראו את הבעיה שבסיפור.','ספרו וחשבו.','בחרו את התשובה!','היעזרו בפרטים שבסיפור כדי לפתור את התרגיל.','לחצו על המספר שעונה על השאלה.'],
+    patterns:['התבוננו בדוגמה.','מצאו מה חסר.','המשיכו את הדוגמה!','שימו לב לחזרה של התמונות או הצבעים.','בחרו את הפריט הבא ברצף.'],
+    riddles:['קראו את הרמז.','חשבו למה הוא מתכוון.','בחרו את התשובה!','היעזרו ברמז כדי להבין מה הוא מתאר.','ענו על החידות כדי לסיים את הפעילות.'],
+    scienceQuest:['קראו את השאלה היטב.','חשבו כמו מדענים.','בחרו בתשובה המתאימה!','היעזרו בתצפית ובידע שלכם במדע.','לחצו על התשובה שמסבירה את השאלה בצורה הטובה ביותר.'],
+    escapeRoom:['מצאו את הרמז הראשון.','פתרו חידה כדי לפתוח את הדרך.','החדר נפתח!','פתרו את החידות בזו אחר זו כדי לצאת.','השלימו כל חדר כדי לעבור לחדר הבא.'],
+    physicsPaths:['התבוננו במסלול.','סובבו את חלקי הדרך.','חברו בין ההתחלה לסיום!','סובבו את האריחים כדי לחבר בין קצות המסלול.','חברו בין ההתחלה הירוקה לסיום לפני שייגמרו הסיבובים.'],
+    gridSokoban:['תכננו את הצעד.','דחפו את הקופסה אל היעד.','הקופסה הגיעה!','נועו בלוח ודחפו את הקופסה.','אפשר לדחוף אותה, אך אי אפשר למשוך.'],
+    railwayControl:['בדקו את צבעי הרכבות.','כוונו את המסילות.','הובילו כל רכבת לתחנה שלה!','בחרו את כיוון המסילה לפני שהרכבות נוסעות.','התאימו כל רכבת לתחנה בצבע שלה.'],
+    wordSearch:['חפשו מילה מהרשימה.','סמנו את אותיותיה בלוח.','מצאתם מילה!','מצאו את המילים שמופיעות לצד לוח האותיות.','סמנו כל מילה בכיוון המתאים.'],
+    magneticMaze:['בחרו כיוון למגנט.','הובילו את הכדור סביב המכשולים.','הגיעו ליעד!','בחרו והפעילו מגנטים כדי להזיז את כדור המתכת.','הימנעו מקירות ומבורות בדרך ליעד.'],
+  },
+  ru:{
+    puzzle:['Выбери деталь пазла.','Передвинь её на место.','Картинка собрана!','Поставь каждую деталь на своё место.','Собери картинку, чтобы завершить пазл.'],
+    logicQuest:['Найди порядок.','Сравни варианты.','Выбери, что дальше!','Используй подсказку или узор, чтобы найти пропущенный ответ.','Нажми на ответ, который завершает задачу.'],
+    differences:['Сравни две картинки.','Найди, что изменилось.','Нажми на отличие!','Внимательно сравни обе картинки.','Найди и нажми на все отличия.'],
+    memory:['Переверни две карточки.','Запомни, что увидел.','Найди пару!','За один ход открывай две карточки.','Найди все пары, используя память.'],
+    math:['Прочитай пример.','Вычисли ответ.','Выбери нужное число!','Реши пример на экране.','Нажми на число с ответом.'],
+    words:['Посмотри на буквы.','Расставь их по порядку.','Найди слово!','Используй буквы и подсказки, чтобы решить задание.','Выбери или составь нужный ответ.'],
+    letters:['Следуй за подсказкой.','Аккуратно обведи букву.','Буква готова!','Обводи буквы по направляющим.','Следуй направлению штрихов и закрась букву.'],
+    storyMath:['Прочитай задачу.','Посчитай и реши.','Выбери ответ!','Используй детали из рассказа, чтобы решить задачу.','Нажми на число, которое отвечает на вопрос.'],
+    patterns:['Посмотри на узор.','Найди пропуск.','Продолжи узор!','Заметь, как повторяются картинки или цвета.','Выбери следующий элемент.'],
+    riddles:['Прочитай подсказку.','Подумай, что она описывает.','Выбери ответ!','Используй подсказку, чтобы разгадать загадку.','Реши загадки, чтобы закончить задание.'],
+    scienceQuest:['Внимательно прочитай вопрос.','Подумай как учёный.','Выбери подходящий ответ!','Используй наблюдения и знания о науке.','Нажми на ответ, который лучше всего объясняет вопрос.'],
+    escapeRoom:['Найди первую подсказку.','Реши загадку, чтобы открыть путь.','Комната открыта!','Решай загадки одну за другой, чтобы выбраться.','Пройди каждую комнату, чтобы перейти дальше.'],
+    physicsPaths:['Посмотри на путь.','Поворачивай плитки.','Соедини старт и финиш!','Поворачивай плитки, соединяя открытые концы пути.','Соедини зелёный старт с финишем, пока не закончились ходы.'],
+    gridSokoban:['Продумай ход.','Толкай ящик к цели.','Ящик доставлен!','Передвигай героя и толкай ящик по полю.','Ящик можно толкать, но нельзя тянуть.'],
+    railwayControl:['Проверь цвета поездов.','Переключай стрелки.','Отправь каждый поезд на свою станцию!','Выбери направление стрелок до движения поездов.','Каждый поезд должен приехать на станцию своего цвета.'],
+    wordSearch:['Найди слово из списка.','Выдели его буквы в сетке.','Слово найдено!','Ищи слова, перечисленные рядом с сеткой букв.','Выделяй каждое слово в нужном направлении.'],
+    magneticMaze:['Выбери направление магнита.','Проведи шар мимо препятствий.','Доберись до цели!','Выбирай и включай магниты, чтобы двигать металлический шар.','Избегай стен и ям по пути к цели.'],
+  },
+};
+const MINI_GAME_INTRO_VISUALS={
+  puzzle:[['🧩','⬜','🖼️','⬜'],['🧩','🖼️','🖼️','⬜'],['🖼️','✨','✨','✨']],
+  logicQuest:[['🔴','🔵','🔴','❔'],['🔴','🔵','🔴','🔵'],['✅','🔵','🔴','🔵']],
+  differences:[['🌳','🌼','🐝','☀️'],['🌳','🌼','🦋','☀️'],['👆','🔎','✨','✅']],
+  memory:[['❔','❔','❔','❔'],['🐶','🐱','🐶','❔'],['🐶','🐱','🐶','🐱']],
+  math:[['2','➕','3','❔'],['2','➕','3','='],['2','➕','3','=','5']],
+  words:[['🅰️','🅲','🅰️','❔'],['C','A','T','❔'],['🐱','✅','✨','✅']],
+  letters:[['✏️','A','·','·'],['✏️','A','↗','·'],['A','✅','✨','✨']],
+  storyMath:[['🍎','🍎','➕','❔'],['🍎','🍎','🍎','🍎'],['4','🍎','✅','✨']],
+  patterns:[['🔴','🔵','🔴','❔'],['🔴','🔵','🔴','🔵'],['🔁','✅','🔴','🔵']],
+  riddles:[['💭','🔎','❔','❔'],['🦁','🐾','🌳','❔'],['🦁','✅','✨','✨']],
+  scienceQuest:[['🌱','☀️','💧','❔'],['🌱','☀️','💧','🌿'],['🌿','✅','🔬','✨']],
+  escapeRoom:[['🚪','🔒','🗝️','❔'],['🧩','🔍','🗝️','🔒'],['🚪','🔓','✨','✅']],
+  physicsPaths:[['🟢','╱','╲','🏁'],['🟢','╱','╱','🏁'],['🟢','➰','➰','🏁']],
+  gridSokoban:[['🧱','🙂','📦','⭐'],['🧱','➡️','📦','⭐'],['🧱','⬜','🙂','📦','⭐']],
+  railwayControl:[['🚂','↔️','🚉','🎨'],['🚂','↗️','🚉','🎨'],['🚂','✅','🚉','🎨']],
+  wordSearch:[['C','A','T','X'],['C','A','T','X'],['✅','✅','✅','🐱']],
+  magneticMaze:[['🧲','⚪','🧱','🏁'],['🧲','➡️','⚪','🏁'],['🧲','✅','⚪','🏁']],
+};
 let currentLanguage='en';
 try{currentLanguage=localStorage.getItem('megical_language')||'en'}catch(e){console.error('Could not read language preference:',e)}
 function tr(key,values={}){
@@ -776,6 +874,8 @@ function setLanguage(language){
     else if(['coloring','differences','drawing','memory','letters'].includes(selectedMiniGame))launchMiniGame(selectedMiniGame,selectedLevel);
     else playLearningGame(selectedMiniGame,selectedLevel);
   }
+  if($('#gameStage').classList.contains('on')&&miniGameScene==='gameIntro')renderMiniGameIntro();
+  if($('#gameStage').classList.contains('on')&&miniGameScene==='codeIntro')renderCodeBreakerIntro();
   if(typeof renderMiniGames==='function'&&$('#games').classList.contains('on'))renderMiniGames();
   if(typeof renderGameLevels==='function'&&$('#gameStage').classList.contains('on')&&miniGameScene==='levels')renderGameLevels();
   if(typeof renderPathLevels==='function'&&$('#gameStage').classList.contains('on')&&miniGameScene==='pathLevels')renderPathLevels();
@@ -1869,7 +1969,7 @@ function selectMiniGame(id){
   if(!MINI_GAMES.some(game=>game.id===id))return;
   selectedMiniGame=id;
   if(id==='codeBreaker'){miniGameScene='codeIntro';renderCodeBreakerIntro();go('gameStage');return}
-  miniGameScene='levels';renderGameLevels();go('gameStage');
+  miniGameScene='gameIntro';renderMiniGameIntro();go('gameStage');
 }
 function renderCodeBreakerIntro(){
   const slots=values=>values.map(value=>`<span class="code-demo-slot${value==='🔒'?' locked':''}">${value}</span>`).join('');
@@ -1882,6 +1982,21 @@ function renderCodeBreakerIntro(){
   $('#gameContent').innerHTML=`<section class="code-intro"><h2>🔐 ${tr('codeDemoTitle')}</h2><p>${tr('codeDemoIntro')}</p><div class="code-demo-video" role="img" aria-label="${tr('codeDemoVideoLabel')}">${scene('codeDemoGuessOne',['🔴','🟡','🔵','🟣'],'', 'codeDemoChoose')}${scene('codeDemoGuessTwo',['🔴','🟡','🟣','🟢'],cluesOne,'codeDemoReadClues')}${scene('codeDemoGuessThree',['🔴','🟡','🟣','🟢'],cluesSolved,'codeDemoSolve')}<span class="code-demo-play" aria-hidden="true">▶</span></div><h3>${tr('codeDemoRulesTitle')}</h3><ul><li>${tr('codeDemoRuleCode')}</li><li>${tr('codeDemoRuleGuesses')}</li><li>${tr('codeDemoRuleClues')}</li></ul><button class="alt" onclick="continueCodeBreakerIntro()">${tr('codeDemoGotIt')}</button><button class="ghost" onclick="go('games')">${tr('back')}</button></section>`;
 }
 function continueCodeBreakerIntro(){
+  miniGameScene='levels';renderGameLevels();go('gameStage');
+}
+function renderMiniGameIntro(){
+  const game=MINI_GAMES.find(item=>item.id===selectedMiniGame);
+  if(!game||game.id==='coloring'||game.id==='codeBreaker')throw new Error(`Unknown mini-game introduction: ${selectedMiniGame}`);
+  const copy=MINI_GAME_INTRO_COPY[currentLanguage]&&MINI_GAME_INTRO_COPY[currentLanguage][game.id];
+  const visuals=MINI_GAME_INTRO_VISUALS[game.id];
+  if(!copy||copy.length!==5||!visuals||visuals.length!==3)throw new Error(`Incomplete mini-game introduction: ${game.id}`);
+  miniGameScene='gameIntro';
+  $('#gameContent').classList.remove('railway-game');
+  const frames=visuals.map((frame,index)=>`<div class="game-demo-frame"><b class="code-demo-video-title">${game.icon} ${tr(game.name)} · ${index+1}/3</b><div class="game-demo-board">${frame.map((token,tokenIndex)=>`<span class="game-demo-token" style="animation-delay:${tokenIndex*.15}s">${token}</span>`).join('')}</div><div class="game-demo-caption">${copy[index]}</div></div>`).join('');
+  $('#gameContent').innerHTML=`<section class="game-intro"><h2>${game.icon} ${tr(game.name)}</h2><p>${tr('gameDemoIntro')}</p><div class="game-demo-video" role="img" aria-label="${copy.slice(0,3).join(' ')}">${frames}<span class="game-demo-play" aria-hidden="true">▶</span></div><h3>${tr('gameDemoRulesTitle')}</h3><ul class="game-intro-rules"><li>${copy[3]}</li><li>${copy[4]}</li></ul><button class="alt" onclick="continueMiniGameIntro()">${tr('gameDemoGotIt')}</button><button class="ghost" onclick="go('games')">${tr('back')}</button></section>`;
+}
+function continueMiniGameIntro(){
+  if(miniGameScene!=='gameIntro'||!selectedMiniGame||selectedMiniGame==='coloring'||selectedMiniGame==='codeBreaker')throw new Error(`Cannot continue mini-game introduction: ${selectedMiniGame}`);
   miniGameScene='levels';renderGameLevels();go('gameStage');
 }
 function renderGameLevels(){
