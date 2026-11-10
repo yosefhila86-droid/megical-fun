@@ -347,9 +347,10 @@ test('coloring palette stays docked above navigation and scrolls horizontally', 
   assert.match(html, /\.paint-workspace\{[^}]*overflow-y:auto/);
   assert.match(html, /#paint>\.paint-palette\{[^}]*flex-direction:column[^}]*overflow-y:auto/);
   assert.match(html, /\.paint-color-swatches\{[^}]*flex-wrap:nowrap[^}]*justify-content:safe center[^}]*overflow-x:auto/);
-  assert.match(html, /\.paint-canvas-wrap\{[^}]*width:min\(92vw,400px\)[^}]*height:min\(92vw,400px\)/);
+  assert.match(html, /\.paint-canvas-wrap\{[^}]*grid-column:1[^}]*width:min\(100%,400px\)[^}]*aspect-ratio:1/);
   assert.doesNotMatch(html, /\.paint-canvas-wrap\{[^}]*52dvh/);
-  assert.match(html, /@media\(min-width:760px\)\{[\s\S]*grid-template-columns:minmax\(0,400px\) minmax\(150px,180px\)[\s\S]*\.paint-actions\{grid-column:2;grid-row:4\/span 3;flex-direction:column/);
+  assert.match(html, /\.paint-workspace\{display:grid[^}]*grid-template-columns:minmax\(0,1fr\) minmax\(112px,180px\)/);
+  assert.match(html, /\.paint-actions\{grid-column:2;grid-row:4\/span 3;flex-direction:column/);
 
   const palette = { innerHTML: '' };
   const context = vm.createContext({
@@ -447,7 +448,7 @@ test('coloring progress is saved per user and restored for the same picture', as
 test('coloring picture navigation is below the canvas and translated', () => {
   const paint = slice('<div id="paint" class="screen center">', '<div id="camera"');
   assert.ok(paint.indexOf('id="cvWrap"') < paint.indexOf('id="paintItemNav"'));
-  assert.match(html, /\.paint-item-nav\{[^}]*flex-wrap:nowrap[^}]*width:min\(92vw,400px\)/);
+  assert.match(html, /\.paint-item-nav\{[^}]*grid-column:1[^}]*flex-wrap:nowrap[^}]*width:min\(100%,400px\)/);
   assert.match(html, /\.paint-item-nav button\{[^}]*flex:1 1 0[^}]*min-width:0[^}]*white-space:nowrap/);
   assert.ok(paint.indexOf('id="paintItemNav"') < paint.indexOf('onclick="zm.by(1.4)"'));
   assert.match(paint, /id="paintPrevItem"[^>]*onclick="navItem\(-1\)"[^>]*data-i18n="previousColoringPicture"/);
