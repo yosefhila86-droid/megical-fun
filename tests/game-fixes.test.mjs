@@ -349,8 +349,9 @@ test('coloring palette stays docked above navigation and scrolls horizontally', 
   assert.match(html, /\.paint-color-swatches\{[^}]*flex-wrap:nowrap[^}]*justify-content:safe center[^}]*overflow-x:auto/);
   assert.match(html, /\.paint-canvas-wrap\{[^}]*grid-column:1[^}]*width:min\(100%,400px\)[^}]*aspect-ratio:1/);
   assert.doesNotMatch(html, /\.paint-canvas-wrap\{[^}]*52dvh/);
-  assert.match(html, /\.paint-workspace\{display:grid[^}]*grid-template-columns:minmax\(0,1fr\) minmax\(112px,180px\)/);
-  assert.match(html, /\.paint-actions\{grid-column:2;grid-row:4\/span 3;flex-direction:column/);
+  assert.match(html, /\.paint-workspace\{display:grid[^}]*grid-template-columns:minmax\(0,1fr\) minmax\(76px,128px\)/);
+  assert.match(html, /\.paint-actions button\{margin:0;padding:6px 4px;font-size:12px/);
+  assert.match(html, /\.paint-actions\{grid-column:2;grid-row:4\/span 3;flex-direction:column[^}]*gap:3px/);
 
   const palette = { innerHTML: '' };
   const context = vm.createContext({
