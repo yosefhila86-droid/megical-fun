@@ -22,6 +22,10 @@ input[type=color]{height:46px;padding:2px;border-radius:12px}
 #welcome.screen.on{display:flex;flex:1 1 auto;flex-direction:column;justify-content:safe center;align-self:stretch;width:100%;max-width:none;margin:0}
 #welcome{position:relative;isolation:isolate;overflow-y:auto;background:radial-gradient(ellipse at 50% 35%,#fff 0%,#fff8e6 48%,#f1eaff 100%)}
 #welcome>button,#welcome #auth{width:100%;max-width:420px;align-self:center}
+.welcome-controls{width:min(100%,420px);align-self:center;display:flex;align-items:center;justify-content:center;gap:12px}
+.welcome-controls label{display:flex;align-items:center;gap:8px}
+.welcome-controls select{width:auto;margin:0}
+.welcome-sound-toggle{width:48px;height:48px;padding:4px;border-radius:50%;font-size:22px;background:#ece6ff;color:#3b2a66}
 #welcome:before,#welcome:after{content:"";position:absolute;z-index:-1;inset:0;pointer-events:none}
 #welcome:before{background-image:radial-gradient(circle,#fff 0 2px,transparent 3px),radial-gradient(circle,#ffd166 0 2px,transparent 3px),radial-gradient(circle,#b8a0ff 0 2px,transparent 3px);background-size:120px 120px,170px 170px,210px 210px;background-position:12px 20px,60px 75px,30px 110px;opacity:.65;animation:sparkle-drift 8s linear infinite}
 #welcome:after{inset:12% 8%;border-radius:50%;background:radial-gradient(ellipse,#ffe38a44,transparent 68%);filter:blur(16px)}
@@ -69,11 +73,29 @@ video{width:100%;max-width:420px;border-radius:16px;background:#222;display:bloc
 .gal{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.gal button{padding:0;border-radius:10px;overflow:hidden;background:#ece6ff;color:#3b2a66}.gal img{display:block;width:100%;border:2px solid #ece6ff;border-radius:10px}
 #toast{position:fixed;left:50%;bottom:118px;transform:translateX(-50%);background:#3b2a66;color:#fff;padding:10px 18px;border-radius:20px;display:none;z-index:20;max-width:90vw;text-align:center}
 .err{color:#d00;min-height:20px;font-size:14px}
-#paint{position:relative;overflow-y:auto;max-height:calc(100vh - 120px);padding-bottom:60px}
-#cv{max-width:320px;max-height:320px;width:100%;height:auto;margin:0 auto;display:block}
-.paint-item-nav{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:12px auto;max-width:400px}
+#paint.screen.on{position:relative;display:flex;flex:1 1 0;flex-direction:column;width:100%;max-width:none;min-height:0;max-height:none;margin:0;overflow:hidden;padding:4px 8px 0}
+.paint-workspace{display:flex;flex:1 1 auto;flex-direction:column;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding-bottom:4px}
+.paint-workspace>.tools{flex:0 0 auto;gap:6px;margin:0 0 4px}
+.paint-workspace>.sizes{flex:0 0 auto;gap:4px;margin:0}
+.paint-workspace>.hint{flex:0 0 auto;min-height:16px;margin:2px 0 4px}
+.paint-canvas-wrap{flex:0 0 auto;width:min(92vw,400px);height:min(92vw,400px);margin:0 auto;overflow:hidden;border-radius:16px;touch-action:none}
+#cv{width:100%;height:100%;max-width:100%;max-height:100%;aspect-ratio:1;background:#fff;border-radius:16px;box-shadow:0 3px 10px #0003;display:block;margin:0 auto;touch-action:none;object-fit:contain}
+.paint-item-nav{display:flex;flex:0 0 auto;flex-wrap:nowrap;justify-content:center;gap:4px;margin:4px auto;width:min(92vw,400px)}
 .paint-item-nav[hidden]{display:none}
-.paint-item-nav button{flex:1 1 140px;min-width:0}
+.paint-item-nav button{flex:1 1 0;min-width:0;padding:8px 6px;font-size:clamp(11px,3vw,14px);white-space:nowrap}
+.paint-actions{display:flex;flex:0 0 auto;flex-wrap:wrap;justify-content:center;gap:4px}
+.paint-actions button{margin:0;padding:8px 10px}
+@media(min-width:760px){
+ .paint-workspace{display:grid;grid-template-columns:minmax(0,400px) minmax(150px,180px);grid-template-rows:auto auto auto auto auto auto;justify-content:center;align-content:start;align-items:center;column-gap:12px}
+ .paint-workspace>.tools:not(.paint-zoom-tools),.paint-workspace>.sizes,.paint-workspace>.hint{grid-column:1/-1}
+ .paint-canvas-wrap{grid-column:1;grid-row:4}
+ .paint-item-nav{grid-column:1;grid-row:5}
+ .paint-zoom-tools{grid-column:1;grid-row:6}
+ .paint-actions{grid-column:2;grid-row:4/span 3;flex-direction:column;align-self:center}
+ .paint-actions button{width:100%}
+}
+#paint>.paint-palette{display:flex;flex:0 0 auto;flex-wrap:nowrap;justify-content:safe center;gap:10px;width:calc(100% + 16px);min-height:54px;margin:0 -8px;padding:8px 14px calc(8px + env(safe-area-inset-bottom));overflow-x:auto;overflow-y:hidden;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;background:#fff7e6;border-top:2px solid #ece6ff;scrollbar-width:thin}
+#paint>.paint-palette .sw{flex:0 0 36px}
 .snd-grid{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:6px 0}
 .snd-opt{background:#ece6ff;color:#3b2a66;padding:10px 14px;border-radius:16px}
 .snd-opt.on{background:#7c4dff;color:#fff;box-shadow:0 0 0 3px #c9b8ff}
@@ -201,6 +223,7 @@ video{width:100%;max-width:420px;border-radius:16px;background:#222;display:bloc
 .level-choice.locked{background:#ece6ff;color:#6a55a5}
 .play-status{margin:8px auto;padding:8px 12px;border-radius:14px;background:#fffdf6eF;box-shadow:0 2px 10px #36205a20;font-weight:700;color:#6a55a5;text-align:center}
 .play-status:empty{display:none}
+.sokoban-success{position:relative;z-index:1;max-width:520px;margin:6px auto;padding:8px 12px;border:2px solid #00b894;border-radius:14px;background:#d8fff2;box-shadow:0 2px 10px #00b89433;font-weight:800;color:#08734d;text-align:center}
 .trace-wrap{position:relative;width:min(78vw,320px);margin:12px auto;background:#fff;border-radius:20px}
 .trace-canvas{position:relative;z-index:1;display:block;width:100%;height:auto;aspect-ratio:1;background:transparent;border:3px dashed #d9ccff;border-radius:20px;touch-action:none}
 .trace-guide{position:absolute;inset:0;width:100%;height:100%;border:3px solid transparent;pointer-events:none}
@@ -219,18 +242,22 @@ video{width:100%;max-width:420px;border-radius:16px;background:#222;display:bloc
 
 <div id="welcome" class="screen on center">
   <div class="logo">🎨✨</div><h1>Magical Fun</h1><p data-i18n="tagline">Games, coloring and creativity!</p>
-  <label><span data-i18n="language">Language</span><select id="welcomeLanguage" onchange="setLanguage(this.value)" aria-label="Language" data-i18n-aria="language"><option value="en">English</option><option value="he">עברית</option><option value="ru">Русский</option></select></label>
+  <div class="welcome-controls"><label><span data-i18n="language">Language</span><select id="welcomeLanguage" onchange="setLanguage(this.value)" aria-label="Language" data-i18n-aria="language"><option value="en">English</option><option value="he">עברית</option><option value="ru">Русский</option></select></label><button id="welcomeSndBtn" class="welcome-sound-toggle" onclick="toggleMusic()" aria-label="Music on or off" aria-pressed="true" data-i18n-aria="musicToggle">🔊</button></div>
   <p><a id="privacyLink" href="./privacy.html?lang=en" data-i18n="privacyPolicyLink">Privacy policy</a> · <a id="deleteAccountLink" href="./delete-account.html?lang=en" data-i18n="deleteAccountLink">Request account deletion</a></p>
   <button class="guest-button" style="width:100%;margin:6px 0" onclick="guest()" data-i18n="playGuest">Play as Guest</button>
   <button style="width:100%;margin:6px 0" onclick="authForm('login')" data-i18n="login">Login</button>
   <button class="ghost" style="width:100%;margin:6px 0" onclick="authForm('reg')" data-i18n="register">Register</button>
   <div id="auth" style="display:none;text-align:left">
     <input id="aName" autocomplete="nickname" placeholder="Child's nickname" data-i18n-placeholder="childName" maxlength="16">
-    <input id="aEmail" type="email" autocomplete="email" placeholder="Parent/guardian email" data-i18n-placeholder="accountEmail">
-    <div class="err" id="aEmailErr" aria-live="polite"></div>
+    <div id="authEmailGroup"><input id="aEmail" type="email" autocomplete="email" placeholder="Parent/guardian email" data-i18n-placeholder="accountEmail">
+      <div class="err" id="aEmailErr" aria-live="polite"></div>
+    </div>
+    <h3 id="passwordRecoveryTitle" data-i18n="passwordRecoveryTitle" hidden></h3>
     <input id="aPassword" type="password" autocomplete="current-password" placeholder="Password (at least 8 characters)" data-i18n-placeholder="accountPassword">
     <div class="err" id="aPasswordErr" aria-live="polite"></div>
-    <div class="err" id="aErr"></div>
+    <div class="err" id="aErr" aria-live="polite"></div>
+    <p id="aStatus" class="access-notice" role="status" hidden></p>
+    <button id="forgotPasswordButton" class="ghost" type="button" onclick="requestPasswordReset()" data-i18n="forgotPassword">Forgot password?</button>
     <button id="aSubmit" style="width:100%" onclick="authGo()">Continue</button>
   </div>
 </div>
@@ -256,27 +283,29 @@ video{width:100%;max-width:420px;border-radius:16px;background:#222;display:bloc
 </div>
 
 <div id="paint" class="screen center">
+  <div class="paint-workspace">
   <div class="tools">
     <button id="bFill" class="on" onclick="setMode('fill')" data-i18n="fill">🪣 Tap-to-Fill</button>
     <button id="bBrush" onclick="setMode('brush')" data-i18n="brush">🖌️ Brush</button>
   </div>
   <div class="sizes dim" id="sizes"></div>
   <div class="hint" id="hint"></div>
-<div id="cvWrap" style="width:min(92vw,400px);margin:0 auto;overflow:hidden;border-radius:16px;touch-action:none"><canvas id="cv" width="512" height="512" style="display:block;width:100%;height:auto;transform-origin:0 0;touch-action:none"></canvas></div>
+  <div id="cvWrap" class="paint-canvas-wrap" style="touch-action:none"><canvas id="cv" width="512" height="512" style="display:block;width:100%;height:100%;transform-origin:0 0;touch-action:none"></canvas></div>
   <div id="paintItemNav" class="paint-item-nav">
     <button id="paintPrevItem" class="ghost" onclick="navItem(-1)" data-i18n="previousColoringPicture">Previous picture</button>
     <button id="paintNextItem" class="ghost" onclick="navItem(1)" data-i18n="nextColoringPicture">Next picture</button>
   </div>
-  <div class="tools" style="margin:6px auto"><button class="ghost" onclick="zm.by(1.4)" aria-label="Zoom in">＋</button><button class="ghost" onclick="zm.by(1/1.4)" aria-label="Zoom out">－</button><button class="ghost" id="bPan" onclick="zm.togglePan()" aria-label="Move">✋</button><button class="ghost" onclick="zm.reset()" aria-label="Reset zoom">↺</button></div>
-  <div>
+  <div class="paint-actions">
     <button class="ghost" onclick="undo()" data-i18n="undo">↩️ Undo</button>
     <button class="ghost" onclick="clearArt()">🗑️ <span data-i18n="clear">Clear</span></button>
     <button class="alt" onclick="saveArt()" data-i18n="save">💾 Save</button>
-    <button id="downloadPaint" class="ghost" onclick="downloadArt()" data-i18n="download">💾 Save to device</button>
+    <button id="downloadPaint" class="ghost" onclick="downloadArt()" data-i18n="download">⬇️ Save to device</button>
     <button class="ghost" onclick="hintArt()" data-i18n="hintBtn">💡 Hint</button>
     <button onclick="go(back)" data-i18n="close">✖ Close</button>
-    <div class="pal" id="pal"></div>
   </div>
+  <div class="tools paint-zoom-tools"><button class="ghost" onclick="zm.by(1.4)" aria-label="Zoom in">＋</button><button class="ghost" onclick="zm.by(1/1.4)" aria-label="Zoom out">－</button><button class="ghost" id="bPan" onclick="zm.togglePan()" aria-label="Move">✋</button><button class="ghost" onclick="zm.reset()" aria-label="Reset zoom">↺</button></div>
+  </div>
+  <div class="pal paint-palette" id="pal" role="toolbar" aria-label="Color palette" data-i18n-aria="colorPalette"></div>
 </div>
 
 <div id="camera" class="screen center">
@@ -620,9 +649,9 @@ Object.assign(TEXT.ru,{cameraPermissionBlocked:'Доступ к камере з�
 Object.assign(TEXT.en,{childName:"Child's nickname",parentYear:'Parent birth year (1950–2006)',profileStars:'Stars',vipLabel:'VIP',freeLabel:'Free',active:'Active',logout:'Log out',noSavedArt:'No saved art yet.',switchCamera:'🔄 Switch camera',cameraPhotoError:'Could not read that image.',soundAuto:'Surprise me',soundGroove:'Bouncy Groove',soundLullaby:'Dreamy Lullaby',soundJungle:'Jungle Beat',soundSpace:'Space Adventure',soundChip:'Game Time',soundOff:'Silent',mixerTitle:'🌈 Color Mixer',mixerHue:'🌈 Pick a rainbow color',mixerSat:'💧 Pale ↔ Bold',mixerValue:'🌓 Dark ↔ Light',mixerChooser:'🎯 Or pick from the color chooser',mixerBlend:'🥣 Mix with my color',mixerAdd:'➕ Add to palette',hintFill:'Tap an area to color it 🎨',hintBrush:'Draw freely - paint stays inside each shape!',authNameError:'Please enter a nickname.',authYearError:'Parent birth year must be 1950–2006.',adultError:'Please ask an adult to continue.'});
 Object.assign(TEXT.he,{childName:'כינוי הילד/ה',parentYear:'שנת הלידה של ההורה (1950–2006)',profileStars:'כוכבים',vipLabel:'VIP',freeLabel:'חינם',active:'פעיל',logout:'יציאה',noSavedArt:'עדיין אין ציורים שמורים.',switchCamera:'🔄 החלפת מצלמה',cameraPhotoError:'לא ניתן לקרוא את התמונה.',soundAuto:'הפתיעו אותי',soundGroove:'קצב קופצני',soundLullaby:'שיר ערש חלומי',soundJungle:'קצב ג׳ונגל',soundSpace:'הרפתקה בחלל',soundChip:'זמן משחק',soundOff:'שקט',mixerTitle:'🌈 מערבל צבעים',mixerHue:'🌈 בחרו צבע מהקשת',mixerSat:'💧 עדין ↔ בולט',mixerValue:'🌓 כהה ↔ בהיר',mixerChooser:'🎯 או בחרו צבע',mixerBlend:'🥣 ערבוב עם הצבע שלי',mixerAdd:'➕ הוספה ללוח הצבעים',hintFill:'לחצו על אזור כדי לצבוע אותו 🎨',hintBrush:'ציירו בחופשיות - הצבע נשאר בתוך הצורה!',authNameError:'נא להזין כינוי.',authYearError:'שנת הלידה של ההורה חייבת להיות בין 1950 ל־2006.',adultError:'בקשו עזרה ממבוגר כדי להמשיך.'});
 Object.assign(TEXT.ru,{childName:'Имя ребёнка',parentYear:'Год рождения родителя (1950–2006)',profileStars:'Звёзды',vipLabel:'VIP',freeLabel:'Бесплатно',active:'Активно',logout:'Выйти',noSavedArt:'Пока нет сохранённых рисунков.',switchCamera:'🔄 Переключить камеру',cameraPhotoError:'Не удалось прочитать изображение.',soundAuto:'Удиви меня',soundGroove:'Бодрый ритм',soundLullaby:'Нежная колыбельная',soundJungle:'Ритм джунглей',soundSpace:'Космическое приключение',soundChip:'Время игры',soundOff:'Без звука',mixerTitle:'🌈 Смешивание цветов',mixerHue:'🌈 Выбери цвет радуги',mixerSat:'💧 Нежный ↔ Яркий',mixerValue:'🌓 Тёмный ↔ Светлый',mixerChooser:'🎯 Или выбери цвет',mixerBlend:'🥣 Смешать с моим цветом',mixerAdd:'➕ Добавить в палитру',hintFill:'Нажми на область, чтобы раскрасить её 🎨',hintBrush:'Рисуй свободно - краска остаётся внутри фигуры!',authNameError:'Введи имя.',authYearError:'Год рождения родителя должен быть от 1950 до 2006.',adultError:'Попроси взрослого помочь.'});
-Object.assign(TEXT.en,{accountEmail:'Parent or guardian email',accountPassword:'Password (at least 8 characters)',authWorking:'Connecting securely…',authNotConfigured:'Account sign-in is not set up yet. You can still play as a guest.',authFailed:'Could not sign in. Please try again.',invalidEmail:'Enter a valid email address.',invalidPassword:'Enter a password with at least 8 characters.',invalidCredentials:'The email or password is incorrect. Check both fields.',emailInUse:'This email is already registered. Try logging in.',emailConfirmation:'Check your email to confirm the new account, then log in.',entitlementsLoadFailed:'Could not load this account’s VIP access. Please try again.'});
-Object.assign(TEXT.he,{accountEmail:'כתובת האימייל של ההורה',accountPassword:'סיסמה (לפחות 8 תווים)',authWorking:'מתחברים באופן מאובטח…',authNotConfigured:'התחברות לחשבון עדיין לא הוגדרה. אפשר להמשיך כאורחים.',authFailed:'לא ניתן להתחבר. נסו שוב.',invalidEmail:'כתובת האימייל אינה תקינה. בדקו אותה.',invalidPassword:'הסיסמה צריכה להכיל לפחות 8 תווים.',invalidCredentials:'האימייל או הסיסמה אינם נכונים. בדקו את שני השדות.',emailInUse:'כתובת האימייל כבר רשומה. נסו להתחבר.',emailConfirmation:'בדקו את האימייל ואשרו את החשבון החדש, ואז התחברו.',entitlementsLoadFailed:'לא ניתן לטעון את הרשאות ה־VIP של החשבון. נסו שוב.'});
-Object.assign(TEXT.ru,{accountEmail:'Электронная почта родителя или опекуна',accountPassword:'Пароль (не менее 8 символов)',authWorking:'Безопасное подключение…',authNotConfigured:'Вход в аккаунт пока не настроен. Можно играть как гость.',authFailed:'Не удалось войти. Попробуйте ещё раз.',invalidEmail:'Введите правильный адрес электронной почты.',invalidPassword:'Пароль должен содержать не менее 8 символов.',invalidCredentials:'Неверная почта или пароль. Проверьте оба поля.',emailInUse:'Этот адрес уже зарегистрирован. Попробуйте войти.',emailConfirmation:'Подтвердите новый аккаунт по ссылке в письме, затем войдите.',entitlementsLoadFailed:'Не удалось загрузить VIP-доступ аккаунта. Попробуйте ещё раз.'});
+Object.assign(TEXT.en,{accountEmail:'Parent or guardian email',accountPassword:'Password (at least 8 characters)',authWorking:'Connecting securely…',authNotConfigured:'The account service is unavailable here, so we could not check this email. Try the published app or try again later. You can still play as a guest.',authFailed:'Could not sign in. Please try again.',invalidEmail:'Enter a valid email address.',invalidPassword:'Enter a password with at least 8 characters.',invalidCredentials:'The email or password is incorrect. Check both fields.',emailInUse:'This email is already registered. Sign in with the existing account.',emailConfirmation:'Check your email to confirm the new account, then log in.',forgotPassword:'Forgot password?',passwordResetSent:'If an account exists for this address, a password reset link has been sent. Check your inbox.',passwordResetFailed:'Could not send the password reset email. Check the address and try again.',passwordRecoveryTitle:'Choose a new password',saveNewPassword:'Save new password',passwordUpdated:'Your password has been updated. Signing you in…',passwordUpdateFailed:'Could not update your password. Open the latest reset link and try again.',entitlementsLoadFailed:'Could not load this account’s VIP access. Please try again.'});
+Object.assign(TEXT.he,{accountEmail:'כתובת האימייל של ההורה',accountPassword:'סיסמה (לפחות 8 תווים)',authWorking:'מתחברים באופן מאובטח…',authNotConfigured:'שירות החשבונות אינו זמין כאן, ולכן לא ניתן לבדוק אם המייל רשום. נסו באפליקציה שפורסמה או שוב מאוחר יותר. אפשר להמשיך כאורחים.',authFailed:'לא ניתן להתחבר. נסו שוב.',invalidEmail:'כתובת האימייל אינה תקינה. בדקו אותה.',invalidPassword:'הסיסמה צריכה להכיל לפחות 8 תווים.',invalidCredentials:'האימייל או הסיסמה אינם נכונים. בדקו את שני השדות.',emailInUse:'המייל הזה כבר נרשם. התחברו באמצעות החשבון הקיים.',emailConfirmation:'בדקו את האימייל ואשרו את החשבון החדש, ואז התחברו.',forgotPassword:'שכחתי סיסמה',passwordResetSent:'אם קיים חשבון עם כתובת זו, נשלח אליו קישור לאיפוס הסיסמה. בדקו את תיבת הדואר.',passwordResetFailed:'לא ניתן לשלוח הודעת איפוס סיסמה. בדקו את כתובת האימייל ונסו שוב.',passwordRecoveryTitle:'בחירת סיסמה חדשה',saveNewPassword:'שמירת סיסמה חדשה',passwordUpdated:'הסיסמה עודכנה. מתחברים לחשבון…',passwordUpdateFailed:'לא ניתן לעדכן את הסיסמה. פתחו את קישור האיפוס האחרון ונסו שוב.',entitlementsLoadFailed:'לא ניתן לטעון את הרשאות ה־VIP של החשבון. נסו שוב.'});
+Object.assign(TEXT.ru,{accountEmail:'Электронная почта родителя или опекуна',accountPassword:'Пароль (не менее 8 символов)',authWorking:'Безопасное подключение…',authNotConfigured:'Сервис аккаунтов здесь недоступен, поэтому проверить этот адрес не удалось. Попробуйте опубликованную версию или повторите попытку позже. Можно играть как гость.',authFailed:'Не удалось войти. Попробуйте ещё раз.',invalidEmail:'Введите правильный адрес электронной почты.',invalidPassword:'Пароль должен содержать не менее 8 символов.',invalidCredentials:'Неверная почта или пароль. Проверьте оба поля.',emailInUse:'Этот адрес уже зарегистрирован. Войдите в существующий аккаунт.',emailConfirmation:'Подтвердите новый аккаунт по ссылке в письме, затем войдите.',forgotPassword:'Забыли пароль?',passwordResetSent:'Если для этого адреса есть аккаунт, ссылка для сброса пароля отправлена. Проверьте почту.',passwordResetFailed:'Не удалось отправить письмо для сброса пароля. Проверьте адрес и попробуйте снова.',passwordRecoveryTitle:'Создайте новый пароль',saveNewPassword:'Сохранить новый пароль',passwordUpdated:'Пароль обновлён. Выполняется вход…',passwordUpdateFailed:'Не удалось обновить пароль. Откройте последнюю ссылку сброса и попробуйте снова.',entitlementsLoadFailed:'Не удалось загрузить VIP-доступ аккаунта. Попробуйте ещё раз.'});
 Object.assign(TEXT.en,{hintButton:'💡 Hint',hintFirst:'Small hint: one incorrect option has been removed. Read the question again.',hintSecond:'Another option is gone. Compare the remaining answers with the question.',hintNoMore:'No more hints. Try the remaining answers!',listenQuestion:'🔊 Listen',speechUnavailable:'Read-aloud is not available in this browser.',parentDashboard:'👪 Parent dashboard',timeLimitTitle:'Daily play-time limit',dailyLimitLabel:'Daily limit',unlimited:'No limit',limit15:'15 minutes',limit30:'30 minutes',limit45:'45 minutes',limit60:'60 minutes',limit90:'90 minutes',limit120:'120 minutes',minutesUsed:'Used today: {used} / {limit} minutes',minutesUnlimited:'Used today: {used} minutes',timeLimitSaved:'Daily time limit saved.',purchaseManagement:'Purchase management',purchaseStatus:'VIP: {vip}. Individual game unlocks: {games}. All games: {all}.',purchaseUnavailableNote:'Purchases are not configured yet. No payment can be made.',viewPurchaseOptions:'View purchase options',contentCheck:'Question content check',runContentCheck:'Run content check',contentCheckPassed:'Checked {n} questions in English, Hebrew, and Russian. No issues found.',contentCheckFailed:'Content check found a problem: {error}',timeLimitReachedTitle:'Time to take a break',timeLimitReached:"Today's play-time limit has been reached. Ask a parent to continue.",askParent:'Ask a parent',contentQuestionError:'Invalid question or answer options.',notUnlocked:'Not unlocked'});
 Object.assign(TEXT.he,{hintButton:'💡 רמז',hintFirst:'רמז קטן: הסרנו אפשרות שגויה אחת. קראו שוב את השאלה.',hintSecond:'הסרנו עוד אפשרות. השוו בין התשובות שנותרו לשאלה.',hintNoMore:'אין עוד רמזים. נסו את התשובות שנותרו!',listenQuestion:'🔊 הקראה',speechUnavailable:'הקראה אינה זמינה בדפדפן הזה.',parentDashboard:'👪 אזור הורים',timeLimitTitle:'הגבלת זמן יומית',dailyLimitLabel:'זמן משחק ביום',unlimited:'ללא הגבלה',limit15:'15 דקות',limit30:'30 דקות',limit45:'45 דקות',limit60:'60 דקות',limit90:'90 דקות',limit120:'120 דקות',minutesUsed:'שימוש היום: {used} מתוך {limit} דקות',minutesUnlimited:'שימוש היום: {used} דקות',timeLimitSaved:'מגבלת הזמן היומית נשמרה.',purchaseManagement:'ניהול רכישות',purchaseStatus:'VIP: {vip}. משחקים שנפתחו בנפרד: {games}. כל המשחקים: {all}.',purchaseUnavailableNote:'הרכישות עדיין אינן מוגדרות. לא ניתן לבצע חיוב.',viewPurchaseOptions:'הצגת אפשרויות רכישה',contentCheck:'בדיקת תוכן השאלות',runContentCheck:'בדיקת תוכן עכשיו',contentCheckPassed:'נבדקו {n} שאלות באנגלית, בעברית וברוסית. לא נמצאו בעיות.',contentCheckFailed:'בדיקת התוכן מצאה בעיה: {error}',timeLimitReachedTitle:'הגיע הזמן להפסקה',timeLimitReached:'הגעתם למגבלת זמן המשחק להיום. בקשו מהורה עזרה כדי להמשיך.',askParent:'בקשת עזרה מהורה',contentQuestionError:'השאלה או אפשרויות התשובה אינן תקינות.',notUnlocked:'לא נפתח'});
 Object.assign(TEXT.ru,{hintButton:'💡 Подсказка',hintFirst:'Небольшая подсказка: один неверный вариант убран. Перечитай вопрос.',hintSecond:'Ещё один вариант убран. Сравни оставшиеся ответы с вопросом.',hintNoMore:'Подсказок больше нет. Выбери из оставшихся ответов!',listenQuestion:'🔊 Слушать',speechUnavailable:'Озвучивание не поддерживается этим браузером.',parentDashboard:'👪 Для родителей',timeLimitTitle:'Дневное ограничение времени',dailyLimitLabel:'Лимит на день',unlimited:'Без ограничений',limit15:'15 минут',limit30:'30 минут',limit45:'45 минут',limit60:'60 минут',limit90:'90 минут',limit120:'120 минут',minutesUsed:'Сегодня: {used} из {limit} минут',minutesUnlimited:'Сегодня сыграно: {used} мин.',timeLimitSaved:'Дневной лимит сохранён.',purchaseManagement:'Управление покупками',purchaseStatus:'VIP: {vip}. Открыто игр: {games}. Все игры: {all}.',purchaseUnavailableNote:'Покупки пока не настроены. Оплата невозможна.',viewPurchaseOptions:'Посмотреть варианты покупки',contentCheck:'Проверка вопросов',runContentCheck:'Проверить вопросы',contentCheckPassed:'Проверено вопросов на английском, иврите и русском: {n}. Ошибок нет.',contentCheckFailed:'Проверка обнаружила проблему: {error}',timeLimitReachedTitle:'Пора отдохнуть',timeLimitReached:'Дневной лимит игры достигнут. Попроси родителя помочь продолжить.',askParent:'Позвать родителя',contentQuestionError:'Некорректный вопрос или варианты ответа.',notUnlocked:'Не открыто'});
@@ -639,24 +668,24 @@ Object.assign(TEXT.en,{chooseGameToUnlock:'Choose a game to unlock',purchaseGame
   purchaseAreaIntro:'This section shows access to games and subscription options. A lock means that some content is not yet unlocked.',
   vipAccessNotice:'VIP is active on this app account: all games and activities are unlocked. You do not need another purchase for access. VIP access does not tell you whether you have a separate Google Play subscription; check Google Play to manage or cancel one.',
   allAccessNotice:'All games and activities are currently unlocked on this account. You do not need another purchase for access. Check Google Play separately to manage any subscription.',
-  purchaseOptionsTitle:'Game access and purchase options',purchaseOptionsAll:'All games are unlocked. The list below shows your access; no game needs to be purchased.',
-  purchaseOptionsSome:'Choose a locked game to see its purchase options. Games marked as unlocked are already available.',
+  purchaseOptionsTitle:'Game access and purchase options',purchaseOptionsAll:'All games are already unlocked. There are no games to purchase.',
+  purchaseOptionsSome:'Choose a locked game to see its purchase options.',
   codeActivityIntro:'The activities use the same board and rules. Each activity has a different secret color sequence to solve.',
   coloringCategories:'Coloring Categories',previousColoringPicture:'Previous picture',nextColoringPicture:'Next picture'});
 Object.assign(TEXT.he,{chooseGameToUnlock:'בחרו משחק לפתיחה',purchaseGameAlreadyUnlocked:'כבר פתוח',
   purchaseAreaIntro:'זהו אזור הגישה למשחקים ואפשרויות המינוי. סמל מנעול מציין שיש במשחק תוכן שעדיין לא פתוח.',
   vipAccessNotice:'הרשאת VIP פעילה בחשבון הזה: כל המשחקים והפעילויות פתוחים. אין צורך ברכישה נוספת כדי לשחק. הרשאת VIP אינה מעידה אם קיים מינוי נפרד ב־Google Play; לניהול או ביטול מינוי יש לבדוק ב־Google Play.',
   allAccessNotice:'כל המשחקים והפעילויות פתוחים כרגע בחשבון הזה. אין צורך ברכישה נוספת כדי לשחק. לניהול מינוי קיים יש לבדוק בנפרד ב־Google Play.',
-  purchaseOptionsTitle:'גישה למשחקים ואפשרויות רכישה',purchaseOptionsAll:'כל המשחקים פתוחים. הרשימה מציגה את הגישה שלכם; אין צורך לרכוש משחק.',
-  purchaseOptionsSome:'בחרו משחק נעול כדי לראות את אפשרויות הרכישה שלו. משחקים המסומנים כפתוחים כבר זמינים.',
+  purchaseOptionsTitle:'גישה למשחקים ואפשרויות רכישה',purchaseOptionsAll:'כל המשחקים כבר פתוחים. אין משחקים לרכישה.',
+  purchaseOptionsSome:'בחרו משחק נעול כדי לראות את אפשרויות הרכישה שלו.',
   codeActivityIntro:'בכל הפעילויות הלוח וכללי המשחק זהים. בכל פעילות יש רצף צבעים סודי שונה לפיצוח.',
   coloringCategories:'קטגוריות צביעה',previousColoringPicture:'לתמונה הקודמת',nextColoringPicture:'לתמונה הבאה'});
 Object.assign(TEXT.ru,{chooseGameToUnlock:'Выберите игру для открытия',purchaseGameAlreadyUnlocked:'Уже открыта',
   purchaseAreaIntro:'Здесь показан доступ к играм и варианты подписки. Замок означает, что часть содержимого игры ещё не открыта.',
   vipAccessNotice:'VIP активен в этом аккаунте приложения: все игры и задания открыты. Для доступа дополнительная покупка не нужна. Статус VIP не показывает, есть ли отдельная подписка Google Play; проверьте её управление или отмену в Google Play.',
   allAccessNotice:'Все игры и задания сейчас открыты в этом аккаунте. Для доступа дополнительная покупка не нужна. Чтобы управлять подпиской, проверьте Google Play отдельно.',
-  purchaseOptionsTitle:'Доступ к играм и варианты покупки',purchaseOptionsAll:'Все игры открыты. Ниже показан ваш доступ; покупать игры не нужно.',
-  purchaseOptionsSome:'Выберите закрытую игру, чтобы увидеть варианты покупки. Игры с отметкой «Уже открыта» доступны.',
+  purchaseOptionsTitle:'Доступ к играм и варианты покупки',purchaseOptionsAll:'Все игры уже открыты. Нет игр для покупки.',
+  purchaseOptionsSome:'Выберите закрытую игру, чтобы увидеть варианты покупки.',
   codeActivityIntro:'Во всех заданиях одинаковые поле и правила. В каждом нужно разгадать свою секретную последовательность цветов.',
   coloringCategories:'Категории раскрасок',previousColoringPicture:'Предыдущая картинка',nextColoringPicture:'Следующая картинка'});
 let currentLanguage='en';
@@ -683,7 +712,9 @@ function setLanguage(language){
   document.querySelectorAll('[data-i18n]').forEach(node=>{node.textContent=tr(node.dataset.i18n)});
   document.querySelectorAll('[data-i18n-placeholder]').forEach(node=>{node.placeholder=tr(node.dataset.i18nPlaceholder)});
   document.querySelectorAll('[data-i18n-aria]').forEach(node=>{node.setAttribute('aria-label',tr(node.dataset.i18nAria))});
-  if($('#auth').style.display!=='none')$('#aSubmit').textContent=tr(amode==='reg'?'register':'login');
+  if(authErrorState)renderAuthError();
+  if(authStatusState)renderAuthStatus();
+  if($('#auth').style.display!=='none')$('#aSubmit').textContent=tr(passwordRecoveryMode?'saveNewPassword':amode==='reg'?'register':'login');
   if($('#games').classList.contains('on'))renderMiniGames();
   if($('#profile').classList.contains('on'))renderProfile();
   if($('#parentM').classList.contains('on'))renderParentDashboard();
@@ -741,6 +772,7 @@ function loadUserData(userId,fallbackName=userId){
   if(![0,15,30,45,60,90,120].includes(S.dailyLimitMinutes))S.dailyLimitMinutes=0;
   currentLanguage=TEXT[S.language]?S.language:currentLanguage;
   setLanguage(currentLanguage);
+  updateMusicButtons();
 }
 
 function sv(){
@@ -794,6 +826,11 @@ const SOUND_OPTS=[
 /* "Surprise me" picks a style to suit each screen */
 const AUTO_TRACK={welcome:'groove',items:'jungle',games:'chip',gameStage:'chip',camera:'chip',profile:'lullaby'};
 let curScreen='welcome';
+let autoTrackChoice=null,autoTrackScreen=null;
+function chooseAutoTrack(excludeTrack){
+  const choices=SOUND_OPTS.filter(option=>!['auto','off',excludeTrack].includes(option.id));
+  return choices[Math.floor(Math.random()*choices.length)].id;
+}
 const Snd=(()=>{
   let ac=null,master=null,out=null,noiseBuf=null,timer=null,nextT=0,step=0,playing=false,cur=null,curId=null,SIX=0.14;
   const hz=m=>440*Math.pow(2,(m-69)/12);
@@ -945,9 +982,23 @@ const Snd=(()=>{
   };
 })();
 function musicOn(){return S.music!==false}
-function trackFor(){const t=S.track||'auto';return t==='auto'?(AUTO_TRACK[curScreen]||'groove'):t}
+function trackFor(){
+  const track=S.track||'auto';
+  if(track!=='auto')return track;
+  if(autoTrackScreen!==curScreen||!autoTrackChoice){
+    autoTrackChoice=AUTO_TRACK[curScreen]||chooseAutoTrack(null);
+    autoTrackScreen=curScreen;
+  }
+  return autoTrackChoice;
+}
+function updateMusicButtons(){
+  for(const selector of ['#sndBtn','#welcomeSndBtn']){
+    const button=$(selector);
+    if(button){button.textContent=musicOn()?'🔊':'🔇';button.setAttribute('aria-pressed',musicOn())}
+  }
+}
 function applyMusic(){
-  const b=$('#sndBtn');if(b){b.textContent=musicOn()?'🔊':'🔇';b.setAttribute('aria-pressed',musicOn())}
+  updateMusicButtons();
   if(musicOn()&&Snd.unlocked&&!document.hidden)Snd.play(trackFor());else Snd.stop();
 }
 function toggleMusic(){
@@ -964,7 +1015,13 @@ function renderSound(){
 }
 function pickSound(id){
   Snd.unlocked=true;                       /* a tap, so audio is allowed: play it right away as a preview */
-  if(id==='off')S.music=false;else{S.music=true;S.track=id}
+  if(id==='off')S.music=false;
+  else if(id==='auto'){
+    const currentTrack=trackFor();
+    autoTrackChoice=chooseAutoTrack(currentTrack);
+    autoTrackScreen=curScreen;
+    S.music=true;S.track=id;
+  }else{S.music=true;S.track=id}
   sv();applyMusic();renderSound();
   const o=SOUND_OPTS.find(x=>x.id===id);
   toast(id==='off'?'🔇 '+tr('soundOff'):(id==='auto'?'🎲 '+tr('soundAuto'):'🎵 '+tr('sound'+id[0].toUpperCase()+id.slice(1))));
@@ -1040,21 +1097,24 @@ function go(id){
 }
 
 /* ---------- onboarding ---------- */
-let amode='login';
+let amode='login',authErrorState=null,authStatusState=null,passwordRecoveryMode=false;
 function authForm(mode){
-  authChoiceMade=true;amode=mode;$('#auth').style.display='block';clearAuthErrors();
+  authChoiceMade=true;amode=mode;passwordRecoveryMode=false;$('#auth').style.display='block';clearAuthErrors();clearAuthStatus();
   $('#aName').style.display=mode==='reg'?'block':'none';
+  $('#authEmailGroup').hidden=false;$('#passwordRecoveryTitle').hidden=true;
+  $('#forgotPasswordButton').hidden=mode!=='login';
   $('#aName').required=mode==='reg';$('#aEmail').required=true;$('#aPassword').required=true;$('#aEmail').value='';$('#aPassword').value='';
   $('#aPassword').autocomplete=mode==='reg'?'new-password':'current-password';
   $('#aSubmit').textContent=tr(mode==='reg'?'register':'login');
 }
 function clearAuthErrors(){
+  authErrorState=null;
   $('#aErr').textContent='';$('#aEmailErr').textContent='';$('#aPasswordErr').textContent='';
   $('#aEmail').removeAttribute('aria-invalid');$('#aPassword').removeAttribute('aria-invalid');
 }
-function setAuthError(field,key){
-  clearAuthErrors();
-  const message=tr(key);
+function renderAuthError(){
+  if(!authErrorState)return;
+  const {field,key}=authErrorState,message=tr(key);
   if(field==='email'||field==='both'){
     $('#aEmailErr').textContent=message;$('#aEmail').setAttribute('aria-invalid','true');
   }
@@ -1062,9 +1122,51 @@ function setAuthError(field,key){
     $('#aPasswordErr').textContent=message;$('#aPassword').setAttribute('aria-invalid','true');
   }
   if(field==='form')$('#aErr').textContent=message;
+}
+function setAuthError(field,key){
+  clearAuthErrors();
+  authErrorState={field,key};
+  renderAuthError();
   if(field==='email')$('#aEmail').focus();
   if(field==='password')$('#aPassword').focus();
   if(field==='both')$('#aEmail').focus();
+}
+function clearAuthStatus(){
+  authStatusState=null;$('#aStatus').hidden=true;$('#aStatus').textContent='';
+}
+function renderAuthStatus(){
+  if(!authStatusState)return;
+  $('#aStatus').textContent=tr(authStatusState);$('#aStatus').hidden=false;
+}
+function showPasswordRecovery(){
+  authChoiceMade=true;amode='recovery';passwordRecoveryMode=true;
+  $('#auth').style.display='block';clearAuthErrors();clearAuthStatus();
+  $('#aName').style.display='none';$('#aName').required=false;
+  $('#authEmailGroup').hidden=true;$('#passwordRecoveryTitle').hidden=false;
+  $('#forgotPasswordButton').hidden=true;$('#aEmail').required=false;$('#aPassword').required=true;
+  $('#aPassword').value='';$('#aPassword').autocomplete='new-password';
+  $('#aSubmit').textContent=tr('saveNewPassword');
+}
+async function requestPasswordReset(){
+  if(authBusy)return;
+  clearAuthErrors();clearAuthStatus();
+  const email=$('#aEmail').value.trim().toLowerCase();
+  if(!email){setAuthError('email','emailRequired');return}
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){setAuthError('email','invalidEmail');return}
+  if(!supabaseClient){setAuthError('form','authNotConfigured');return}
+  authBusy=true;$('#forgotPasswordButton').disabled=true;
+  try{
+    const redirectTo=location.protocol==='http:'&&['localhost','127.0.0.1'].includes(location.hostname)
+      ?'https://megical-fun.vercel.app/':location.origin;
+    const {error}=await supabaseClient.auth.resetPasswordForEmail(email,{redirectTo});
+    if(error)throw error;
+    authStatusState='passwordResetSent';renderAuthStatus();
+  }catch(error){
+    console.error('Password reset request failed:',error);
+    setAuthError('form','passwordResetFailed');
+  }finally{
+    authBusy=false;$('#forgotPasswordButton').disabled=false;
+  }
 }
 function guest(){
   clearBillingAccess();
@@ -1089,19 +1191,31 @@ async function authGo(){
   if(authBusy)return;
   const email=$('#aEmail').value.trim().toLowerCase(),password=$('#aPassword').value;
   const name=$('#aName').value.trim();
-  clearAuthErrors();
-  if(!email){setAuthError('email','emailRequired');return}
-  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){setAuthError('email','invalidEmail');return}
+  clearAuthErrors();clearAuthStatus();
+  if(!passwordRecoveryMode){
+    if(!email){setAuthError('email','emailRequired');return}
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){setAuthError('email','invalidEmail');return}
+  }
   if(!password){setAuthError('password','passwordRequired');return}
   if(password.length<8){setAuthError('password','invalidPassword');return}
   if(amode==='reg'&&!name){setAuthError('form','authNameError');return}
   if(!supabaseClient){setAuthError('form','authNotConfigured');return}
   authBusy=true;$('#aSubmit').disabled=true;
   try{
-    if(amode==='reg'){
+    if(passwordRecoveryMode){
+      const {data,error}=await supabaseClient.auth.updateUser({password});
+      if(error)throw error;
+      if(!data.user)throw new Error('Password recovery returned no authenticated user.');
+      authStatusState='passwordUpdated';renderAuthStatus();
+      await enterAccount(data.user);
+    }else if(amode==='reg'){
       const {data,error}=await supabaseClient.auth.signUp({email,password,options:{data:{display_name:name},emailRedirectTo:location.origin}});
       if(error)throw error;
-      if(!data.session){$('#aErr').textContent=tr('emailConfirmation');return}
+      if(!data.session){
+        if(data.user&&Array.isArray(data.user.identities)&&data.user.identities.length===0)setAuthError('email','emailInUse');
+        else setAuthError('form','emailConfirmation');
+        return;
+      }
       await enterAccount(data.user);
     }else{
       const {data,error}=await supabaseClient.auth.signInWithPassword({email,password});
@@ -1116,7 +1230,8 @@ async function authGo(){
     }
   }catch(error){
     console.error('Account authentication failed:',error);
-    if(error.code==='email_exists'||/already registered|already been registered/i.test(error.message||''))setAuthError('email','emailInUse');
+    if(passwordRecoveryMode)setAuthError('form','passwordUpdateFailed');
+    else if(['email_exists','user_already_exists'].includes(error.code)||/already\s+(?:been\s+)?registered|already exists/i.test(error.message||''))setAuthError('email','emailInUse');
     else if(error.code==='weak_password'||/password should be at least|password.*characters/i.test(error.message||''))setAuthError('password','invalidPassword');
     else if(error.code==='invalid_email'||/invalid email/i.test(error.message||''))setAuthError('email','invalidEmail');
     else setAuthError('form','authFailed');
@@ -1150,6 +1265,9 @@ async function initializeAuth(){
     if(typeof config.supabaseUrl!=='string'||typeof config.supabaseAnonKey!=='string')throw new Error('Supabase public configuration is incomplete.');
     await loadSupabaseLibrary();
     supabaseClient=window.supabase.createClient(config.supabaseUrl,config.supabaseAnonKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+    supabaseClient.auth.onAuthStateChange(event=>{
+      if(event==='PASSWORD_RECOVERY')showPasswordRecovery();
+    });
     const {data,error}=await supabaseClient.auth.getSession();
     if(error)throw error;
     if(data.session&&!authChoiceMade)await enterAccount(data.session.user);
@@ -1365,7 +1483,7 @@ function startFreeDraw(){
   go('gameStage');
   const idea=DRAWING_IDEAS[currentLanguage][selectedLevel];
   const ideaMarkup=selectedLevel===0?'':`<p id="drawIdea">${idea}</p>`;
-  $('#gameContent').innerHTML=`<h2 data-i18n="drawing">✏️ ${tr('drawing')}</h2>${ideaMarkup}<p data-i18n="drawingPrompt">${tr('drawingPrompt')}</p><div class="tools"><button id="drawBrush" class="on" onclick="selectDrawTool(false)" data-i18n="brush">🖌️ Brush</button><button id="drawEraser" onclick="selectDrawTool(true)" data-i18n="eraser">🧽 Eraser</button></div><div class="sizes" id="drawSizes"></div><div class="pal" id="drawPalette"></div><canvas id="drawCanvas" class="draw-canvas" width="640" height="480" aria-label="${tr('drawing')}" data-i18n-aria="drawingArea"></canvas><button class="ghost" onclick="clearFreeDraw()">🗑️ <span data-i18n="clear">${tr('clear')}</span></button> <button class="alt" onclick="saveFreeDrawToGallery()">⭐ <span data-i18n="saveToGallery">${tr('saveToGallery')}</span></button> <button class="ghost" onclick="downloadFreeDraw()">💾 <span data-i18n="download">${tr('download')}</span></button>`;
+  $('#gameContent').innerHTML=`<h2 data-i18n="drawing">✏️ ${tr('drawing')}</h2>${ideaMarkup}<p data-i18n="drawingPrompt">${tr('drawingPrompt')}</p><div class="tools"><button id="drawBrush" class="on" onclick="selectDrawTool(false)" data-i18n="brush">🖌️ Brush</button><button id="drawEraser" onclick="selectDrawTool(true)" data-i18n="eraser">🧽 Eraser</button></div><div class="sizes" id="drawSizes"></div><div class="pal" id="drawPalette"></div><canvas id="drawCanvas" class="draw-canvas" width="640" height="480" aria-label="${tr('drawing')}" data-i18n-aria="drawingArea"></canvas><button class="ghost" onclick="clearFreeDraw()">🗑️ <span data-i18n="clear">${tr('clear')}</span></button> <button class="alt" onclick="saveFreeDrawToGallery()">⭐ <span data-i18n="saveToGallery">${tr('saveToGallery')}</span></button> <button class="ghost" onclick="downloadFreeDraw()" data-i18n="download">${tr('download')}</button>`;
   drawSizeIndex=1;drawEraser=false;renderDrawTools();
   drawHasInk=false;
   const canvas=$('#drawCanvas'),context=canvas.getContext('2d');
@@ -1406,7 +1524,7 @@ function saveFreeDrawToGallery(){
 function downloadFreeDraw(){
   const canvas=$('#drawCanvas');
   if(!canvas)return;
-  const link=document.createElement('a');link.download='my-color-magic-drawing.png';link.href=canvas.toDataURL('image/png');link.click();
+  void saveCanvasToDevice(canvas,'my-color-magic-drawing.png');
 }
 
 /* ---------- Mini games, each with six free activities ---------- */
@@ -1518,8 +1636,10 @@ function renderGameLevels(){
   $('#gameContent').innerHTML=`<h2>${game.icon} ${tr(game.name)}</h2>${game.id==='codeBreaker'?`<p>${tr('codeActivityIntro')}</p>`:''}<div class="level-grid">${Array.from({length:names.length},(_,i)=>{
     const paid=i>=6&&!gameUnlocked(game.id);
     const name=names[i];
-    const label=name;
-    return `<button class="level-choice ${paid?'locked':''}" aria-label="${paid?'🔒 ':''}${label}" onclick="launchMiniGame('${game.id}',${i})">${paid?'🔒 ':''}${label}</button>`;
+    const label=game.id==='scienceQuest'&&currentLanguage==='ru'&&i===7
+      ?name.replace('Приспособление','Приспособле<wbr>ние')
+      :name;
+    return `<button class="level-choice ${paid?'locked':''}" aria-label="${paid?'🔒 ':''}${name}" onclick="launchMiniGame('${game.id}',${i})">${paid?'🔒 ':''}${label}</button>`;
   }).join('')}</div><button class="ghost" onclick="go('games')">${tr('back')}</button>`;
 }
 const WORD_SEARCH_LEVELS=[
@@ -2107,10 +2227,11 @@ function renderInteractivePuzzle(){
   const feedback=interactivePuzzle.feedback?`<p class="play-status">${interactivePuzzle.feedback}</p>`:'<p class="play-status"></p>';
   const progress=id==='physicsPaths'?tr('pathLevelProgress',{n:selectedPathLevel+1}):id==='gridSokoban'?tr('boxLevelProgress',{n:selectedBoxLevel+1}):id==='railwayControl'?tr('railwayProgress',{n:selectedRailwayLevel+1}):'';
   const continueLabel=id==='physicsPaths'?tr(selectedPathLevel<4?'pathNextLevel':'pathAllComplete'):id==='gridSokoban'?tr(selectedBoxLevel<4?'boxNextLevel':'boxAllComplete'):id==='railwayControl'?tr(selectedRailwayLevel<4?'railwayNextLevel':'railwayAllComplete'):tr('next');
-  const success=interactivePuzzle.won?`<p class="play-status"><b>${tr('correct')} ${interactivePuzzle.newStar?tr('starEarned'):''}</b><br>${tr(interactivePuzzle.successKey)}${progress?`<br>${progress}`:''}<br><button class="alt" onclick="continueInteractivePuzzle()">${continueLabel}</button></p>`:'';
+  const success=interactivePuzzle.won?`<p class="${id==='gridSokoban'?'sokoban-success':'play-status'}" aria-live="polite"><b>${tr('correct')} ${interactivePuzzle.newStar?tr('starEarned'):''}</b><br>${tr(interactivePuzzle.successKey)}${progress?`<br>${progress}`:''}<br><button class="alt" onclick="continueInteractivePuzzle()">${continueLabel}</button></p>`:'';
   const restart=interactivePuzzle.finished&&!interactivePuzzle.won?`<button class="alt" onclick="startInteractivePuzzle('${id}')">${tr('puzzleRetry')}</button>`:'';
   $('#gameContent').classList.toggle('railway-game',id==='railwayControl');
-  $('#gameContent').innerHTML=`<h2>${tr(MINI_GAMES.find(game=>game.id===id).name)}</h2><p>${interactiveGamePrompt(id)}</p><section class="interactive-puzzle${id==='railwayControl'?' railway-puzzle':''}">${board}${hint}<div class="puzzle-controls"><button class="ghost" onclick="showInteractiveHint()">${tr('hintButton')}</button></div>${feedback}${success}${restart}</section><button class="ghost" onclick="backFromGame()" data-i18n="back">${tr('back')}</button>`;
+  $('#gameContent').innerHTML=`<h2>${tr(MINI_GAMES.find(game=>game.id===id).name)}</h2><p>${interactiveGamePrompt(id)}</p>${id==='gridSokoban'?success:''}<section class="interactive-puzzle${id==='railwayControl'?' railway-puzzle':''}">${board}${hint}<div class="puzzle-controls"><button class="ghost" onclick="showInteractiveHint()">${tr('hintButton')}</button></div>${feedback}${id==='gridSokoban'?'':success}${restart}</section><button class="ghost" onclick="backFromGame()" data-i18n="back">${tr('back')}</button>`;
+  if(id==='gridSokoban'&&interactivePuzzle.won)$('#gameStage').scrollTop=0;
 }
 function showInteractiveHint(){
   if(!interactivePuzzle||interactivePuzzle.finished)return;
@@ -2549,6 +2670,20 @@ const STORY_MATH_ITEMS=[
   ['muffin','muffins','מאפינס','кекса','кексов','кекс'],['balloon','balloons','בלונים','шара','шаров','шар'],['orange','oranges','תפוזים','апельсина','апельсинов','апельсин'],
   ['ticket','tickets','כרטיסים','билета','билетов','билет']
 ];
+const STORY_MATH_SETTINGS=[
+  {en:'at the marble tournament table',he:'בשולחן התחרות במשחק הגולות',ru:'за столом турнира по шарикам'},
+  {en:'in the apple orchard',he:'במטע התפוחים',ru:'в яблоневом саду'},
+  {en:'in the classroom art corner',he:'בפינת היצירה בכיתה',ru:'в школьном уголке для рисования'},
+  {en:'on a garden birdwatch',he:'בסיור צפרות בגינה',ru:'во время наблюдения за птицами в саду'},
+  {en:'in the birthday party hall',he:'באולם מסיבת יום ההולדת',ru:'в зале празднования дня рождения'},
+  {en:'at the beach shell display',he:'בתצוגת הצדפים בחוף',ru:'на выставке ракушек на пляже'},
+  {en:'at the toy-car race track',he:'במסלול המרוצים למכוניות צעצוע',ru:'на трассе для игрушечных машинок'},
+  {en:'in the cookie bakery',he:'במאפיית העוגיות',ru:'в кондитерской, где пекут печенье'},
+  {en:'at the school bake sale',he:'ביריד האפייה בבית הספר',ru:'на школьной ярмарке выпечки'},
+  {en:'at a picnic in the park',he:'בפיקניק בפארק',ru:'на пикнике в парке'},
+  {en:'at the orange fruit stand',he:'בדוכן התפוזים בשוק',ru:'у прилавка с апельсинами на рынке'},
+  {en:'at the theater ticket booth',he:'בקופת הכרטיסים בתיאטרון',ru:'в театральной кассе'}
+];
 const PATTERN_THEMES=[
   ['🔴','🔵','🟡','🟢'],['⭐','🌙','☀️','☁️'],['🐱','🐶','🐰','🦊'],['🍎','🍐','🍊','🍇'],
   ['🌼','🌻','🌷','🌸'],['🚗','🚌','🚲','🚂'],['🐟','🐙','🦀','🐬'],['🦖','🥚','🦕','🦴'],
@@ -2627,7 +2762,8 @@ function getMathQuestion(activityIndex,questionIndex){
 }
 function getStoryMathQuestion(activityIndex,questionIndex){
   const item=STORY_MATH_ITEMS[activityIndex];
-  if(!item)throw new Error(`Unknown story math activity: ${activityIndex}`);
+  const setting=STORY_MATH_SETTINGS[activityIndex];
+  if(!item||!setting)throw new Error(`Unknown story math activity: ${activityIndex}`);
   const p=(questionIndex*7+activityIndex*3)%10;
   const answer=24+p*6;
   const child=[
@@ -2637,44 +2773,127 @@ function getStoryMathQuestion(activityIndex,questionIndex){
     {en:'Yael',he:'יעל',ru:'Аня',ruGenitive:'Ани'}
   ][(questionIndex+activityIndex)%4];
   let en,he,ru;
-  switch(questionIndex%5){
+  switch(questionIndex%10){
     case 0:
       {
         const first=Math.floor(answer*0.4)+(p%4),second=answer-first;
-        en=`${child.en} had ${first} ${item[1]} and got ${second} more. How many ${item[1]} does ${child.en} have now?`;
-        he=`ל${child.he} היו ${first} ${item[2]}, והיא קיבלה עוד ${second}. כמה ${item[2]} יש לה עכשיו?`;
-        ru=`У ${child.ruGenitive} было ${first} ${getRussianCountedItem(item,first)}, и она получила ещё ${second} ${getRussianCountedItem(item,second)}. Сколько стало?`;
+        if(activityIndex===3){
+          en=`${setting.en}, ${child.en} spotted ${first} ${item[1]} near the feeder and ${second} more in the trees. How many ${item[1]} did ${child.en} spot altogether?`;
+          he=`${setting.he}, ${child.he} הבחינה ב־${first} ${item[2]} ליד המזון וב־${second} נוספות על העצים. כמה ${item[2]} היא ראתה בסך הכול?`;
+          ru=`${setting.ru}: ${child.ru} заметила ${first} ${getRussianCountedItem(item,first)} у кормушки и ещё ${second} ${getRussianCountedItem(item,second)} на деревьях. Сколько птиц она увидела всего?`;
+        }else{
+          en=`${setting.en}, ${child.en} had ${first} ${item[1]} and received ${second} more. How many ${item[1]} are there now?`;
+          he=`${setting.he}, у${child.he} היו ${first} ${item[2]} והיא קיבלה עוד ${second}. כמה ${item[2]} יש עכשיו?`;
+          ru=`${setting.ru}: у ${child.ruGenitive} было ${first} ${getRussianCountedItem(item,first)}, и она получила ещё ${second} ${getRussianCountedItem(item,second)}. Сколько стало?`;
+        }
       }
       break;
     case 1:
       {
         const removed=11+(p*3)%19,total=answer+removed;
-        en=`${child.en} put ${total} ${item[1]} in a basket and used ${removed}. How many are left?`;
-        he=`${child.he} שמה בסל ${total} ${item[2]} והשתמשה ב־${removed}. כמה נשארו?`;
-        ru=`${child.ru} положила в корзину ${total} ${getRussianCountedItem(item,total)} и использовала ${removed}. Сколько осталось?`;
+        if(activityIndex===3){
+          en=`${setting.en}, ${child.en} counted ${total} birds by the pond. Then ${removed} flew away. How many birds were still there?`;
+          he=`${setting.he}, ${child.he} ספרה ${total} ציפורים ליד הבריכה. אחר כך ${removed} עפו. כמה ציפורים נשארו שם?`;
+          ru=`${setting.ru}: ${child.ru} насчитала ${total} птиц у пруда. Затем ${removed} птиц улетели. Сколько птиц осталось?`;
+        }else{
+          en=`${setting.en}, there were ${total} ${item[1]} on display. ${removed} were taken away. How many remain?`;
+          he=`${setting.he}, הוצגו ${total} ${item[2]}. לקחו משם ${removed}. כמה נשארו?`;
+          ru=`${setting.ru}: на витрине было ${total} ${getRussianCountedItem(item,total)}. ${removed} забрали. Сколько осталось?`;
+        }
       }
       break;
     case 2:
       {
         const boxes=3,perBox=answer/boxes;
-        en=`${child.en} helps pack ${perBox} ${item[1]} in each of ${boxes} boxes. How many ${item[1]} are packed altogether?`;
-        he=`${child.he} עזרה לארוז ${perBox} ${item[2]} בכל אחת מ־${boxes} קופסאות. כמה ${item[2]} נארזו בסך הכול?`;
-        ru=`${child.ru} помогла упаковать по ${perBox} ${getRussianCountedItem(item,perBox)} в каждую из ${boxes} коробок. Сколько предметов упаковали?`;
+        if(activityIndex===3){
+          en=`${setting.en}, ${child.en} recorded ${perBox} birds in each of ${boxes} garden areas. How many birds were recorded altogether?`;
+          he=`${setting.he}, ${child.he} רשמה ${perBox} ציפורים בכל אחד מ־${boxes} אזורים בגינה. כמה ציפורים היא רשמה בסך הכול?`;
+          ru=`${setting.ru}: ${child.ru} записала по ${perBox} птиц в каждом из ${boxes} участков сада. Сколько птиц она записала всего?`;
+        }else{
+          en=`${setting.en}, ${child.en} arranged ${perBox} ${item[1]} on each of ${boxes} tables. How many ${item[1]} were arranged altogether?`;
+          he=`${setting.he}, ${child.he} סידרה ${perBox} ${item[2]} על כל אחד מ־${boxes} שולחנות. כמה ${item[2]} סודרו בסך הכול?`;
+          ru=`${setting.ru}: ${child.ru} разложила по ${getRussianCountedItem(item,perBox)} на каждом из ${boxes} столов. Сколько всего ${item[4]} она разложила?`;
+        }
       }
       break;
     case 3:
       {
         const friends=2+p%2,total=answer*friends;
-        en=`${child.en} shares ${total} ${item[1]} equally among ${friends} friends. How many does each friend get?`;
-        he=`${child.he} חילקה ${total} ${item[2]} שווה בשווה בין ${friends} חברים. כמה יקבל כל אחד?`;
-        ru=`${child.ru} разделила ${total} ${getRussianCountedItem(item,total)} поровну между ${friends} друзьями. Сколько получит каждый?`;
+        if(activityIndex===3){
+          en=`${setting.en}, ${child.en} wrote ${total} bird sightings equally across ${friends} pages in a nature journal. How many sightings went on each page?`;
+          he=`${setting.he}, ${child.he} חילקה ${total} תצפיות בציפורים באופן שווה בין ${friends} עמודים ביומן טבע. כמה תצפיות נרשמו בכל עמוד?`;
+          ru=`${setting.ru}: ${child.ru} поровну распределила ${total} наблюдений за птицами по ${friends} страницам дневника природы. Сколько наблюдений записано на каждой странице?`;
+        }else{
+          en=`${setting.en}, ${child.en} packed ${total} ${item[1]} equally into ${friends} gift bags. How many ${item[1]} went in each bag?`;
+          he=`${setting.he}, ${child.he} ארזה ${total} ${item[2]} באופן שווה ב־${friends} שקיות מתנה. כמה ${item[2]} נכנסו לכל שקית?`;
+          ru=`${setting.ru}: ${child.ru} поровну разложила ${total} ${getRussianCountedItem(item,total)} по ${friends} подарочным пакетам. Сколько ${item[4]} оказалось в каждом пакете?`;
+        }
       }
       break;
-    default:{
+    case 4:{
       const added=8+(p*2)%15,used=6+(p*3)%17,start=answer-added+used;
-      en=`${child.en} had ${start} ${item[1]}, got ${added} more, and then used ${used}. How many are left?`;
-      he=`ל${child.he} היו ${start} ${item[2]}. היא קיבלה עוד ${added}, ואז השתמשה ב־${used}. כמה נשארו לה?`;
-      ru=`У ${child.ruGenitive} было ${start} ${getRussianCountedItem(item,start)}. Она получила ещё ${added} ${getRussianCountedItem(item,added)}, а затем использовала ${used}. Сколько осталось?`;
+      if(activityIndex===3){
+        en=`${setting.en}, ${child.en} saw ${start} birds near the flower beds. ${added} more arrived, then ${used} flew away. How many birds were still in the garden?`;
+        he=`${setting.he}, ${child.he} ראתה ${start} ציפורים ליד הערוגות. עוד ${added} הגיעו, ואז ${used} עפו. כמה ציפורים נשארו בגינה?`;
+        ru=`${setting.ru}: ${child.ru} увидела ${start} птиц у цветочных клумб. Прилетели ещё ${added}, а затем ${used} улетели. Сколько птиц осталось в саду?`;
+      }else{
+        en=`${setting.en}, ${child.en} started with ${start} ${item[1]}, received ${added} more, and sold ${used}. How many are left?`;
+        he=`${setting.he}, ל${child.he} היו ${start} ${item[2]}. היא קיבלה עוד ${added} ומכרה ${used}. כמה נשארו?`;
+        ru=`${setting.ru}: у ${child.ruGenitive} было ${start} ${getRussianCountedItem(item,start)}. Она получила ещё ${added} и продала ${used}. Сколько осталось?`;
+      }
+    }
+      break;
+    case 5:{
+      const target=answer+14+(p%5),already=target-answer;
+      if(activityIndex===3){
+        en=`${setting.en}, ${child.en} hopes to record ${target} bird sightings today. ${child.en} has recorded ${already} so far. How many more sightings are needed?`;
+        he=`${setting.he}, ${child.he} רוצה לתעד ${target} תצפיות בציפורים היום. עד עכשיו היא תיעדה ${already}. כמה תצפיות נוספות דרושות?`;
+        ru=`${setting.ru}: ${child.ru} хочет записать ${target} наблюдений за птицами за день. Пока она записала ${already}. Сколько наблюдений осталось записать?`;
+      }else{
+        en=`${setting.en}, ${child.en} wants to collect ${target} ${item[1]} for a display. ${child.en} already has ${already}. How many more are needed?`;
+        he=`${setting.he}, ${child.he} רוצה לאסוף ${target} ${item[2]} לתצוגה. כבר יש לה ${already}. כמה עוד עליה לאסוף?`;
+        ru=`${setting.ru}: ${child.ru} хочет собрать ${target} ${getRussianCountedItem(item,target)} для выставки. У неё уже есть ${already}. Сколько ещё нужно собрать?`;
+      }
+      break;
+    }
+    case 6:{
+      const other=9+(p*2)%13,observed=answer+other;
+      en=`${setting.en}, ${child.en} counted ${observed} ${item[1]} at one spot and ${other} at another. How many more were at the first spot?`;
+      he=`${setting.he}, ${child.he} ספרה ${observed} ${item[2]} במקום אחד ו־${other} במקום אחר. בכמה היה המספר במקום הראשון גדול יותר?`;
+      ru=`${setting.ru}: ${child.ru} насчитала ${observed} ${getRussianCountedItem(item,observed)} в одном месте и ${other} в другом. На сколько больше было в первом месте?`;
+      break;
+    }
+    case 7:{
+      const perGroup=3+p%6,total=answer*perGroup;
+      if(activityIndex===3){
+        en=`${setting.en}, ${child.en} records ${perGroup} bird sightings on each walking route. After recording ${total} sightings, how many routes had ${child.en} completed?`;
+        he=`${setting.he}, ${child.he} רשמה ${perGroup} תצפיות בציפורים בכל מסלול הליכה. אחרי שרשמה ${total} תצפיות, כמה מסלולים היא השלימה?`;
+        ru=`${setting.ru}: ${child.ru} записывает по ${perGroup} наблюдений за птицами на каждом маршруте. Записав ${total} наблюдений, сколько маршрутов она прошла?`;
+      }else{
+        en=`${setting.en}, ${child.en} puts ${perGroup} ${item[1]} in each party pack. How many full packs can ${child.en} make with ${total} ${item[1]}?`;
+        he=`${setting.he}, ${child.he} שמה ${perGroup} ${item[2]} בכל שקית למסיבה. כמה שקיות מלאות אפשר להכין מ־${total} ${item[2]}?`;
+        ru=`${setting.ru}: ${child.ru} кладёт по ${perGroup} ${getRussianCountedItem(item,perGroup)} в каждый праздничный набор. Сколько полных наборов можно сделать из ${total} ${item[4]}?`;
+      }
+      break;
+    }
+    case 8:{
+      const first=Math.floor(answer/3),second=Math.floor(answer/3),third=answer-first-second;
+      en=`${setting.en}, ${child.en} counted ${first} ${item[1]} in the morning, ${second} at noon, and ${third} in the afternoon. How many were counted during the day?`;
+      he=`${setting.he}, ${child.he} ספרה ${first} ${item[2]} בבוקר, ${second} בצהריים ו־${third} אחר הצהריים. כמה היא ספרה במהלך היום?`;
+      ru=`${setting.ru}: ${child.ru} насчитала ${first} ${getRussianCountedItem(item,first)} утром, ${second} днём и ${third} после обеда. Сколько всего она насчитала за день?`;
+      break;
+    }
+    default:{
+      const added=5+p%8,removed=4+(p*2)%9,start=answer-added+removed;
+      if(activityIndex===3){
+        en=`${setting.en}, ${child.en} counted ${start} birds before lunch. ${added} more arrived, and later ${removed} flew to another garden. How many birds remained?`;
+        he=`${setting.he}, ${child.he} ספרה ${start} ציפורים לפני ארוחת הצהריים. עוד ${added} הגיעו, ובהמשך ${removed} עפו לגינה אחרת. כמה ציפורים נשארו?`;
+        ru=`${setting.ru}: ${child.ru} насчитала ${start} птиц до обеда. Прилетели ещё ${added}, а позже ${removed} улетели в другой сад. Сколько птиц осталось?`;
+      }else{
+        en=`${setting.en}, ${child.en} prepared ${start} ${item[1]} for the event. ${added} more arrived, but ${removed} were set aside. How many were ready to use?`;
+        he=`${setting.he}, ${child.he} הכינה ${start} ${item[2]} לאירוע. הגיעו עוד ${added}, אבל ${removed} הונחו בצד. כמה נשארו מוכנים לשימוש?`;
+        ru=`${setting.ru}: ${child.ru} приготовила ${start} ${getRussianCountedItem(item,start)} для мероприятия. Принесли ещё ${added}, но ${removed} отложили в сторону. Сколько осталось готовыми к использованию?`;
+      }
     }
   }
   const options=makeChoices(answer,Math.max(0,answer-8),answer+8).map(String);
@@ -2916,7 +3135,7 @@ const SCIENCE_ACTIVITY_DATA=[
     ['What person travels into space and may explore the Moon?','איך נקרא אדם שטס לחלל ועשוי לחקור את הירח?','Как называют человека, который летит в космос и может исследовать Луну?','Astronaut','אסטרונאוט','Космонавт']
   ],
   [
-    ['What tiny garden animal can eat aphids from leaves?','איזו חיית גינה קטנה יכולה לאכול כנימות מהעלים?','Какое маленькое садовое животное может поедать тлю с листьев?','Ladybug','פרת משה רבנו','Божья коровка'],
+    ['What tiny garden animal can eat aphids from leaves?','איזו חיית גינה קטנה יכולה לאכול כנימות מהעלים?','Какое насекомое в саду питается тлей?','Ladybug','פרת משה רבנו','Божья коровка'],
     ['What garden helper tunnels through soil and leaves tiny piles of castings?','איזה עוזר גינה חופר באדמה ומשאיר בה ערימות קטנות של הפרשות?','Какой помощник сада прокладывает ходы в почве и оставляет маленькие кучки перегноя?','Earthworm','שלשול','Дождевой червь'],
     ['What insect carries pollen as it visits flowers?','איזה חרק מעביר אבקה כשהוא מבקר בפרחים?','Какое насекомое переносит пыльцу, посещая цветы?','Pollinator','מאביק','Опылитель'],
     ['What prepared patch of soil is used to grow flowers and vegetables?','איך נקראת חלקת אדמה מוכנה לגידול פרחים וירקות?','Как называют подготовленный участок почвы для выращивания цветов и овощей?','Garden bed','ערוגה','Грядка'],
@@ -3327,11 +3546,10 @@ function openParentPurchaseOptions(){
 }
 function renderParentPurchaseOptions(){
   const allUnlocked=MINI_GAMES.every(game=>gameUnlocked(game.id));
-  $('#purchaseOptionsNotice').textContent=tr(allUnlocked?'purchaseOptionsAll':'purchaseOptionsSome');
-  $('#purchaseGameList').innerHTML=MINI_GAMES.map(game=>{
-    const unlocked=gameUnlocked(game.id);
-    return `<button class="level-choice" ${unlocked?'disabled':''} onclick="selectParentPurchaseGame('${game.id}')">${game.icon} ${tr(game.name)}${unlocked?` - ${tr('purchaseGameAlreadyUnlocked')}`:''}</button>`;
-  }).join('');
+  $('#purchaseOptionsNotice').textContent=tr(S.vip?'vipAccessNotice':allUnlocked?'purchaseOptionsAll':'purchaseOptionsSome');
+  $('#purchaseGameList').innerHTML=MINI_GAMES.filter(game=>!gameUnlocked(game.id))
+    .map(game=>`<button class="level-choice" onclick="selectParentPurchaseGame('${game.id}')">${game.icon} ${tr(game.name)}</button>`)
+    .join('');
 }
 function selectParentPurchaseGame(id){
   const game=MINI_GAMES.find(item=>item.id===id);
@@ -4595,9 +4813,9 @@ if('serviceWorker' in navigator&&location.protocol!=='file:'){
 }
 
 /* ===== Magical Fun additions: zoom/pan, share, hint, celebration, daily bonus ===== */
-Object.assign(TEXT.en,{download:'💾 Save to device',hintBtn:'💡 Hint',hintNone:'Everything is colored! 🎉',hintYes:'Try coloring the flashing part!',shareFail:'Add some color first!',dailyTitle:'Daily bonus!',dailyDay:'Day {n} in a row',dailyBtn:'Collect ⭐'});
-Object.assign(TEXT.he,{download:'💾 שמירה למכשיר',hintBtn:'💡 רמז',hintNone:'הכול צבוע! 🎉',hintYes:'נסו לצבוע את החלק המהבהב!',shareFail:'קודם צבעו קצת!',dailyTitle:'בונוס יומי!',dailyDay:'יום {n} ברצף',dailyBtn:'קבלו ⭐'});
-Object.assign(TEXT.ru,{download:'💾 Сохранить',hintBtn:'💡 Подсказка',hintNone:'Всё раскрашено! 🎉',hintYes:'Раскрасьте мигающую часть!',shareFail:'Сначала раскрасьте!',dailyTitle:'Бонус дня!',dailyDay:'Дней подряд: {n}',dailyBtn:'Забрать ⭐'});
+Object.assign(TEXT.en,{download:'⬇️ Save to device',colorPalette:'Color palette',deviceSaveSuccess:'✅ Drawing saved to Pictures / Magical Fun.',deviceSaveStarted:'⬇️ Drawing download started.',deviceSaveFailed:'Could not save the drawing. Please try again.',hintBtn:'💡 Hint',hintNone:'Everything is colored! 🎉',hintYes:'Try coloring the flashing part!',shareFail:'Add some color first!',dailyTitle:'Daily bonus!',dailyDay:'Day {n} in a row',dailyBtn:'Collect ⭐'});
+Object.assign(TEXT.he,{download:'⬇️ שמירה למכשיר',colorPalette:'פלטת צבעים',deviceSaveSuccess:'✅ הציור נשמר בתיקיית תמונות / Magical Fun.',deviceSaveStarted:'⬇️ הורדת הציור התחילה.',deviceSaveFailed:'שמירת הציור נכשלה. נסו שוב.',hintBtn:'💡 רמז',hintNone:'הכול צבוע! 🎉',hintYes:'נסו לצבוע את החלק המהבהב!',shareFail:'קודם צבעו קצת!',dailyTitle:'בונוס יומי!',dailyDay:'יום {n} ברצף',dailyBtn:'קבלו ⭐'});
+Object.assign(TEXT.ru,{download:'⬇️ Сохранить на устройство',colorPalette:'Палитра цветов',deviceSaveSuccess:'✅ Рисунок сохранён в папку «Изображения / Magical Fun».',deviceSaveStarted:'⬇️ Загрузка рисунка началась.',deviceSaveFailed:'Не удалось сохранить рисунок. Попробуй ещё раз.',hintBtn:'💡 Подсказка',hintNone:'Всё раскрашено! 🎉',hintYes:'Раскрасьте мигающую часть!',shareFail:'Сначала раскрасьте!',dailyTitle:'Бонус дня!',dailyDay:'Дней подряд: {n}',dailyBtn:'Забрать ⭐'});
 Object.assign(TEXT.en,{miniGames:'🎮 19 Mini Games',unlockAll:'Subscribe to all 19 games - $14.90/month',shopGame:'Monthly subscription: {game} for $1.90/month, or all 19 games for $14.90/month.',wordSearchFinishActivity:'Back to activities',magneticMaze:'Magnetic Maze',magneticInstruction:'Place a magnet around the edge, choose attract or repel, then activate it to move the steel ball. Avoid walls and holes, and reach the finish.',magneticStagesInstruction:'Each activity has 6 stages. Complete a stage to unlock the next; each stage has a larger board and more hazards.',magneticStageLabel:'Stage {n} · {difficulty}',magneticDifficulty1:'Easy',magneticDifficulty2:'Easy+',magneticDifficulty3:'Medium',magneticDifficulty4:'Tricky',magneticDifficulty5:'Hard',magneticDifficulty6:'Expert',magneticAttract:'Attract',magneticRepel:'Repel',magneticActivate:'Activate magnet',magneticBackToActivities:'Back to activities',magneticBackToStages:'Back to stages',magneticNextStage:'Next stage',magneticComplete:'Brilliant! You reached the finish.',magneticRestart:'Try again',magneticTurns:'Moves: {n}',magneticEdge:'The ball cannot roll off the board. Try another magnet.',magneticBlocked:'A wall blocks the ball. Choose another magnet.',magneticFall:'Oh no! The ball fell into a hole. Try the maze again.',magneticBall:'Steel ball',magneticGoal:'Finish',magneticHole:'Hole',magneticWall:'Wall',magneticNorth:'North edge',magneticEast:'East edge',magneticSouth:'South edge',magneticWest:'West edge',magneticPlace:'Place magnet on {side}, position {n}'});
 Object.assign(TEXT.he,{miniGames:'🎮 19 משחקי מיני',unlockAll:'מנוי לכל 19 המשחקים - $14.90 לחודש',shopGame:'תשלום חודשי: {game} ב־$1.90 לחודש, או כל 19 המשחקים ב־$14.90 לחודש.',wordSearchFinishActivity:'חזרה לפעילויות',magneticMaze:'מבוך מגנטי',magneticInstruction:'בחרו מיקום למגנט מסביב ללוח, בחרו משיכה או דחייה והפעילו אותו כדי להזיז את כדור המתכת. הימנעו מקירות ומבורות והגיעו לסיום.',magneticStagesInstruction:'בכל פעילות יש 6 שלבים. השלימו שלב כדי לפתוח את הבא; הלוח והאתגרים גדלים בכל שלב.',magneticStageLabel:'שלב {n} · {difficulty}',magneticDifficulty1:'קל',magneticDifficulty2:'קל+',magneticDifficulty3:'בינוני',magneticDifficulty4:'מאתגר',magneticDifficulty5:'קשה',magneticDifficulty6:'מומחים',magneticAttract:'משיכה',magneticRepel:'דחייה',magneticActivate:'הפעלת המגנט',magneticBackToActivities:'חזרה לפעילויות',magneticBackToStages:'חזרה לשלבים',magneticNextStage:'לשלב הבא',magneticComplete:'כל הכבוד! הגעתם לנקודת הסיום.',magneticRestart:'נסו שוב',magneticTurns:'צעדים: {n}',magneticEdge:'הכדור לא יכול לצאת מהלוח. נסו מגנט אחר.',magneticBlocked:'הכדור נתקל בקיר. בחרו מגנט אחר.',magneticFall:'אוי לא! הכדור נפל לבור. נסו שוב את המבוך.',magneticBall:'כדור מתכת',magneticGoal:'נקודת סיום',magneticHole:'בור',magneticWall:'קיר',magneticNorth:'הצד הצפוני',magneticEast:'הצד המזרחי',magneticSouth:'הצד הדרומי',magneticWest:'הצד המערבי',magneticPlace:'הנחת מגנט: {side}, מיקום {n}'});
 Object.assign(TEXT.ru,{miniGames:'🎮 19 мини-игр',unlockAll:'Подписка на все 19 игр - $14.90 в месяц',shopGame:'Ежемесячная подписка: игра «{game}» за $1.90 в месяц или все 19 игр за $14.90 в месяц.',wordSearchFinishActivity:'К заданиям',magneticMaze:'Магнитный лабиринт',magneticInstruction:'Выбери место для магнита у края поля, выбери притяжение или отталкивание и включи магнит, чтобы переместить стальной шарик. Избегай стен и ям и доберись до финиша.',magneticStagesInstruction:'В каждом задании 6 этапов. Пройди этап, чтобы открыть следующий; поле и число опасностей увеличиваются.',magneticStageLabel:'Этап {n} · {difficulty}',magneticDifficulty1:'Лёгкий',magneticDifficulty2:'Лёгкий+',magneticDifficulty3:'Средний',magneticDifficulty4:'Сложный',magneticDifficulty5:'Трудный',magneticDifficulty6:'Эксперт',magneticAttract:'Притянуть',magneticRepel:'Оттолкнуть',magneticActivate:'Включить магнит',magneticBackToActivities:'К заданиям',magneticBackToStages:'К этапам',magneticNextStage:'Следующий этап',magneticComplete:'Отлично! Ты добрался до финиша.',magneticRestart:'Попробовать ещё',magneticTurns:'Ходы: {n}',magneticEdge:'Шарик не может выкатиться за поле. Попробуй другой магнит.',magneticBlocked:'Шарик упёрся в стену. Выбери другой магнит.',magneticFall:'Ой! Шарик упал в яму. Попробуй лабиринт ещё раз.',magneticBall:'Стальной шарик',magneticGoal:'Финиш',magneticHole:'Яма',magneticWall:'Стена',magneticNorth:'Северный край',magneticEast:'Восточный край',magneticSouth:'Южный край',magneticWest:'Западный край',magneticPlace:'Поставить магнит: {side}, позиция {n}'});
@@ -4640,9 +4858,34 @@ cv.addEventListener('pointerup',()=>{
 ['openItem','openSavedArt'].forEach(n=>{const f=window[n];if(typeof f==='function')window[n]=function(){zm.reset();return f.apply(this,arguments)}});
 
 /* share / download the finished picture */
-function dlBlob(b){const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='megical-fun.png';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),4000)}
-function artBlob(cb){flush();if(!L||!img||!baseImg||changedPixels(img.data,baseImg,MIN_CHANGE)<MIN_CHANGE){toast(tr('shareFail'));return}cv.toBlob(cb,'image/png')}
-function downloadArt(){artBlob(dlBlob)}
+async function saveCanvasToDevice(canvas,fileName){
+  try{
+    const nativeSave=window.Capacitor&&window.Capacitor.getPlatform&&window.Capacitor.getPlatform()==='android'
+      &&window.Capacitor.Plugins&&window.Capacitor.Plugins.ArtworkSave;
+    if(nativeSave){
+      const imageData=canvas.toDataURL('image/png').split(',')[1];
+      if(!imageData)throw new Error('Could not encode the drawing as a PNG.');
+      await nativeSave.saveImage({fileName,data:imageData});
+      toast(tr('deviceSaveSuccess'));
+      return;
+    }
+    const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/png'));
+    if(!blob)throw new Error('Could not create a PNG from the drawing.');
+    const url=URL.createObjectURL(blob),link=document.createElement('a');
+    link.download=fileName;link.href=url;link.style.display='none';
+    document.body.append(link);link.click();link.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),4000);
+    toast(tr('deviceSaveStarted'));
+  }catch(error){
+    console.error('Could not save artwork to the device:',error);
+    toast(tr('deviceSaveFailed'));
+  }
+}
+function downloadArt(){
+  flush();
+  if(!L||!img||!baseImg||changedPixels(img.data,baseImg,MIN_CHANGE)<MIN_CHANGE){toast(tr('shareFail'));return}
+  void saveCanvasToDevice(cv,'magical-fun-coloring.png');
+}
 
 /* hint: flash a region that is still uncolored */
 function hintArt(){
