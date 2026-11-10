@@ -5,6 +5,10 @@ import vm from 'node:vm';
 
 const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
 const serviceWorker = await readFile(new URL('../sw.js', import.meta.url), 'utf8');
+const translations = vm.createContext({});
+const translationStart = html.indexOf('const TEXT='), translationEnd = html.indexOf("let currentLanguage='en';", translationStart);
+vm.runInContext(`${html.slice(translationStart, translationEnd)}\nglobalThis.TEXT=TEXT;`, translations);
+const textForLanguage = (language) => translations.TEXT[language];
 const slice = (start, end) => {
   const first = html.indexOf(start), last = html.indexOf(end, first);
   assert.ok(first >= 0 && last > first);
@@ -222,35 +226,60 @@ test('bee-pollen question is clear in all languages and keeps the correct answer
   assert.match(scienceQuestions, /\['What do bees carry from one flower to another\?','מה דבורים מעבירות מפרח אחד לפרח אחר\?','Что пчёлы переносят с одного цветка на другой\?'[\s\S]*?'Pollen','אבקה','Пыльца'\]/);
 });
 
-test('code breaker tutorial explains a sample guess in all supported languages', () => {
-  const modal = slice('<div class="modal" id="codeTutorialM"', '<div class="modal" id="parentM"');
-  assert.match(modal, /role="dialog"[^>]*aria-modal="true"/);
-  assert.match(modal, /🔴[\s\S]*🟡[\s\S]*🔵[\s\S]*🟣/);
-  assert.match(modal, /code-demo-feedback[\s\S]*class="exact"[\s\S]*class="present"[\s\S]*class="absent"/);
-  assert.match(modal, /onclick="continueCodeTutorial\(\)"/);
-  for (const [language, title, clue] of [
-    ['en', 'Live code-breaker demo', '2 colors are in the right place'],
-    ['he', 'הדגמה חיה - פיצוח צפנים', 'שני צבעים במקום הנכון'],
-    ['ru', 'Живая демонстрация взлома кода', '2 цвета стоят на своих местах'],
-  ]) {
-    const translation = slice(`codeInstruction:'${language === 'en' ? 'Crack the secret' : language === 'he' ? 'פצחו את הקוד' : 'Взломай секретный код'}`, '});');
-    assert.ok(translation.includes(`codeTutorialTitle:'${title}'`), `${language} tutorial title`);
-    assert.ok(translation.includes(clue), `${language} tutorial clue`);
-    assert.ok(translation.includes('codeTutorialColors:'), `${language} accessible sample colors`);
-    assert.ok(translation.includes('codeTutorialFeedbackColors:'), `${language} accessible demo feedback`);
+test('code-breaker opens one animated rules screen before activity selection in every language', () => {
+  const intro = slice('function selectMiniGame(', 'function renderGameLevels(){');
+  assert.match(intro, /code-demo-video/);
+  assert.match(intro, /codeDemoGuessOne/);
+  assert.match(intro, /codeDemoGuessTwo/);
+  assert.match(intro, /codeDemoGuessThree/);
+  assert.match(intro, /codeDemoRulesTitle/);
+  assert.match(intro, /codeDemoRuleCode/);
+  assert.match(intro, /codeDemoRuleGuesses/);
+  assert.match(intro, /codeDemoRuleClues/);
+  assert.match(intro, /onclick="continueCodeBreakerIntro\(\)"/);
+  assert.match(html, /@keyframes code-demo-scene/);
+  assert.match(html, /@keyframes code-demo-progress/);
+  assert.doesNotMatch(html, /codeTutorialM|openCodeTutorial|codeHowTo/);
+  for (const language of ['en', 'he', 'ru']) {
+    const translation = textForLanguage(language);
+    for (const key of ['codeDemoTitle', 'codeDemoVideoLabel', 'codeDemoRulesTitle', 'codeDemoRuleCode', 'codeDemoRuleGuesses', 'codeDemoRuleClues', 'codeDemoGotIt']) {
+      assert.ok(translation[key], `${language} missing ${key}`);
+    }
   }
+  assert.equal(textForLanguage('he').codeDemoReadClues, 'בדקו את הרמזים: צבע במקום הנכון, צבע נכון במקום אחר, או צבע לא נכון.');
+  assert.match(textForLanguage('en').codeDemoReadClues, /incorrect color/);
+  assert.match(textForLanguage('ru').codeDemoReadClues, /неверный цвет/);
+
+  const displayed = [];
+  const context = vm.createContext({
+    MINI_GAMES: [{ id: 'codeBreaker' }, { id: 'memory' }],
+    $: () => ({ classList: { remove() {} }, innerHTML: '' }),
+    tr: (key) => key,
+    go() {},
+    renderGameLevels: () => displayed.push('activities'),
+  });
+  vm.runInContext(`let selectedMiniGame='',miniGameScene='';
+    ${intro}`, context);
+  context.selectMiniGame('codeBreaker');
+  assert.equal(vm.runInContext('miniGameScene', context), 'codeIntro');
+  assert.equal(displayed.length, 0);
+  context.continueCodeBreakerIntro();
+  assert.equal(vm.runInContext('miniGameScene', context), 'levels');
+  assert.deepEqual(displayed, ['activities']);
+});
+
+test('code-breaker success feedback is rendered above the board and scrolls into view', () => {
   const renderer = slice('function renderInteractivePuzzle(){', 'function showInteractiveHint(){');
-  assert.match(renderer, /id==='codeBreaker'\?`<button class="ghost" onclick="openCodeTutorial\(\)"/);
-  const launcher = slice('function launchMiniGame(', 'function backFromGame(){');
-  assert.match(launcher, /if\(id==='codeBreaker'\)\{[\s\S]*?openCodeTutorial\(true\);return;\s*\}/);
-  assert.match(html, /function openCodeTutorial\(startGame=false\)/);
-  assert.match(html, /function continueCodeTutorial\(\)\{[\s\S]*?if\(startsGame\)startInteractivePuzzle\('codeBreaker'\)/);
+  assert.match(renderer, /const topSuccess=\['physicsPaths','gridSokoban','codeBreaker'\]\.includes\(id\)/);
+  assert.match(renderer, /<h2>[\s\S]*?\$\{interactiveGamePrompt\(id\)\}<\/p>\$\{topSuccess\?success:''\}<section/);
+  assert.match(renderer, /if\(topSuccess&&interactivePuzzle\.won\)\$\('#gameStage'\)\.scrollTop=0/);
 });
 
 test('pastel background is applied across screens and cached for offline use', async () => {
   assert.match(html, /body\{[^}]*background:#fff7e6 url\('\.\/images\/magical-fun-background\.png'\)/);
-  assert.match(html, /\.screen:not\(#welcome\)\{background-color:rgba\(255,247,230,\.62\)\}/);
-  assert.match(html, /#welcome\{[^}]*background:radial-gradient\([^}]*#[0-9a-f]{6,8}/i);
+  assert.match(html, /\.screen:not\(#welcome\)\{background-color:rgba\(255,247,230,\.15\)\}/);
+  assert.match(html, /@media\(min-aspect-ratio:1\/1\)\{body\{background-size:auto 100%/);
+  assert.match(html, /#welcome\{[^}]*background:radial-gradient\([^}]*#ffffff22/i);
   assert.match(html, /#cv\{[^}]*background:#fff/);
   assert.match(html, /\.interactive-puzzle\{[^}]*background:#fff/);
   assert.match(serviceWorker, /magical-fun-shell-v22/);
@@ -435,10 +464,10 @@ test('coloring picture navigation is below the canvas and translated', () => {
   }
 });
 
-test('Sokoban and path success feedback is shown above the board and resets scroll', () => {
+test('Sokoban, path and code-breaker success feedback is shown above the board and resets scroll', () => {
   const render = slice('function renderInteractivePuzzle()', 'function showInteractiveHint()');
   assert.ok(render.indexOf("${topSuccess?success:''}") < render.indexOf('<section class="interactive-puzzle'));
-  assert.match(render, /const topSuccess=\['physicsPaths','gridSokoban'\]\.includes\(id\)/);
+  assert.match(render, /const topSuccess=\['physicsPaths','gridSokoban','codeBreaker'\]\.includes\(id\)/);
   assert.match(render, /\$\{topSuccess\?'':success\}/);
   assert.match(render, /if\(topSuccess&&interactivePuzzle\.won\)\$\('#gameStage'\)\.scrollTop=0/);
   assert.match(html, /\.sokoban-success\{[^}]*background:#d8fff2[^}]*text-align:center/);
