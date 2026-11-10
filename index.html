@@ -1969,6 +1969,7 @@ function selectMiniGame(id){
   if(!MINI_GAMES.some(game=>game.id===id))return;
   selectedMiniGame=id;
   if(id==='codeBreaker'){miniGameScene='codeIntro';renderCodeBreakerIntro();go('gameStage');return}
+  if(id==='coloring'){miniGameScene='levels';renderGameLevels();go('gameStage');return}
   miniGameScene='gameIntro';renderMiniGameIntro();go('gameStage');
 }
 function renderCodeBreakerIntro(){
