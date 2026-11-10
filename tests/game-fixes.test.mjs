@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFile } from 'node:fs/promises';
+import { access, readFile } from 'node:fs/promises';
 import vm from 'node:vm';
 
 const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
@@ -117,6 +117,39 @@ test('math exercises render left to right in Hebrew', () => {
   assert.match(element.innerHTML, />\? \+ 5 = 12<\/div>/);
 });
 
+test('memory and differences activities use images that match their titles', async () => {
+  const context = vm.createContext({});
+  vm.runInContext(slice('const ACTIVITY_NAMES=', 'let selectedMiniGame='), context);
+  vm.runInContext(slice('const CATS=', 'const COLORS='), context);
+  vm.runInContext(slice('const DIFFERENCE_SCENES=', 'function startDifferences()'), context);
+  vm.runInContext(slice('const MEMORY_ICON_SETS=', 'function renderMemory()'), context);
+  vm.runInContext('globalThis.testData={ACTIVITY_NAMES,CATS,DIFFERENCE_SCENES,MEMORY_ICON_SETS}', context);
+
+  const { ACTIVITY_NAMES, CATS, DIFFERENCE_SCENES, MEMORY_ICON_SETS } = context.testData;
+  const memorySets = MEMORY_ICON_SETS;
+  assert.equal(memorySets.length, ACTIVITY_NAMES.en.memory.length);
+  assert.deepEqual(Array.from(memorySets, set => set.length), Array(12).fill(6));
+  assert.deepEqual(Array.from(memorySets[0]), ['🐶', '🐕', '🐩', '🦮', '🐕‍🦺', '🐾']);
+  assert.deepEqual(Array.from(memorySets[1]), ['🦊', '🐻', '🐿️', '🦉', '🦔', '🦝']);
+  assert.deepEqual(Array.from(memorySets[2]), ['🐮', '🐷', '🐔', '🐑', '🐐', '🐴']);
+
+  const expectedScenes = ['nature', 'animals', 'food', 'ocean', 'space', 'animals', 'vehicles', 'dino', 'fairy', 'sport', 'nature', 'dragon'];
+  assert.deepEqual(Array.from(DIFFERENCE_SCENES), expectedScenes);
+  for (const language of ['en', 'he', 'ru']) {
+    assert.equal(ACTIVITY_NAMES[language].differences.length, expectedScenes.length);
+    assert.match(ACTIVITY_NAMES[language].differences[2], /food|אוכל|едой/i);
+  }
+  for (const [level, scene] of expectedScenes.entries()) {
+    const category = CATS.find(item => item.id === scene);
+    assert.ok(category, `missing image category for differences activity ${level + 1}`);
+    assert.ok(category.items.length >= 6, `not enough images for differences activity ${level + 1}`);
+    for (const imagePath of category.items) {
+      assert.match(imagePath, /^images\//);
+      await access(new URL(`../${imagePath}`, import.meta.url));
+    }
+  }
+});
+
 test('welcome screen exposes an accessible music toggle that tracks mute state', () => {
   const welcome = slice('<div id="welcome"', '<header id="top"');
   assert.match(html, /\.welcome-controls\{[^}]*align-self:center/);
@@ -181,6 +214,30 @@ test('Russian science activity label and first garden question use the requested
   assert.match(html, /aria-label="\$\{paid\?'🔒 ':''\}\$\{name\}"/);
   assert.match(html, /Какое насекомое в саду питается тлей\?/);
   assert.doesNotMatch(html, /Какое маленькое садовое животное может поедать тлю с листьев\?/);
+});
+
+test('bee-pollen question is clear in all languages and keeps the correct answer', () => {
+  const scienceQuestions = slice('const SCIENCE_QUESTION_DATA=', 'const SCIENCE_ACTIVITY_DATA=');
+  assert.match(scienceQuestions, /\['What do bees carry from one flower to another\?','מה דבורים מעבירות מפרח אחד לפרח אחר\?','Что пчёлы переносят с одного цветка на другой\?'[\s\S]*?'Pollen','אבקה','Пыльца'\]/);
+});
+
+test('code breaker tutorial explains a sample guess in all supported languages', () => {
+  const modal = slice('<div class="modal" id="codeTutorialM"', '<div class="modal" id="parentM"');
+  assert.match(modal, /role="dialog"[^>]*aria-modal="true"/);
+  assert.match(modal, /🔴[\s\S]*🟡[\s\S]*🔵[\s\S]*🟣/);
+  for (const [language, title, clue] of [
+    ['en', 'How to crack the code', '2 colors are in the right place'],
+    ['he', 'איך מפצחים את הקוד?', 'שני צבעים במקום הנכון'],
+    ['ru', 'Как разгадать код?', '2 цвета стоят на своих местах'],
+  ]) {
+    const translation = slice(`codeInstruction:'${language === 'en' ? 'Crack the secret' : language === 'he' ? 'פצחו את הקוד' : 'Взломай секретный код'}`, '});');
+    assert.ok(translation.includes(`codeTutorialTitle:'${title}'`), `${language} tutorial title`);
+    assert.ok(translation.includes(clue), `${language} tutorial clue`);
+    assert.ok(translation.includes('codeTutorialColors:'), `${language} accessible sample colors`);
+  }
+  const renderer = slice('function renderInteractivePuzzle(){', 'function showInteractiveHint(){');
+  assert.match(renderer, /id==='codeBreaker'\?`<button class="ghost" onclick="openCodeTutorial\(\)"/);
+  assert.match(html, /function openCodeTutorial\(\)\{\$\('#codeTutorialM'\)\.classList\.add\('on'\)\}/);
 });
 
 test('drawing screens use one download icon and route saves through the device saver', async () => {
