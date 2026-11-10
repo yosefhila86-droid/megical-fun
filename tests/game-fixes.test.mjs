@@ -275,6 +275,56 @@ test('code-breaker success feedback is rendered above the board and scrolls into
   assert.match(renderer, /if\(topSuccess&&interactivePuzzle\.won\)\$\('#gameStage'\)\.scrollTop=0/);
 });
 
+test('all other mini games have localized animated demos and continue to activity selection', () => {
+  const dataStart = html.indexOf('const MINI_GAME_INTRO_COPY=');
+  const dataEnd = html.indexOf("let currentLanguage='en';", dataStart);
+  assert.ok(dataStart >= 0 && dataEnd > dataStart);
+  const dataContext = vm.createContext({});
+  vm.runInContext(`${html.slice(dataStart, dataEnd)}
+    globalThis.introCopy=MINI_GAME_INTRO_COPY;
+    globalThis.introVisuals=MINI_GAME_INTRO_VISUALS;`, dataContext);
+  const ids = Object.keys(dataContext.introCopy.en);
+  assert.equal(ids.length, 17);
+  for (const language of ['en', 'he', 'ru']) {
+    assert.deepEqual(Object.keys(dataContext.introCopy[language]).sort(), ids.slice().sort(), `${language} game demos`);
+    for (const id of ids) {
+      assert.equal(dataContext.introCopy[language][id].length, 5, `${language}:${id} copy`);
+      assert.ok(dataContext.introCopy[language][id].every(Boolean), `${language}:${id} empty copy`);
+    }
+  }
+  for (const id of ids) {
+    assert.equal(dataContext.introVisuals[id].length, 3, `${id} demo scenes`);
+    assert.ok(dataContext.introVisuals[id].every((scene) => scene.length >= 4), `${id} demo visuals`);
+  }
+  assert.match(html, /@keyframes code-demo-scene/);
+  assert.match(html, /@keyframes demo-token-pop/);
+
+  const container = { innerHTML: '', classList: { remove() {} } };
+  const selected = [];
+  const miniGames = ids.map((id) => ({ id, icon: '🎮', name: id }));
+  const context = vm.createContext({
+    MINI_GAMES: miniGames,
+    MINI_GAME_INTRO_COPY: dataContext.introCopy,
+    MINI_GAME_INTRO_VISUALS: dataContext.introVisuals,
+    currentLanguage: 'en',
+    $: () => container,
+    tr: (key) => key,
+    go() {},
+    renderGameLevels: () => selected.push('levels'),
+  });
+  const selectionSource = slice('function selectMiniGame(', 'function renderGameLevels(){');
+  vm.runInContext(`let selectedMiniGame='',miniGameScene='';
+    ${selectionSource}`, context);
+  for (const id of ids) {
+    context.selectMiniGame(id);
+    assert.equal(vm.runInContext('miniGameScene', context), 'gameIntro', `${id} intro scene`);
+    assert.match(container.innerHTML, new RegExp(`onclick="continueMiniGameIntro\\(\\)"`), `${id} continue button`);
+    assert.match(container.innerHTML, new RegExp(dataContext.introCopy.en[id][3]));
+    context.continueMiniGameIntro();
+  }
+  assert.equal(selected.length, ids.length);
+});
+
 test('pastel background is applied across screens and cached for offline use', async () => {
   assert.match(html, /body\{[^}]*background:#fff7e6 url\('\.\/images\/magical-fun-background\.png'\)/);
   assert.match(html, /\.screen:not\(#welcome\)\{background-color:rgba\(255,247,230,\.15\)\}/);
