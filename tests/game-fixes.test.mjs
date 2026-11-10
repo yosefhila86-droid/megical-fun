@@ -4,6 +4,7 @@ import { access, readFile } from 'node:fs/promises';
 import vm from 'node:vm';
 
 const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
+const serviceWorker = await readFile(new URL('../sw.js', import.meta.url), 'utf8');
 const slice = (start, end) => {
   const first = html.indexOf(start), last = html.indexOf(end, first);
   assert.ok(first >= 0 && last > first);
@@ -225,19 +226,36 @@ test('code breaker tutorial explains a sample guess in all supported languages',
   const modal = slice('<div class="modal" id="codeTutorialM"', '<div class="modal" id="parentM"');
   assert.match(modal, /role="dialog"[^>]*aria-modal="true"/);
   assert.match(modal, /🔴[\s\S]*🟡[\s\S]*🔵[\s\S]*🟣/);
+  assert.match(modal, /code-demo-feedback[\s\S]*class="exact"[\s\S]*class="present"[\s\S]*class="absent"/);
+  assert.match(modal, /onclick="continueCodeTutorial\(\)"/);
   for (const [language, title, clue] of [
-    ['en', 'How to crack the code', '2 colors are in the right place'],
-    ['he', 'איך מפצחים את הקוד?', 'שני צבעים במקום הנכון'],
-    ['ru', 'Как разгадать код?', '2 цвета стоят на своих местах'],
+    ['en', 'Live code-breaker demo', '2 colors are in the right place'],
+    ['he', 'הדגמה חיה - פיצוח צפנים', 'שני צבעים במקום הנכון'],
+    ['ru', 'Живая демонстрация взлома кода', '2 цвета стоят на своих местах'],
   ]) {
     const translation = slice(`codeInstruction:'${language === 'en' ? 'Crack the secret' : language === 'he' ? 'פצחו את הקוד' : 'Взломай секретный код'}`, '});');
     assert.ok(translation.includes(`codeTutorialTitle:'${title}'`), `${language} tutorial title`);
     assert.ok(translation.includes(clue), `${language} tutorial clue`);
     assert.ok(translation.includes('codeTutorialColors:'), `${language} accessible sample colors`);
+    assert.ok(translation.includes('codeTutorialFeedbackColors:'), `${language} accessible demo feedback`);
   }
   const renderer = slice('function renderInteractivePuzzle(){', 'function showInteractiveHint(){');
   assert.match(renderer, /id==='codeBreaker'\?`<button class="ghost" onclick="openCodeTutorial\(\)"/);
-  assert.match(html, /function openCodeTutorial\(\)\{\$\('#codeTutorialM'\)\.classList\.add\('on'\)\}/);
+  const launcher = slice('function launchMiniGame(', 'function backFromGame(){');
+  assert.match(launcher, /if\(id==='codeBreaker'\)\{[\s\S]*?openCodeTutorial\(true\);return;\s*\}/);
+  assert.match(html, /function openCodeTutorial\(startGame=false\)/);
+  assert.match(html, /function continueCodeTutorial\(\)\{[\s\S]*?if\(startsGame\)startInteractivePuzzle\('codeBreaker'\)/);
+});
+
+test('pastel background is applied across screens and cached for offline use', async () => {
+  assert.match(html, /body\{[^}]*background:#fff7e6 url\('\.\/images\/magical-fun-background\.png'\)/);
+  assert.match(html, /\.screen:not\(#welcome\)\{background-color:rgba\(255,247,230,\.62\)\}/);
+  assert.match(html, /#welcome\{[^}]*background:radial-gradient\([^}]*#[0-9a-f]{6,8}/i);
+  assert.match(html, /#cv\{[^}]*background:#fff/);
+  assert.match(html, /\.interactive-puzzle\{[^}]*background:#fff/);
+  assert.match(serviceWorker, /magical-fun-shell-v22/);
+  assert.match(serviceWorker, /new URL\('images\/magical-fun-background\.png',APP_ROOT\)\.href/);
+  await access(new URL('../images/magical-fun-background.png', import.meta.url));
 });
 
 test('drawing screens use one download icon and route saves through the device saver', async () => {
