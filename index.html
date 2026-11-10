@@ -2981,11 +2981,11 @@ function getStoryMathQuestion(activityIndex,questionIndex){
         const first=Math.floor(answer*0.4)+(p%4),second=answer-first;
         if(activityIndex===3){
           en=`${setting.en}, ${child.en} spotted ${first} ${item[1]} near the feeder and ${second} more in the trees. How many ${item[1]} did ${child.en} spot altogether?`;
-          he=`${setting.he}, ${child.he} הבחינה ב־${first} ${item[2]} ליד המזון וב־${second} נוספות על העצים. כמה ${item[2]} היא ראתה בסך הכול?`;
+          he=`${setting.he}, ${child.he} הבחינה ב-${first} ${item[2]} ליד המזון וב-${second} נוספות על העצים. כמה ${item[2]} היא ראתה בסך הכול?`;
           ru=`${setting.ru}: ${child.ru} заметила ${first} ${getRussianCountedItem(item,first)} у кормушки и ещё ${second} ${getRussianCountedItem(item,second)} на деревьях. Сколько птиц она увидела всего?`;
         }else{
           en=`${setting.en}, ${child.en} had ${first} ${item[1]} and received ${second} more. How many ${item[1]} are there now?`;
-          he=`${setting.he}, у${child.he} היו ${first} ${item[2]} והיא קיבלה עוד ${second}. כמה ${item[2]} יש עכשיו?`;
+          he=`${setting.he}, ${child.he} מצאה ${first} ${item[2]} וקיבלה עוד ${second}. כמה ${item[2]} יש עכשיו?`;
           ru=`${setting.ru}: у ${child.ruGenitive} было ${first} ${getRussianCountedItem(item,first)}, и она получила ещё ${second} ${getRussianCountedItem(item,second)}. Сколько стало?`;
         }
       }
@@ -3009,11 +3009,11 @@ function getStoryMathQuestion(activityIndex,questionIndex){
         const boxes=3,perBox=answer/boxes;
         if(activityIndex===3){
           en=`${setting.en}, ${child.en} recorded ${perBox} birds in each of ${boxes} garden areas. How many birds were recorded altogether?`;
-          he=`${setting.he}, ${child.he} רשמה ${perBox} ציפורים בכל אחד מ־${boxes} אזורים בגינה. כמה ציפורים היא רשמה בסך הכול?`;
+          he=`${setting.he}, ${child.he} רשמה ${perBox} ציפורים בכל אחד מ-${boxes} אזורים בגינה. כמה ציפורים היא רשמה בסך הכול?`;
           ru=`${setting.ru}: ${child.ru} записала по ${perBox} птиц в каждом из ${boxes} участков сада. Сколько птиц она записала всего?`;
         }else{
           en=`${setting.en}, ${child.en} arranged ${perBox} ${item[1]} on each of ${boxes} tables. How many ${item[1]} were arranged altogether?`;
-          he=`${setting.he}, ${child.he} סידרה ${perBox} ${item[2]} על כל אחד מ־${boxes} שולחנות. כמה ${item[2]} סודרו בסך הכול?`;
+          he=`${setting.he}, ${child.he} סידרה ${perBox} ${item[2]} על כל אחד מ-${boxes} שולחנות. כמה ${item[2]} סודרו בסך הכול?`;
           ru=`${setting.ru}: ${child.ru} разложила по ${getRussianCountedItem(item,perBox)} на каждом из ${boxes} столов. Сколько всего ${item[4]} она разложила?`;
         }
       }
@@ -3027,7 +3027,7 @@ function getStoryMathQuestion(activityIndex,questionIndex){
           ru=`${setting.ru}: ${child.ru} поровну распределила ${total} наблюдений за птицами по ${friends} страницам дневника природы. Сколько наблюдений записано на каждой странице?`;
         }else{
           en=`${setting.en}, ${child.en} packed ${total} ${item[1]} equally into ${friends} gift bags. How many ${item[1]} went in each bag?`;
-          he=`${setting.he}, ${child.he} ארזה ${total} ${item[2]} באופן שווה ב־${friends} שקיות מתנה. כמה ${item[2]} נכנסו לכל שקית?`;
+          he=`${setting.he}, ${child.he} ארזה ${total} ${item[2]} באופן שווה ב-${friends} שקיות מתנה. כמה ${item[2]} נכנסו לכל שקית?`;
           ru=`${setting.ru}: ${child.ru} поровну разложила ${total} ${getRussianCountedItem(item,total)} по ${friends} подарочным пакетам. Сколько ${item[4]} оказалось в каждом пакете?`;
         }
       }
@@ -3061,7 +3061,7 @@ function getStoryMathQuestion(activityIndex,questionIndex){
     case 6:{
       const other=9+(p*2)%13,observed=answer+other;
       en=`${setting.en}, ${child.en} counted ${observed} ${item[1]} at one spot and ${other} at another. How many more were at the first spot?`;
-      he=`${setting.he}, ${child.he} ספרה ${observed} ${item[2]} במקום אחד ו־${other} במקום אחר. בכמה היה המספר במקום הראשון גדול יותר?`;
+      he=`${setting.he}, ${child.he} ספרה ${observed} ${item[2]} במקום אחד ו-${other} במקום אחר. בכמה היה המספר במקום הראשון גדול יותר?`;
       ru=`${setting.ru}: ${child.ru} насчитала ${observed} ${getRussianCountedItem(item,observed)} в одном месте и ${other} в другом. На сколько больше было в первом месте?`;
       break;
     }
@@ -3073,7 +3073,7 @@ function getStoryMathQuestion(activityIndex,questionIndex){
         ru=`${setting.ru}: ${child.ru} записывает по ${perGroup} наблюдений за птицами на каждом маршруте. Записав ${total} наблюдений, сколько маршрутов она прошла?`;
       }else{
         en=`${setting.en}, ${child.en} puts ${perGroup} ${item[1]} in each party pack. How many full packs can ${child.en} make with ${total} ${item[1]}?`;
-        he=`${setting.he}, ${child.he} שמה ${perGroup} ${item[2]} בכל שקית למסיבה. כמה שקיות מלאות אפשר להכין מ־${total} ${item[2]}?`;
+        he=`${setting.he}, ${child.he} שמה ${perGroup} ${item[2]} בכל שקית למסיבה. כמה שקיות מלאות אפשר להכין מ-${total} ${item[2]}?`;
         ru=`${setting.ru}: ${child.ru} кладёт по ${perGroup} ${getRussianCountedItem(item,perGroup)} в каждый праздничный набор. Сколько полных наборов можно сделать из ${total} ${item[4]}?`;
       }
       break;
@@ -3081,7 +3081,7 @@ function getStoryMathQuestion(activityIndex,questionIndex){
     case 8:{
       const first=Math.floor(answer/3),second=Math.floor(answer/3),third=answer-first-second;
       en=`${setting.en}, ${child.en} counted ${first} ${item[1]} in the morning, ${second} at noon, and ${third} in the afternoon. How many were counted during the day?`;
-      he=`${setting.he}, ${child.he} ספרה ${first} ${item[2]} בבוקר, ${second} בצהריים ו־${third} אחר הצהריים. כמה היא ספרה במהלך היום?`;
+      he=`${setting.he}, ${child.he} ספרה ${first} ${item[2]} בבוקר, ${second} בצהריים ו-${third} אחר הצהריים. כמה היא ספרה במהלך היום?`;
       ru=`${setting.ru}: ${child.ru} насчитала ${first} ${getRussianCountedItem(item,first)} утром, ${second} днём и ${third} после обеда. Сколько всего она насчитала за день?`;
       break;
     }
