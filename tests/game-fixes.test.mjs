@@ -301,7 +301,7 @@ test('all other mini games have localized animated demos and continue to activit
 
   const container = { innerHTML: '', classList: { remove() {} } };
   const selected = [];
-  const miniGames = ids.map((id) => ({ id, icon: '🎮', name: id }));
+  const miniGames = [...ids, 'coloring'].map((id) => ({ id, icon: '🎮', name: id }));
   const context = vm.createContext({
     MINI_GAMES: miniGames,
     MINI_GAME_INTRO_COPY: dataContext.introCopy,
@@ -315,6 +315,9 @@ test('all other mini games have localized animated demos and continue to activit
   const selectionSource = slice('function selectMiniGame(', 'function renderGameLevels(){');
   vm.runInContext(`let selectedMiniGame='',miniGameScene='';
     ${selectionSource}`, context);
+  context.selectMiniGame('coloring');
+  assert.equal(vm.runInContext('miniGameScene', context), 'levels', 'coloring opens directly to category selection');
+  assert.equal(selected.length, 1, 'coloring renders its category selection');
   for (const id of ids) {
     context.selectMiniGame(id);
     assert.equal(vm.runInContext('miniGameScene', context), 'gameIntro', `${id} intro scene`);
@@ -322,7 +325,7 @@ test('all other mini games have localized animated demos and continue to activit
     assert.match(container.innerHTML, new RegExp(dataContext.introCopy.en[id][3]));
     context.continueMiniGameIntro();
   }
-  assert.equal(selected.length, ids.length);
+  assert.equal(selected.length, ids.length + 1);
 });
 
 test('pastel background is applied across screens and cached for offline use', async () => {
