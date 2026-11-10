@@ -17,11 +17,12 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:32px;heigh
 input[type=range]::-moz-range-thumb{width:24px;height:24px;border-radius:50%;background:#fff;border:4px solid #3b2a66}
 input[type=color]{height:46px;padding:2px;border-radius:12px}
 .screen{display:none;flex:1;overflow-y:auto;padding:14px}.screen.on{display:block}
-.screen:not(#welcome){background-color:rgba(255,247,230,.62)}
+.screen:not(#welcome){background-color:rgba(255,247,230,.15)}
+@media(min-aspect-ratio:1/1){body{background-size:auto 100%;background-color:#fff7e6}}
 #gameStage.screen.center{width:100%;max-width:none;margin:0 auto}
 #gameContent{width:min(100%,560px);margin:0 auto}
 #welcome.screen.on{display:flex;flex:1 1 auto;flex-direction:column;justify-content:safe center;align-self:stretch;width:100%;max-width:none;margin:0}
-#welcome{position:relative;isolation:isolate;overflow-y:auto;background:radial-gradient(ellipse at 50% 35%,#ffffff99 0%,#fff8e68c 48%,#f1eaff70 100%)}
+#welcome{position:relative;isolation:isolate;overflow-y:auto;background:radial-gradient(ellipse at 50% 35%,#ffffff22 0%,#fff8e622 48%,#f1eaff18 100%)}
 #welcome>button,#welcome #auth{width:100%;max-width:420px;align-self:center}
 #auth>button{width:100%;margin:6px 0}
 #auth .err:empty{display:none;min-height:0;margin:0}
@@ -37,7 +38,7 @@ input[type=color]{height:46px;padding:2px;border-radius:12px}
 .guest-button{background:#2387e8}
 @keyframes sparkle-drift{to{background-position:92px 100px,160px 185px,150px 20px}}
 @keyframes logo-sparkle{to{filter:drop-shadow(0 0 20px #ffd166)}}
-@media(prefers-reduced-motion:reduce){#welcome:before,#welcome .logo{animation:none}}
+@media(prefers-reduced-motion:reduce){#welcome:before,#welcome .logo,.code-demo-feedback i{animation:none}}
 header{display:flex;justify-content:space-between;align-items:center;padding:calc(10px + env(safe-area-inset-top)) 14px 10px;background:#7c4dff;color:#fff;font-weight:800}
 header select{width:auto;max-width:105px;margin:0;padding:7px;border:0}
 nav{display:flex;background:#fff;border-top:2px solid #ece6ff;padding-bottom:env(safe-area-inset-bottom)}
@@ -184,16 +185,27 @@ video{width:100%;max-width:420px;border-radius:16px;background:#222;display:bloc
 .code-peg{width:48px;height:48px;padding:0;border:3px solid #d9ccff;border-radius:50%;font-size:25px}
 .code-peg.active{outline:3px solid #7c4dff}
 .code-feedback{max-width:430px;margin:8px auto;padding:8px;background:#f8f5ff;border-radius:12px}
-.code-demo-row{display:flex;justify-content:center;gap:8px;margin:12px auto}
-.code-demo-feedback{display:flex;justify-content:center;gap:10px;margin:8px auto}
-.code-demo-feedback i{width:20px;height:20px;border:2px solid #fff;border-radius:50%;box-shadow:0 0 0 1px #b8aacd;animation:code-demo-reveal .45s ease-out both}
-.code-demo-feedback i:nth-child(2){animation-delay:.2s}
-.code-demo-feedback i:nth-child(3){animation-delay:.4s}
-.code-demo-feedback i:nth-child(4){animation-delay:.6s}
-.code-demo-feedback .exact{background:#45a66b}
-.code-demo-feedback .present{background:#ffb703}
-.code-demo-feedback .absent{background:#d9d4df}
-@keyframes code-demo-reveal{from{opacity:0;transform:scale(.3)}to{opacity:1;transform:scale(1)}}
+.code-intro{max-width:620px;margin:0 auto;text-align:center}
+.code-demo-video{position:relative;width:min(100%,560px);aspect-ratio:16/10;margin:16px auto;padding:18px;overflow:hidden;border:5px solid #fff;border-radius:24px;background:linear-gradient(145deg,#36205a,#6041a2);box-shadow:0 5px 16px #36205a45;color:#fff}
+.code-demo-video:after{content:"";position:absolute;left:0;bottom:0;width:100%;height:5px;background:#ffffff35;transform:scaleX(0);transform-origin:left;animation:code-demo-progress 15s linear infinite}
+.code-demo-frame{position:absolute;inset:16px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:clamp(4px,1.5vh,12px);opacity:0;animation:code-demo-scene 15s infinite}
+.code-demo-frame:nth-child(2){animation-delay:5s}
+.code-demo-frame:nth-child(3){animation-delay:10s}
+.code-demo-video-title{font-size:clamp(13px,3.8vw,20px);font-weight:800}
+.code-demo-secret,.code-demo-guess,.code-demo-palette,.code-demo-clues{display:flex;justify-content:center;align-items:center;gap:clamp(5px,2vw,12px)}
+.code-demo-slot{display:grid;place-items:center;width:clamp(34px,9vw,52px);height:clamp(34px,9vw,52px);border:2px solid #ffffffa8;border-radius:50%;background:#ffffff24;font-size:clamp(20px,5vw,30px)}
+.code-demo-slot.locked{font-size:clamp(17px,4vw,25px)}
+.code-demo-palette{gap:clamp(4px,1.5vw,9px)}
+.code-demo-palette i{width:clamp(14px,4vw,23px);height:clamp(14px,4vw,23px);border:2px solid #fff;border-radius:50%;box-shadow:0 2px 4px #0005}
+.code-demo-clues i{width:clamp(13px,3.5vw,20px);height:clamp(13px,3.5vw,20px);border:2px solid #fff;border-radius:50%;box-shadow:0 0 0 1px #24163d}
+.code-demo-clues .exact{background:#45d483}
+.code-demo-clues .present{background:#ffca3a}
+.code-demo-clues .absent{background:#aaa4b2}
+.code-demo-caption{max-width:90%;font-size:clamp(11px,3vw,16px);font-weight:700}
+.code-demo-play{position:absolute;right:10px;bottom:9px;font-size:11px;opacity:.8}
+@keyframes code-demo-scene{0%,3%{opacity:0;transform:translateY(8px)}6%,29%{opacity:1;transform:translateY(0)}33%,100%{opacity:0;transform:translateY(-5px)}}
+@keyframes code-demo-progress{to{transform:scaleX(1)}}
+@media(prefers-reduced-motion:reduce){.code-demo-video:after{animation:none;transform:scaleX(1)}.code-demo-frame{animation:none;display:none}.code-demo-frame:nth-child(3){display:flex;opacity:1;transform:none}}
 .puzzle-controls{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
 .escape-scene{position:relative;isolation:isolate;overflow:hidden;max-width:520px;min-height:180px;aspect-ratio:2.4/1;margin:12px auto;border:5px solid #fff;border-radius:22px;background:linear-gradient(to bottom,#c4e7ff 0 70%,#b9815c 70% 74%,#e8c89c 74%);box-shadow:0 4px 12px #36205a26}
 .escape-scene:after{content:"";position:absolute;z-index:-1;inset:auto 0 0;height:27%;background:repeating-linear-gradient(90deg,transparent 0 49px,#bd9970 50px,#bd9970 52px,transparent 53px)}
@@ -367,25 +379,6 @@ video{width:100%;max-width:420px;border-radius:16px;background:#222;display:bloc
   <input id="gYear" type="number" placeholder="e.g. 1985"><div class="err" id="gErr"></div>
   <button onclick="gateOk()" data-i18n="continue">Continue</button><button class="ghost" onclick="closeM('gate')" data-i18n="cancel">Cancel</button>
 </div></div>
-
-<div class="modal" id="codeTutorialM" role="dialog" aria-modal="true" aria-labelledby="codeTutorialTitle">
-  <div class="box">
-    <div style="font-size:40px" aria-hidden="true">🔐</div>
-    <h3 id="codeTutorialTitle" data-i18n="codeTutorialTitle">Live code-breaker demo</h3>
-    <p data-i18n="codeTutorialIntro">Watch a sample guess and see how the clues show which colors match.</p>
-    <b data-i18n="codeTutorialGuess">Example guess</b>
-    <div class="code-demo-row" role="img" aria-label="Red, yellow, blue, purple" data-i18n-aria="codeTutorialColors">
-      <span class="code-peg" aria-hidden="true">🔴</span><span class="code-peg" aria-hidden="true">🟡</span>
-      <span class="code-peg" aria-hidden="true">🔵</span><span class="code-peg" aria-hidden="true">🟣</span>
-    </div>
-    <b data-i18n="codeTutorialFeedbackLabel">Clue feedback</b>
-    <div class="code-demo-feedback" role="img" aria-label="Two in the right place, one in the code but in a different place, one not in the code" data-i18n-aria="codeTutorialFeedbackColors">
-      <i class="exact"></i><i class="exact"></i><i class="present"></i><i class="absent"></i>
-    </div>
-    <p class="code-feedback" data-i18n="codeTutorialClue">The clue says: 2 colors are in the right place, 1 color is in the code but in a different place, and 1 color is not in the code.</p>
-    <button class="alt" onclick="continueCodeTutorial()" data-i18n="codeTutorialClose">Got it</button>
-  </div>
-</div>
 
 <div class="modal" id="parentM"><div class="box">
   <div style="font-size:40px">👪</div><h3 data-i18n="parentDashboard">Parent dashboard</h3>
@@ -590,8 +583,11 @@ Object.assign(TEXT.en,{
   sokobanWin:'Box delivered!',sokobanRestart:'Restart board',
   codeInstruction:'Crack the secret 4-color code. Colors do not repeat. After each guess, feedback shows which colors are correct and whether they are in the right place.',
   codeSubmit:'Check guess',codeNeedFour:'Choose a color for all four spaces first.',codeAttempt:'Guess {n} of 8',
-  codeHowTo:'Show an example',codeTutorialTitle:'How to crack the code',codeTutorialIntro:'The secret code has four different colors. Choose four colors and check your guess.',codeTutorialColors:'Red, yellow, blue, purple',
-  codeTutorialGuess:'Example guess',codeTutorialClue:'The clue says: 2 colors are in the right place, 1 color is in the code but in a different place, and 1 color is not in the code.',codeTutorialClose:'Got it',
+  codeDemoTitle:'How to play Code Breaker',codeDemoIntro:'Watch a short gameplay preview, then choose an activity to crack your own code.',codeDemoVideoLabel:'Animated Code Breaker gameplay: make a guess, read the color clues, then crack the code.',
+  codeDemoSecret:'Secret code',codeDemoGuessOne:'Guess 1',codeDemoGuessTwo:'Guess 2',codeDemoGuessThree:'Solved!',
+  codeDemoChoose:'Choose four different colors.',codeDemoReadClues:'Check the clues: exact place, right color in a different place, or an incorrect color.',codeDemoSolve:'Use the clues to crack the code.',
+  codeDemoRulesTitle:'How the game works',codeDemoRuleCode:'Crack a secret sequence of four different colors.',codeDemoRuleGuesses:'You have up to eight guesses.',codeDemoRuleClues:'After each guess, clues show which colors match and whether they are in the right place.',
+  codeDemoGotIt:'Got it - choose an activity',
   codeFeedback:'{exact} in the right place ({exactColors}) · {present} right color, different place ({presentColors}) · incorrect ({absentColors})',
   codeNone:'none',
   codeWin:'Secret code cracked!',codeFail:'No guesses left. The code was {code}.',codeHint:'Use the exact-place and color-only counts to eliminate possibilities. Colors never repeat.',
@@ -615,8 +611,11 @@ Object.assign(TEXT.he,{
   sokobanWin:'הקופסה הגיעה ליעד!',sokobanRestart:'התחלת הלוח מחדש',
   codeInstruction:'פצחו את הקוד הסודי בן ארבעת הצבעים. אין צבעים כפולים. אחרי כל ניחוש המשוב מציג אילו צבעים נכונים והאם הם במקום הנכון.',
   codeSubmit:'בדיקת הניחוש',codeNeedFour:'בחרו צבע לכל ארבעת המקומות.',codeAttempt:'ניחוש {n} מתוך 8',
-  codeHowTo:'הצגת דוגמה',codeTutorialTitle:'איך מפצחים את הקוד?',codeTutorialIntro:'הקוד הסודי מורכב מארבעה צבעים שונים. בחרו ארבעה צבעים ובדקו את הניחוש.',codeTutorialColors:'אדום, צהוב, כחול, סגול',
-  codeTutorialGuess:'דוגמה לניחוש',codeTutorialClue:'הרמז אומר: שני צבעים במקום הנכון, צבע אחד בקוד אבל במקום אחר, וצבע אחד שלא נמצא בקוד.',codeTutorialClose:'הבנתי',
+  codeDemoTitle:'איך משחקים בפיצוח צפנים?',codeDemoIntro:'צפו בהדגמת משחק קצרה, ואז בחרו פעילות כדי לפצח קוד משלכם.',codeDemoVideoLabel:'הדגמת משחק מונפשת בפיצוח צפנים: מנחשים, קוראים את רמזי הצבעים ולבסוף מפצחים את הקוד.',
+  codeDemoSecret:'הקוד הסודי',codeDemoGuessOne:'ניחוש 1',codeDemoGuessTwo:'ניחוש 2',codeDemoGuessThree:'פוצח!',
+  codeDemoChoose:'בחרו ארבעה צבעים שונים.',codeDemoReadClues:'בדקו את הרמזים: צבע במקום הנכון, צבע נכון במקום אחר, או צבע לא נכון.',codeDemoSolve:'השתמשו ברמזים כדי לפצח את הקוד.',
+  codeDemoRulesTitle:'איך המשחק עובד',codeDemoRuleCode:'מפצחים רצף סודי של ארבעה צבעים שונים.',codeDemoRuleGuesses:'לרשותכם עד שמונה ניחושים.',codeDemoRuleClues:'אחרי כל ניחוש מתקבלים רמזים אילו צבעים מתאימים והאם הם במקום הנכון.',
+  codeDemoGotIt:'הבנתי - לבחירת פעילות',
   codeFeedback:'{exact} במקום הנכון ({exactColors}) · {present} בצבע הנכון אך במקום אחר ({presentColors}) · לא נכון ({absentColors})',
   codeNone:'אין',
   codeWin:'פיצחתם את הקוד!',codeFail:'נגמרו הניחושים. הקוד היה {code}.',codeHint:'היעזרו במספר הצבעים במקום הנכון ובמספר הצבעים שקיימים במקום אחר. אין צבעים כפולים.',
@@ -640,9 +639,11 @@ Object.assign(TEXT.ru,{
   sokobanWin:'Ящик доставлен!',sokobanRestart:'Начать уровень заново',
   codeInstruction:'Взломай секретный код из четырёх цветов. Цвета не повторяются. После каждой попытки подсказка показывает, какие цвета угаданы и стоят ли они на верном месте.',
   codeSubmit:'Проверить вариант',codeNeedFour:'Сначала выбери цвет для всех четырёх мест.',codeAttempt:'Попытка {n} из 8',
-  codeHowTo:'Показать пример',codeTutorialTitle:'Как разгадать код?',codeTutorialIntro:'В секретном коде четыре разных цвета. Выбери четыре цвета и проверь свою попытку.',codeTutorialColors:'Красный, жёлтый, синий, фиолетовый',
-  codeTutorialGuess:'Пример попытки',codeTutorialClue:'Подсказка: 2 цвета стоят на своих местах, 1 цвет есть в коде, но стоит в другом месте, а 1 цвета в коде нет.',
-  codeTutorialClose:'Понятно',
+  codeDemoTitle:'Как играть во взлом кода?',codeDemoIntro:'Посмотри короткую демонстрацию игры, затем выбери задание и взломай свой код.',codeDemoVideoLabel:'Анимированная демонстрация взлома кода: сделай попытку, прочитай подсказки о цветах и разгадай код.',
+  codeDemoSecret:'Секретный код',codeDemoGuessOne:'Попытка 1',codeDemoGuessTwo:'Попытка 2',codeDemoGuessThree:'Разгадано!',
+  codeDemoChoose:'Выбери четыре разных цвета.',codeDemoReadClues:'Смотри на подсказки: цвет на своём месте, цвет есть, но стоит в другом месте, или неверный цвет.',codeDemoSolve:'Используй подсказки, чтобы разгадать код.',
+  codeDemoRulesTitle:'Как устроена игра',codeDemoRuleCode:'Нужно разгадать секретную последовательность из четырёх разных цветов.',codeDemoRuleGuesses:'У тебя есть до восьми попыток.',codeDemoRuleClues:'После каждой попытки подсказки показывают, какие цвета угаданы и стоят ли они на верном месте.',
+  codeDemoGotIt:'Понятно - выбрать задание',
   codeFeedback:'На месте ({exact}): {exactColors} · Верный цвет, другое место ({present}): {presentColors} · Неверно: {absentColors}',
   codeNone:'нет',
   codeWin:'Код взломан!',codeFail:'Попытки закончились. Код был: {code}.',codeHint:'Используй количество точных совпадений и цветов не на месте, чтобы исключать варианты. Цвета не повторяются.',
@@ -720,7 +721,6 @@ Object.assign(TEXT.en,{chooseGameToUnlock:'Choose a game to unlock',purchaseGame
   allAccessNotice:'All games and activities are currently unlocked on this account. You do not need another purchase for access. Check Google Play separately to manage any subscription.',
   purchaseOptionsTitle:'Game access and purchase options',purchaseOptionsAll:'All games are already unlocked. There are no games to purchase.',
   purchaseOptionsSome:'Choose a locked game to see its purchase options.',
-  codeActivityIntro:'The activities use the same board and rules. Each activity has a different secret color sequence to solve.',
   coloringCategories:'Coloring Categories',previousColoringPicture:'Previous picture',nextColoringPicture:'Next picture'});
 Object.assign(TEXT.he,{chooseGameToUnlock:'בחרו משחק לפתיחה',purchaseGameAlreadyUnlocked:'כבר פתוח',
   purchaseAreaIntro:'זהו אזור הגישה למשחקים ואפשרויות המינוי. סמל מנעול מציין שיש במשחק תוכן שעדיין לא פתוח.',
@@ -728,7 +728,6 @@ Object.assign(TEXT.he,{chooseGameToUnlock:'בחרו משחק לפתיחה',purch
   allAccessNotice:'כל המשחקים והפעילויות פתוחים כרגע בחשבון הזה. אין צורך ברכישה נוספת כדי לשחק. לניהול מינוי קיים יש לבדוק בנפרד ב־Google Play.',
   purchaseOptionsTitle:'גישה למשחקים ואפשרויות רכישה',purchaseOptionsAll:'כל המשחקים כבר פתוחים. אין משחקים לרכישה.',
   purchaseOptionsSome:'בחרו משחק נעול כדי לראות את אפשרויות הרכישה שלו.',
-  codeActivityIntro:'בכל הפעילויות הלוח וכללי המשחק זהים. בכל פעילות יש רצף צבעים סודי שונה לפיצוח.',
   coloringCategories:'קטגוריות צביעה',previousColoringPicture:'לתמונה הקודמת',nextColoringPicture:'לתמונה הבאה'});
 Object.assign(TEXT.ru,{chooseGameToUnlock:'Выберите игру для открытия',purchaseGameAlreadyUnlocked:'Уже открыта',
   purchaseAreaIntro:'Здесь показан доступ к играм и варианты подписки. Замок означает, что часть содержимого игры ещё не открыта.',
@@ -736,7 +735,6 @@ Object.assign(TEXT.ru,{chooseGameToUnlock:'Выберите игру для от
   allAccessNotice:'Все игры и задания сейчас открыты в этом аккаунте. Для доступа дополнительная покупка не нужна. Чтобы управлять подпиской, проверьте Google Play отдельно.',
   purchaseOptionsTitle:'Доступ к играм и варианты покупки',purchaseOptionsAll:'Все игры уже открыты. Нет игр для покупки.',
   purchaseOptionsSome:'Выберите закрытую игру, чтобы увидеть варианты покупки.',
-  codeActivityIntro:'Во всех заданиях одинаковые поле и правила. В каждом нужно разгадать свою секретную последовательность цветов.',
   coloringCategories:'Категории раскрасок',previousColoringPicture:'Предыдущая картинка',nextColoringPicture:'Следующая картинка'});
 Object.assign(TEXT.en,{basicColors:'Basic colors',createdColors:'My colors',noCreatedColors:'Colors you create will appear here.',draftSaveFailed:'Could not save this coloring progress. Please free up device storage and try again.'});
 Object.assign(TEXT.he,{basicColors:'צבעים בסיסיים',createdColors:'הצבעים שלי',noCreatedColors:'הצבעים שתיצרו יופיעו כאן.',draftSaveFailed:'שמירת ההתקדמות נכשלה. פנו מקום באחסון המכשיר ונסו שוב.'});
@@ -1874,7 +1872,22 @@ function renderMiniGameCards(grid){
 }
 function selectMiniGame(id){
   if(!MINI_GAMES.some(game=>game.id===id))return;
-  selectedMiniGame=id;miniGameScene='levels';renderGameLevels();go('gameStage');
+  selectedMiniGame=id;
+  if(id==='codeBreaker'){miniGameScene='codeIntro';renderCodeBreakerIntro();go('gameStage');return}
+  miniGameScene='levels';renderGameLevels();go('gameStage');
+}
+function renderCodeBreakerIntro(){
+  const slots=values=>values.map(value=>`<span class="code-demo-slot${value==='🔒'?' locked':''}">${value}</span>`).join('');
+  const palette='<div class="code-demo-palette"><i style="background:#ef476f"></i><i style="background:#f78c3b"></i><i style="background:#ffd166"></i><i style="background:#06d6a0"></i><i style="background:#118ab2"></i><i style="background:#8b5cf6"></i></div>';
+  const scene=(title,guess,clues,caption)=>`<div class="code-demo-frame"><b class="code-demo-video-title">${tr(title)}</b><div class="code-demo-secret">${slots(['🔒','🔒','🔒','🔒'])}</div><div class="code-demo-guess">${slots(guess)}</div>${clues?`<div class="code-demo-clues">${clues}</div>`:''}${palette}<div class="code-demo-caption">${tr(caption)}</div></div>`;
+  const cluesOne='<i class="exact"></i><i class="exact"></i><i class="present"></i><i class="absent"></i>';
+  const cluesTwo='<i class="exact"></i><i class="exact"></i><i class="present"></i><i class="present"></i>';
+  const cluesSolved='<i class="exact"></i><i class="exact"></i><i class="exact"></i><i class="exact"></i>';
+  $('#gameContent').classList.remove('railway-game');
+  $('#gameContent').innerHTML=`<section class="code-intro"><h2>🔐 ${tr('codeDemoTitle')}</h2><p>${tr('codeDemoIntro')}</p><div class="code-demo-video" role="img" aria-label="${tr('codeDemoVideoLabel')}">${scene('codeDemoGuessOne',['🔴','🟡','🔵','🟣'],'', 'codeDemoChoose')}${scene('codeDemoGuessTwo',['🔴','🟡','🟣','🟢'],cluesOne,'codeDemoReadClues')}${scene('codeDemoGuessThree',['🔴','🟡','🟣','🟢'],cluesSolved,'codeDemoSolve')}<span class="code-demo-play" aria-hidden="true">▶</span></div><h3>${tr('codeDemoRulesTitle')}</h3><ul><li>${tr('codeDemoRuleCode')}</li><li>${tr('codeDemoRuleGuesses')}</li><li>${tr('codeDemoRuleClues')}</li></ul><button class="alt" onclick="continueCodeBreakerIntro()">${tr('codeDemoGotIt')}</button><button class="ghost" onclick="go('games')">${tr('back')}</button></section>`;
+}
+function continueCodeBreakerIntro(){
+  miniGameScene='levels';renderGameLevels();go('gameStage');
 }
 function renderGameLevels(){
   $('#gameContent').classList.remove('railway-game');
@@ -1886,7 +1899,7 @@ function renderGameLevels(){
     return;
   }
   const names=activityNames(game.id,currentLanguage);
-  $('#gameContent').innerHTML=`<h2>${game.icon} ${tr(game.name)}</h2>${game.id==='codeBreaker'?`<p>${tr('codeActivityIntro')}</p>`:''}<div class="level-grid">${Array.from({length:names.length},(_,i)=>{
+  $('#gameContent').innerHTML=`<h2>${game.icon} ${tr(game.name)}</h2><div class="level-grid">${Array.from({length:names.length},(_,i)=>{
     const paid=i>=6&&!gameUnlocked(game.id);
     const name=names[i];
     const label=game.id==='scienceQuest'&&currentLanguage==='ru'&&i===7
@@ -1939,10 +1952,6 @@ function launchMiniGame(id,level){
   }
   if(!game||!Number.isInteger(level)||level<0||level>=activityNames(id,currentLanguage).length)return;
   if(level>=6&&!gameUnlocked(id)){requestGamePurchase(id);return}
-  if(id==='codeBreaker'){
-    selectedMiniGame=id;selectedLevel=level;miniGameScene='codeDemo';
-    go('gameStage');openCodeTutorial(true);return;
-  }
   selectedMiniGame=id;selectedLevel=level;miniGameScene='play';
   if(id==='letters')traceLetterIndex=0;
   if(learningGameHasTenQuestions(id))riddleQuestionIndex=0;
@@ -2421,7 +2430,7 @@ function setupCodeBreaker(){
 function interactiveGamePrompt(id){
   const keys={physicsPaths:'pathInstruction',gridSokoban:'sokobanInstruction',codeBreaker:'codeInstruction',railwayControl:'railwayInstruction'};
   return id==='physicsPaths'?tr(keys[id],{n:interactivePuzzle.maxTurns})
-    :id==='codeBreaker'?`${tr('codeActivityIntro')} ${tr(keys[id])}`:tr(keys[id]);
+    :tr(keys[id]);
 }
 function renderInteractivePuzzle(){
   if(!interactivePuzzle)return;
@@ -2483,20 +2492,12 @@ function renderInteractivePuzzle(){
   const feedback=interactivePuzzle.feedback?`<p class="play-status">${interactivePuzzle.feedback}</p>`:'<p class="play-status"></p>';
   const progress=id==='physicsPaths'?tr('pathLevelProgress',{n:selectedPathLevel+1}):id==='gridSokoban'?tr('boxLevelProgress',{n:selectedBoxLevel+1}):id==='railwayControl'?tr('railwayProgress',{n:selectedRailwayLevel+1}):'';
   const continueLabel=id==='physicsPaths'?tr(selectedPathLevel<4?'pathNextLevel':'pathAllComplete'):id==='gridSokoban'?tr(selectedBoxLevel<4?'boxNextLevel':'boxAllComplete'):id==='railwayControl'?tr(selectedRailwayLevel<4?'railwayNextLevel':'railwayAllComplete'):tr('next');
-  const topSuccess=['physicsPaths','gridSokoban'].includes(id);
+  const topSuccess=['physicsPaths','gridSokoban','codeBreaker'].includes(id);
   const success=interactivePuzzle.won?`<p class="${id==='gridSokoban'?'sokoban-success':id==='physicsPaths'?'path-success':'play-status'}" aria-live="polite"><b>${tr('correct')} ${interactivePuzzle.newStar?tr('starEarned'):''}</b><br>${tr(interactivePuzzle.successKey)}${progress?`<br>${progress}`:''}<br><button class="alt" onclick="continueInteractivePuzzle()">${continueLabel}</button></p>`:'';
   const restart=interactivePuzzle.finished&&!interactivePuzzle.won?`<button class="alt" onclick="startInteractivePuzzle('${id}')">${tr('puzzleRetry')}</button>`:'';
   $('#gameContent').classList.toggle('railway-game',id==='railwayControl');
-  $('#gameContent').innerHTML=`<h2>${tr(MINI_GAMES.find(game=>game.id===id).name)}</h2><p>${interactiveGamePrompt(id)}</p>${topSuccess?success:''}<section class="interactive-puzzle${id==='railwayControl'?' railway-puzzle':''}">${board}${hint}<div class="puzzle-controls">${id==='codeBreaker'?`<button class="ghost" onclick="openCodeTutorial()">${tr('codeHowTo')}</button>`:''}<button class="ghost" onclick="showInteractiveHint()">${tr('hintButton')}</button></div>${feedback}${topSuccess?'':success}${restart}</section><button class="ghost" onclick="backFromGame()" data-i18n="back">${tr('back')}</button>`;
+  $('#gameContent').innerHTML=`<h2>${tr(MINI_GAMES.find(game=>game.id===id).name)}</h2><p>${interactiveGamePrompt(id)}</p>${topSuccess?success:''}<section class="interactive-puzzle${id==='railwayControl'?' railway-puzzle':''}">${board}${hint}<div class="puzzle-controls"><button class="ghost" onclick="showInteractiveHint()">${tr('hintButton')}</button></div>${feedback}${topSuccess?'':success}${restart}</section><button class="ghost" onclick="backFromGame()" data-i18n="back">${tr('back')}</button>`;
   if(topSuccess&&interactivePuzzle.won)$('#gameStage').scrollTop=0;
-}
-let codeTutorialStartsGame=false;
-function openCodeTutorial(startGame=false){codeTutorialStartsGame=startGame;$('#codeTutorialM').classList.add('on')}
-function continueCodeTutorial(){
-  const startsGame=codeTutorialStartsGame;
-  codeTutorialStartsGame=false;
-  closeM('codeTutorialM');
-  if(startsGame)startInteractivePuzzle('codeBreaker');
 }
 function showInteractiveHint(){
   if(!interactivePuzzle||interactivePuzzle.finished)return;
