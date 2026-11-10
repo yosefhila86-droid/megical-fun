@@ -1,10 +1,11 @@
 'use strict';
 
-const CACHE_NAME='magical-fun-shell-v21';
+const CACHE_NAME='magical-fun-shell-v22';
 const APP_ROOT=new URL('./',self.registration.scope);
 const APP_SHELL=[
   APP_ROOT.href,
   new URL('index.html',APP_ROOT).href,
+  new URL('images/magical-fun-background.png',APP_ROOT).href,
   new URL('manifest.json',APP_ROOT).href,
   new URL('privacy.html',APP_ROOT).href,
   new URL('delete-account.html',APP_ROOT).href
