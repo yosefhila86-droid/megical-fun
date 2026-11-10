@@ -183,6 +183,7 @@ video{width:100%;max-width:420px;border-radius:16px;background:#222;display:bloc
 .code-peg{width:48px;height:48px;padding:0;border:3px solid #d9ccff;border-radius:50%;font-size:25px}
 .code-peg.active{outline:3px solid #7c4dff}
 .code-feedback{max-width:430px;margin:8px auto;padding:8px;background:#f8f5ff;border-radius:12px}
+.code-demo-row{display:flex;justify-content:center;gap:8px;margin:12px auto}
 .puzzle-controls{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
 .escape-scene{position:relative;isolation:isolate;overflow:hidden;max-width:520px;min-height:180px;aspect-ratio:2.4/1;margin:12px auto;border:5px solid #fff;border-radius:22px;background:linear-gradient(to bottom,#c4e7ff 0 70%,#b9815c 70% 74%,#e8c89c 74%);box-shadow:0 4px 12px #36205a26}
 .escape-scene:after{content:"";position:absolute;z-index:-1;inset:auto 0 0;height:27%;background:repeating-linear-gradient(90deg,transparent 0 49px,#bd9970 50px,#bd9970 52px,transparent 53px)}
@@ -356,6 +357,21 @@ video{width:100%;max-width:420px;border-radius:16px;background:#222;display:bloc
   <input id="gYear" type="number" placeholder="e.g. 1985"><div class="err" id="gErr"></div>
   <button onclick="gateOk()" data-i18n="continue">Continue</button><button class="ghost" onclick="closeM('gate')" data-i18n="cancel">Cancel</button>
 </div></div>
+
+<div class="modal" id="codeTutorialM" role="dialog" aria-modal="true" aria-labelledby="codeTutorialTitle">
+  <div class="box">
+    <div style="font-size:40px" aria-hidden="true">🔐</div>
+    <h3 id="codeTutorialTitle" data-i18n="codeTutorialTitle">How to crack the code</h3>
+    <p data-i18n="codeTutorialIntro">The secret code has four different colors. Choose four colors and check your guess.</p>
+    <b data-i18n="codeTutorialGuess">Example guess</b>
+    <div class="code-demo-row" role="img" aria-label="Red, yellow, blue, purple" data-i18n-aria="codeTutorialColors">
+      <span class="code-peg" aria-hidden="true">🔴</span><span class="code-peg" aria-hidden="true">🟡</span>
+      <span class="code-peg" aria-hidden="true">🔵</span><span class="code-peg" aria-hidden="true">🟣</span>
+    </div>
+    <p class="code-feedback" data-i18n="codeTutorialClue">The clue says: 2 colors are in the right place, 1 color is in the code but in a different place, and 1 color is not in the code.</p>
+    <button class="alt" onclick="closeM('codeTutorialM')" data-i18n="codeTutorialClose">Got it</button>
+  </div>
+</div>
 
 <div class="modal" id="parentM"><div class="box">
   <div style="font-size:40px">👪</div><h3 data-i18n="parentDashboard">Parent dashboard</h3>
@@ -560,6 +576,8 @@ Object.assign(TEXT.en,{
   sokobanWin:'Box delivered!',sokobanRestart:'Restart board',
   codeInstruction:'Crack the secret 4-color code. Colors do not repeat. After each guess, feedback shows which colors are correct and whether they are in the right place.',
   codeSubmit:'Check guess',codeNeedFour:'Choose a color for all four spaces first.',codeAttempt:'Guess {n} of 8',
+  codeHowTo:'Show an example',codeTutorialTitle:'How to crack the code',codeTutorialIntro:'The secret code has four different colors. Choose four colors and check your guess.',codeTutorialColors:'Red, yellow, blue, purple',
+  codeTutorialGuess:'Example guess',codeTutorialClue:'The clue says: 2 colors are in the right place, 1 color is in the code but in a different place, and 1 color is not in the code.',codeTutorialClose:'Got it',
   codeFeedback:'{exact} in the right place ({exactColors}) · {present} right color, different place ({presentColors}) · incorrect ({absentColors})',
   codeNone:'none',
   codeWin:'Secret code cracked!',codeFail:'No guesses left. The code was {code}.',codeHint:'Use the exact-place and color-only counts to eliminate possibilities. Colors never repeat.',
@@ -583,6 +601,8 @@ Object.assign(TEXT.he,{
   sokobanWin:'הקופסה הגיעה ליעד!',sokobanRestart:'התחלת הלוח מחדש',
   codeInstruction:'פצחו את הקוד הסודי בן ארבעת הצבעים. אין צבעים כפולים. אחרי כל ניחוש המשוב מציג אילו צבעים נכונים והאם הם במקום הנכון.',
   codeSubmit:'בדיקת הניחוש',codeNeedFour:'בחרו צבע לכל ארבעת המקומות.',codeAttempt:'ניחוש {n} מתוך 8',
+  codeHowTo:'הצגת דוגמה',codeTutorialTitle:'איך מפצחים את הקוד?',codeTutorialIntro:'הקוד הסודי מורכב מארבעה צבעים שונים. בחרו ארבעה צבעים ובדקו את הניחוש.',codeTutorialColors:'אדום, צהוב, כחול, סגול',
+  codeTutorialGuess:'דוגמה לניחוש',codeTutorialClue:'הרמז אומר: שני צבעים במקום הנכון, צבע אחד בקוד אבל במקום אחר, וצבע אחד שלא נמצא בקוד.',codeTutorialClose:'הבנתי',
   codeFeedback:'{exact} במקום הנכון ({exactColors}) · {present} בצבע הנכון אך במקום אחר ({presentColors}) · לא נכון ({absentColors})',
   codeNone:'אין',
   codeWin:'פיצחתם את הקוד!',codeFail:'נגמרו הניחושים. הקוד היה {code}.',codeHint:'היעזרו במספר הצבעים במקום הנכון ובמספר הצבעים שקיימים במקום אחר. אין צבעים כפולים.',
@@ -606,6 +626,9 @@ Object.assign(TEXT.ru,{
   sokobanWin:'Ящик доставлен!',sokobanRestart:'Начать уровень заново',
   codeInstruction:'Взломай секретный код из четырёх цветов. Цвета не повторяются. После каждой попытки подсказка показывает, какие цвета угаданы и стоят ли они на верном месте.',
   codeSubmit:'Проверить вариант',codeNeedFour:'Сначала выбери цвет для всех четырёх мест.',codeAttempt:'Попытка {n} из 8',
+  codeHowTo:'Показать пример',codeTutorialTitle:'Как разгадать код?',codeTutorialIntro:'В секретном коде четыре разных цвета. Выбери четыре цвета и проверь свою попытку.',codeTutorialColors:'Красный, жёлтый, синий, фиолетовый',
+  codeTutorialGuess:'Пример попытки',codeTutorialClue:'Подсказка: 2 цвета стоят на своих местах, 1 цвет есть в коде, но стоит в другом месте, а 1 цвета в коде нет.',
+  codeTutorialClose:'Понятно',
   codeFeedback:'На месте ({exact}): {exactColors} · Верный цвет, другое место ({present}): {presentColors} · Неверно: {absentColors}',
   codeNone:'нет',
   codeWin:'Код взломан!',codeFail:'Попытки закончились. Код был: {code}.',codeHint:'Используй количество точных совпадений и цветов не на месте, чтобы исключать варианты. Цвета не повторяются.',
@@ -1764,7 +1787,7 @@ const ACTIVITY_NAMES={
   en:{
     puzzle:['Animal Pictures','Vehicles','Food','Dinosaurs','Fairytales & Magic','Space','Ocean Life','Superheroes','Sports','Nature & Garden','Dragons','All Coloring Pictures'],
     logicQuest:['Garden Order','Ocean Voyage','Space Mission','Farm Morning','City Traffic','Fruit Picnic','Dinosaur Trail','Rainbow Garden','Band Practice','Big Match','Winter Day','Night Sky'],
-    differences:['Garden Picture','Animal Picture','Fruit Picture','Ocean Picture','Space Picture','Cute Animals','Vehicle Picture','Dinosaur Picture','Magic Picture','Sports Picture','Nature Picture','Dragon Picture'],
+    differences:['Garden Picture','Animal Picture','Food Picture','Ocean Picture','Space Picture','Cute Animals','Vehicle Picture','Dinosaur Picture','Magic Picture','Sports Picture','Nature Picture','Dragon Picture'],
     memory:['Puppy Pairs','Forest Friends','Farm Animals','Ocean Buddies','Vehicle Pairs','Fruit Pairs','Dinosaur Pairs','Space Pairs','Garden Pairs','Pet Pairs','Bird Pairs','Sea Creature Pairs'],
     math:['Two-Digit Addition','Two-Digit Subtraction','Tens and Ones','Missing Addend','Add Across a Ten','Subtract Across a Ten','Multiplication Mission','Division Detective','Three-Number Addition','Two-Step Challenge','Missing Factor','Multiply and Add'],
     words:['Mystery Letters','Mixed-Up Message','Letter Challenge','Spelling Trail','Word Puzzle','Hidden Word','Letter Detective','Scramble Quest','Secret Spelling','Word Workshop','Letter Lab','Spelling Challenge'],
@@ -1784,7 +1807,7 @@ const ACTIVITY_NAMES={
   he:{
     puzzle:['תמונות חיות','כלי רכב','אוכל','דינוזאורים','אגדות וקסמים','חלל','חיי הים','גיבורי על','ספורט','טבע וגינה','דרקונים','כל תמונות הצביעה'],
     logicQuest:['סדר בגינה','מסע בים','משימת חלל','בוקר בחווה','תנועה בעיר','פיקניק פירות','שביל הדינוזאורים','גן הקשת','חזרה מוזיקלית','משחק גדול','יום חורפי','שמיים בלילה'],
-    differences:['תמונת גינה','תמונת חיות','תמונת פירות','תמונת ים','תמונת חלל','חיות חמודות','תמונת כלי רכב','תמונת דינוזאורים','תמונת קסם','תמונת ספורט','תמונת טבע','תמונת דרקונים'],
+    differences:['תמונת גינה','תמונת חיות','תמונת אוכל','תמונת ים','תמונת חלל','חיות חמודות','תמונת כלי רכב','תמונת דינוזאורים','תמונת קסם','תמונת ספורט','תמונת טבע','תמונת דרקונים'],
     memory:['זוגות כלבלבים','חברים ביער','חיות החווה','חברים בים','זוגות כלי רכב','זוגות פירות','זוגות דינוזאורים','זוגות חלל','זוגות גינה','זוגות חיות מחמד','זוגות ציפורים','זוגות יצורי ים'],
     math:['חיבור דו־ספרתי','חיסור דו־ספרתי','עשרות ואחדות','המחובר החסר','חיבור מעבר לעשר','חיסור מעבר לעשר','משימת כפל','בלשי חילוק','חיבור של שלושה מספרים','אתגר בשני שלבים','הגורם החסר','כפל וחיבור'],
     words:['אותיות מסתוריות','מסר מעורבב','אתגר האותיות','שביל האיות','חידת מילים','מילה נסתרת','בלשי אותיות','מסע הערבוב','איות סודי','סדנת מילים','מעבדת האותיות','אתגר האיות'],
@@ -1804,7 +1827,7 @@ const ACTIVITY_NAMES={
   ru:{
     puzzle:['Животные','Транспорт','Еда','Динозавры','Сказки и магия','Космос','Морская жизнь','Супергерои','Спорт','Природа и сад','Драконы','Все раскраски'],
     logicQuest:['Порядок в саду','Морское путешествие','Космическая миссия','Утро на ферме','Движение в городе','Фруктовый пикник','Тропа динозавров','Радужный сад','Репетиция оркестра','Большой матч','Зимний день','Ночное небо'],
-    differences:['Садовая картина','Картина с животными','Фруктовая картина','Морская картина','Космическая картина','Милые животные','Транспорт','Динозавры','Волшебный мир','Спорт','Природа','Драконы'],
+    differences:['Садовая картина','Картина с животными','Картинки с едой','Морская картина','Космическая картина','Милые животные','Транспорт','Динозавры','Волшебный мир','Спорт','Природа','Драконы'],
     memory:['Пары щенков','Лесные друзья','Фермерские животные','Морские друзья','Пары транспорта','Пары фруктов','Пары динозавров','Космические пары','Садовые пары','Пары питомцев','Пары птиц','Морские существа'],
     math:['Двузначное сложение','Двузначное вычитание','Десятки и единицы','Найди слагаемое','Переход через десяток','Вычитание с переходом','Задание на умножение','Детектив деления','Сложение трёх чисел','Задача в два шага','Найди множитель','Умножение и сложение'],
     words:['Тайные буквы','Перепутанное послание','Испытание букв','Тропа правописания','Задача со словом','Скрытое слово','Детектив букв','Буквенная путаница','Тайное правописание','Мастерская слов','Лаборатория букв','Испытание правописания'],
@@ -2446,9 +2469,10 @@ function renderInteractivePuzzle(){
   const success=interactivePuzzle.won?`<p class="${id==='gridSokoban'?'sokoban-success':id==='physicsPaths'?'path-success':'play-status'}" aria-live="polite"><b>${tr('correct')} ${interactivePuzzle.newStar?tr('starEarned'):''}</b><br>${tr(interactivePuzzle.successKey)}${progress?`<br>${progress}`:''}<br><button class="alt" onclick="continueInteractivePuzzle()">${continueLabel}</button></p>`:'';
   const restart=interactivePuzzle.finished&&!interactivePuzzle.won?`<button class="alt" onclick="startInteractivePuzzle('${id}')">${tr('puzzleRetry')}</button>`:'';
   $('#gameContent').classList.toggle('railway-game',id==='railwayControl');
-  $('#gameContent').innerHTML=`<h2>${tr(MINI_GAMES.find(game=>game.id===id).name)}</h2><p>${interactiveGamePrompt(id)}</p>${topSuccess?success:''}<section class="interactive-puzzle${id==='railwayControl'?' railway-puzzle':''}">${board}${hint}<div class="puzzle-controls"><button class="ghost" onclick="showInteractiveHint()">${tr('hintButton')}</button></div>${feedback}${topSuccess?'':success}${restart}</section><button class="ghost" onclick="backFromGame()" data-i18n="back">${tr('back')}</button>`;
+  $('#gameContent').innerHTML=`<h2>${tr(MINI_GAMES.find(game=>game.id===id).name)}</h2><p>${interactiveGamePrompt(id)}</p>${topSuccess?success:''}<section class="interactive-puzzle${id==='railwayControl'?' railway-puzzle':''}">${board}${hint}<div class="puzzle-controls">${id==='codeBreaker'?`<button class="ghost" onclick="openCodeTutorial()">${tr('codeHowTo')}</button>`:''}<button class="ghost" onclick="showInteractiveHint()">${tr('hintButton')}</button></div>${feedback}${topSuccess?'':success}${restart}</section><button class="ghost" onclick="backFromGame()" data-i18n="back">${tr('back')}</button>`;
   if(topSuccess&&interactivePuzzle.won)$('#gameStage').scrollTop=0;
 }
+function openCodeTutorial(){$('#codeTutorialM').classList.add('on')}
 function showInteractiveHint(){
   if(!interactivePuzzle||interactivePuzzle.finished)return;
   const keys={physicsPaths:'pathHint',gridSokoban:'sokobanHint',codeBreaker:'codeHint',railwayControl:'railwayHint'};
@@ -3168,7 +3192,7 @@ const SCIENCE_QUESTION_DATA=[
     ['Which part of a plant takes in water from the soil?','איזה חלק בצמח קולט מים מהאדמה?','Какая часть растения поглощает воду из почвы?','Root','שורש','Корень'],
     ['Which flat green plant part catches sunlight?','איזה חלק שטוח וירוק בצמח קולט אור שמש?','Какая плоская зелёная часть растения улавливает солнечный свет?','Leaf','עלה','Лист'],
     ['What is the colorful part of a flower that can attract insects?','איזה חלק צבעוני בפרח עשוי למשוך חרקים?','Какая яркая часть цветка может привлекать насекомых?','Petal','עלי כותרת','Лепесток'],
-    ['What powder can bees carry from one flower to another?','איזו אבקה דבורים יכולות להעביר מפרח אחד לאחר?','Какую пыльцу пчёлы переносят с одного цветка на другой?','Pollen','אבקה','Пыльца'],
+    ['What do bees carry from one flower to another?','מה דבורים מעבירות מפרח אחד לפרח אחר?','Что пчёлы переносят с одного цветка на другой?','Pollen','אבקה','Пыльца'],
     ['What sweet liquid do bees collect from flowers?','איזה נוזל מתוק דבורים אוספות מפרחים?','Какую сладкую жидкость пчёлы собирают с цветов?','Nectar','צוף','Нектар'],
     ['What can sprout and grow into a new plant?','מה יכול לנבוט ולצמוח לצמח חדש?','Что может прорасти и стать новым растением?','Seed','זרע','Семя'],
     ['Which part of a plant may hold and protect its seeds?','איזה חלק בצמח עשוי להכיל זרעים ולהגן עליהם?','Какая часть растения может содержать и защищать семена?','Fruit','פרי','Плод'],
@@ -3819,14 +3843,22 @@ function retryLearningAnswer(){
   $('#learningFeedback').textContent='';
   [...buttons].find(button=>!button.hidden)?.focus();
 }
+const MEMORY_ICON_SETS=[
+  ['🐶','🐕','🐩','🦮','🐕‍🦺','🐾'],
+  ['🦊','🐻','🐿️','🦉','🦔','🦝'],
+  ['🐮','🐷','🐔','🐑','🐐','🐴'],
+  ['🐢','🐙','🐬','🦀','🐳','🦭'],
+  ['🚗','🚲','🚂','✈️','🚀','🚁'],
+  ['🍎','🍐','🍓','🍇','🍌','🍉'],
+  ['🦖','🦕','🦴','🌋','🥚','🌿'],
+  ['🌎','🌙','⭐','🪐','🚀','👽'],
+  ['🌷','🌻','🌼','🐝','🐞','🦋'],
+  ['🐕','🐈','🐇','🐹','🐢','🐠'],
+  ['🦉','🦜','🦆','🦢','🦚','🐦'],
+  ['🐠','🪼','🦈','🦐','🐚','🦑']
+];
 function renderMemory(){
-  const iconSets=[
-    ['🐶','🐱','🐰','🐻','🐼','🦊'],['🐸','🐵','🦁','🐷','🐮','🐔'],['🐧','🐨','🦒','🦓','🐘','🦛'],
-    ['🐢','🐙','🐬','🦀','🐳','🦭'],['🚗','🚲','🚂','✈️','🚀','🚁'],['🍎','🍐','🍓','🍇','🍌','🍉'],
-    ['🦖','🦕','🦴','🌋','🥚','🌿'],['🌎','🌙','⭐','🪐','🚀','👽'],['🌷','🌻','🌼','🐝','🐞','🦋'],
-    ['🐕','🐈','🐇','🐹','🐢','🐠'],['🦉','🦜','🦆','🦢','🦚','🐦'],['🐠','🪼','🦈','🦐','🐚','🦑']
-  ];
-  const icons=iconSets[selectedLevel];
+  const icons=MEMORY_ICON_SETS[selectedLevel];
   memoryCards=[...icons,...icons].sort(()=>Math.random()-.5);
   memoryOpen=[];memoryMatched=new Set();miniGameScene='play';go('gameStage');
   $('#gameContent').innerHTML=`<h2 data-i18n="memory">🃏 ${tr('memory')}</h2><p data-i18n="matchPrompt">${tr('matchPrompt')}</p><div class="grid" style="max-width:380px;margin:12px auto">${memoryCards.map((_,i)=>`<button id="memory${i}" class="tile" style="font-size:38px;min-height:76px" onclick="flipMemoryCard(${i})">❔</button>`).join('')}</div><p id="memoryStatus" aria-live="polite"></p>`;
