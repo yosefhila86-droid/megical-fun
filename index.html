@@ -944,6 +944,7 @@ function loadUserData(userId,fallbackName=userId){
     console.error('Could not load local player settings:',e);
     S = defaultUserData(fallbackName);
   }
+    if(typeof loadMiniGameProgress==='function')loadMiniGameProgress();
   delete S.badges;
   if(!Array.isArray(S.art)) S.art=[];
   if(!Array.isArray(S.custom)) S.custom=[];
@@ -1447,10 +1448,10 @@ function stopDailyUsageTracking(){
   usageStartedAt=null;
 }
 document.addEventListener('visibilitychange',()=>{
-  if(document.hidden)stopDailyUsageTracking();
+  if(document.hidden){saveMiniGameProgress();stopDailyUsageTracking()}
   else if(!$('#welcome').classList.contains('on'))startDailyUsageTracking();
 });
-window.addEventListener('pagehide',flushDailyUsage);
+window.addEventListener('pagehide',()=>{saveMiniGameProgress();flushDailyUsage()});
 
 /* ---------- navigation ---------- */
 function go(id){
@@ -2030,6 +2031,126 @@ function cloneMiniGameProgress(value){
   return value;
 }
 function miniGameProgressKey(id,level){return `${id}:${level}`}
+function miniGameProgressStorageKey(){return `megical_game_progress_${currentUserId}`}
+function encodeMiniGameProgressValue(value){
+  if(value instanceof Set)return {__gameProgressType:'Set',values:[...value].map(encodeMiniGameProgressValue)};
+  if(value instanceof Uint8Array||value instanceof Uint8ClampedArray){
+    const bytes=new Uint8Array(value.buffer,value.byteOffset,value.byteLength);
+    let binary='';
+    for(let offset=0;offset<bytes.length;offset+=0x8000)binary+=String.fromCharCode(...bytes.subarray(offset,offset+0x8000));
+    return {__gameProgressType:value.constructor.name,data:btoa(binary)};
+  }
+  if(Array.isArray(value))return value.map(encodeMiniGameProgressValue);
+  if(value&&typeof value==='object'){
+    const copy={};
+    for(const [key,item] of Object.entries(value))if(typeof item!=='function')copy[key]=encodeMiniGameProgressValue(item);
+    return copy;
+  }
+  return value;
+}
+function decodeMiniGameProgressValue(value){
+  if(Array.isArray(value))return value.map(decodeMiniGameProgressValue);
+  if(value&&typeof value==='object'){
+    if(value.__gameProgressType==='Set')return new Set(value.values.map(decodeMiniGameProgressValue));
+    if(value.__gameProgressType==='Uint8Array'||value.__gameProgressType==='Uint8ClampedArray'){
+      const binary=atob(value.data),bytes=new Uint8Array(binary.length);
+      for(let index=0;index<binary.length;index++)bytes[index]=binary.charCodeAt(index);
+      return value.__gameProgressType==='Uint8ClampedArray'?new Uint8ClampedArray(bytes):bytes;
+    }
+    const copy={};
+    for(const [key,item] of Object.entries(value))copy[key]=decodeMiniGameProgressValue(item);
+    return copy;
+  }
+  return value;
+}
+function miniGameFeedbackActionId(id,state,success){
+  if(id==='puzzle')return state.puzzleImageIndex+1<state.puzzleImages.length?'puzzleNextPicture':'puzzleNextActivity';
+  if(id==='differences')return success?'advanceActivity':'noop';
+  if(['logicQuest','math','words','storyMath','patterns','riddles','scienceQuest'].includes(id)){
+    if(!success)return 'retryLearningAnswer';
+    return learningGameHasTenQuestions(id)&&state.riddleQuestionIndex<9?'nextQuestion':'advanceActivity';
+  }
+  if(id==='letters'){
+    if(!success)return 'clearTrace';
+    return state.traceLetterIndex+1<traceLetterGroups(currentLanguage)[selectedLevel].length?'nextTraceLetter':'advanceActivity';
+  }
+  if(id==='memory')return success?'advanceActivity':'noop';
+  if(id==='escapeRoom'){
+    if(!success)return state.escapeRoomPhase==='riddles'&&!state.escapeRoomSolved?'retryLearningAnswer':'noop';
+    if(state.escapeRoomPhase==='complete')return 'advanceActivity';
+    return state.escapeRoomIndex<4?'nextEscapeRoom':'enterEscapeKeyRoom';
+  }
+  if(['physicsPaths','gridSokoban','codeBreaker','railwayControl'].includes(id))return state.interactivePuzzle.won?'continueInteractivePuzzle':'retryInteractivePuzzle';
+  if(id==='wordSearch')return success?(state.selectedWordSearchLevel<5?'nextWordSearchLevel':'advanceActivity'):'clearWordSearchSelection';
+  if(id==='magneticMaze'){
+    if(!state.magneticMaze.won)return 'restartMagneticMaze';
+    if(state.selectedMagneticStage<5)return 'nextMagneticStage';
+    return selectedLevel+1<activityNames('magneticMaze',currentLanguage).length?'nextMagneticActivity':'renderMagneticMazeStages';
+  }
+  throw new Error(`Unknown game feedback action: ${id}`);
+}
+function resolveMiniGameFeedbackAction(id,actionId){
+  const handlers={
+    noop:()=>{},
+    puzzleNextPicture:nextPuzzlePicture,
+    puzzleNextActivity:nextPuzzleActivity,
+    advanceActivity:()=>advanceGameActivity(id),
+    retryLearningAnswer,
+    nextQuestion:nextRiddleQuestion,
+    clearTrace,
+    nextTraceLetter,
+    nextEscapeRoom,
+    enterEscapeKeyRoom,
+    continueInteractivePuzzle,
+    retryInteractivePuzzle:()=>startInteractivePuzzle(id),
+    clearWordSearchSelection,
+    nextWordSearchLevel:renderWordSearchLevels,
+    restartMagneticMaze:()=>startMagneticMaze(selectedLevel,selectedMagneticStage),
+    nextMagneticStage:()=>startMagneticMaze(selectedLevel,selectedMagneticStage+1),
+    nextMagneticActivity:()=>startMagneticMaze(selectedLevel+1,0),
+    renderMagneticMazeStages
+  };
+  if(!Object.prototype.hasOwnProperty.call(handlers,actionId))throw new Error(`Unknown saved game feedback action: ${actionId}`);
+  return handlers[actionId];
+}
+function persistMiniGameProgress(){
+  const entries=[...miniGameProgress.values()].map(progress=>({
+    id:progress.id,level:progress.level,scene:progress.scene,state:encodeMiniGameProgressValue(progress.state),
+    html:progress.html,className:progress.className,savedAt:progress.savedAt,
+    feedback:progress.feedback?{
+      message:progress.feedback.message,label:progress.feedback.label,success:progress.feedback.success,
+      actionId:progress.feedback.actionId
+    }:null
+  }));
+  try{localStorage.setItem(miniGameProgressStorageKey(),JSON.stringify({version:1,entries}))}
+  catch(error){console.error('Could not save mini-game progress:',error)}
+}
+function loadMiniGameProgress(){
+  miniGameProgress.clear();
+  let raw;
+  try{raw=localStorage.getItem(miniGameProgressStorageKey())}
+  catch(error){console.error('Could not read saved mini-game progress:',error);return}
+  if(!raw)return;
+  try{
+    const saved=JSON.parse(raw);
+    if(saved.version!==1||!Array.isArray(saved.entries))throw new Error('Unsupported saved mini-game progress format.');
+    for(const entry of saved.entries){
+      if(!MINI_GAMES.some(game=>game.id===entry.id)||!Number.isInteger(entry.level)||entry.level<0
+        ||entry.level>=activityNames(entry.id,currentLanguage).length||!entry.state||typeof entry.state!=='object'
+        ||typeof entry.html!=='string'||typeof entry.className!=='string'){
+        console.error('Ignored invalid saved mini-game progress entry:',entry&&entry.id);
+        continue;
+      }
+      const progress={...entry,state:decodeMiniGameProgressValue(entry.state)};
+      if(progress.feedback){
+        if(typeof progress.feedback.actionId!=='string')throw new Error(`Missing saved feedback action for ${entry.id}.`);
+        progress.feedback.action=resolveMiniGameFeedbackAction(entry.id,progress.feedback.actionId);
+      }
+      miniGameProgress.set(miniGameProgressKey(entry.id,entry.level),progress);
+      miniGameProgressSequence=Math.max(miniGameProgressSequence,Number(progress.savedAt)||0);
+    }
+  }catch(error){console.error('Could not restore saved mini-game progress:',error)}
+}
 function clearMiniGameProgress(){
   miniGameProgress.clear();
   if(memoryMismatchTimer!==null){clearTimeout(memoryMismatchTimer);memoryMismatchTimer=null}
@@ -2051,9 +2172,8 @@ function captureMiniGameState(id){
   if(['logicQuest','math','words','storyMath','patterns','riddles','scienceQuest'].includes(id))return {genericAnswer,riddleQuestionIndex,questionHintCount};
   if(id==='letters'){
     const canvas=$('#traceCanvas');
-    let tracePixels=null;
-    if(canvas){const context=canvas.getContext('2d',{willReadFrequently:true});if(context)tracePixels=context.getImageData(0,0,320,320).data}
-    return {traceLetterIndex,traceDistance,traceHasInk,tracePixels};
+    const traceImage=canvas?canvas.toDataURL('image/png'):null;
+    return {traceLetterIndex,traceDistance,traceHasInk,traceImage};
   }
   if(id==='memory')return {memoryCards,memoryOpen,memoryMatched};
   if(id==='escapeRoom')return {escapeRoomIndex,escapeRoomSolved,escapeRoomStarEarned,escapeRoomAnswer,escapeRoomAnswerIndex,escapeRoomExplanation,escapeRoomPhase,escapeKeyFound,escapeKeyFeedback,genericAnswer,questionHintCount};
@@ -2071,8 +2191,10 @@ function saveMiniGameProgress(){
     message:$('#gameFeedbackMessage').textContent,label:$('#gameFeedbackAction').textContent,
     action:gameFeedbackAction,success:$('#gameFeedbackIcon').textContent==='🎉'
   }:null;
+  if(feedback)feedback.actionId=miniGameFeedbackActionId(selectedMiniGame,state,feedback.success);
   if(selectedMiniGame==='memory'&&memoryMismatchTimer!==null){clearTimeout(memoryMismatchTimer);memoryMismatchTimer=null}
   miniGameProgress.set(key,{id:selectedMiniGame,level:selectedLevel,scene:miniGameScene,state:cloneMiniGameProgress(state),html:$('#gameContent').innerHTML,className:$('#gameContent').className,feedback,savedAt:++miniGameProgressSequence});
+  persistMiniGameProgress();
   if(feedback){closeM('gameFeedbackM');gameFeedbackAction=null}
 }
 function applyMiniGameProgressState(id,state){
@@ -2094,11 +2216,18 @@ function restoreMiniGameProgress(id,level,stage){
   const state=cloneMiniGameProgress(progress.state);
   applyMiniGameProgressState(id,state);
   miniGameProgress.delete(key);
+  persistMiniGameProgress();
   if(id==='letters'){
     renderLetterTrace(selectedLevel);
     traceLetterIndex=state.traceLetterIndex;traceDistance=state.traceDistance;traceHasInk=state.traceHasInk;
     const canvas=$('#traceCanvas'),context=canvas&&canvas.getContext('2d',{willReadFrequently:true});
-    if(context&&state.tracePixels){const pixels=context.createImageData(320,320);pixels.data.set(state.tracePixels);context.putImageData(pixels,0,0)}
+    if(context&&state.traceImage){
+      canvas.style.pointerEvents='none';
+      const image=new Image();
+      image.onload=()=>{context.drawImage(image,0,0);canvas.style.pointerEvents=''};
+      image.onerror=()=>{canvas.style.pointerEvents='';console.error('Could not restore saved letter tracing.')}
+      image.src=state.traceImage;
+    }
   }else{
     $('#gameContent').className=progress.className;
     $('#gameContent').innerHTML=progress.html;
