@@ -404,7 +404,17 @@ test('all other mini games have localized animated demos and continue to activit
     assert.match(copy.escapeRoom[1], /key|מפתח|ключ/i, `${language} explains the hidden-key clue`);
     assert.match(copy.escapeRoom[3], /key|מפתח|ключ/i, `${language} explains that riddles reveal key clues`);
     assert.match(copy.escapeRoom[4], /click|לחצו|нажимай/i, `${language} explains clicking room objects`);
+    assert.match(copy.puzzle[1], /swap|להחליף|поменять/i, `${language} explains swapping puzzle pieces`);
+    assert.match(copy.logicQuest[4], /three clues|שלושת הרמזים|трёх подсказки|все три подсказки/i, `${language} describes the three logic clues`);
+    assert.match(copy.words[3], /answer choices|אפשרויות מציגות|варианты ответа/i, `${language} explains the word choices`);
+    assert.match(copy.wordSearch[4], /neighboring|סמוכות|соседние/i, `${language} explains selecting neighboring letters`);
   }
+  assert.equal(dataContext.introVisuals.puzzle[0].length, 6, 'puzzle demo shows six pieces rather than an empty-space sliding puzzle');
+  assert.ok(dataContext.introVisuals.puzzle[1].includes('↔️'), 'puzzle demo shows the actual swap action');
+  assert.equal(dataContext.introVisuals.logicQuest[1].filter((token) => token === '➡️').length, 3, 'logic demo shows three ordering clues');
+  assert.deepEqual(Array.from(dataContext.introVisuals.words[0].slice(0, 3)), ['T', 'C', 'A'], 'word builder demo starts with scrambled letters');
+  assert.ok(dataContext.introVisuals.words[1].includes('CAT'), 'word builder demo shows answer choices');
+  assert.ok(dataContext.introVisuals.wordSearch[0].includes('📋') && dataContext.introVisuals.wordSearch[0].includes('CAT'), 'word-search demo shows a word list beside the letter grid');
   assert.ok(dataContext.introVisuals.escapeRoom[1].filter((token) => token === '💡').length >= 5, 'demo shows clues accumulating across five riddles');
   for (const object of ['🕰️', '📚', '🖼️', '🧰', '🗄️', '🏺', '🪴', '🟪']) {
     assert.ok(dataContext.introVisuals.escapeRoom[2].includes(object), `demo room includes ${object}`);
@@ -448,6 +458,117 @@ test('all other mini games have localized animated demos and continue to activit
     context.continueMiniGameIntro();
   }
   assert.equal(selected.length, ids.length + 1);
+});
+
+test('word search boards mix horizontal, vertical and diagonal words at every level', () => {
+  const engineStart = html.indexOf('const WORD_SEARCH_LEVELS=');
+  const engineEnd = html.indexOf('function renderWordSearchGame()', engineStart);
+  assert.ok(engineStart >= 0 && engineEnd > engineStart);
+  let seed = 72419;
+  const math = Object.create(Math);
+  math.random = () => {
+    seed = (seed * 16807) % 2147483647;
+    return (seed - 1) / 2147483646;
+  };
+  const context = vm.createContext({ currentLanguage: 'en', Math: math });
+  vm.runInContext(`${html.slice(engineStart, engineEnd)}\nglobalThis.testLevels=WORD_SEARCH_LEVELS;`, context);
+  for (const language of ['en', 'he', 'ru']) {
+    assert.match(textForLanguage(language).wordSearchPrompt, /horizontal|אופקית|горизонтали/i);
+    assert.match(textForLanguage(language).wordSearchPrompt, /diagonally|באלכסון|диагонали/i);
+    context.currentLanguage = language;
+    for (let activity = 0; activity < 12; activity++) for (let level = 0; level < 6; level++) {
+      const puzzle = context.createWordSearchPuzzle(activity, level);
+      const directions = new Set(puzzle.words.map(({ cells }) => {
+        const first = cells[0], second = cells[1];
+        const dx = second % puzzle.size - first % puzzle.size;
+        const dy = Math.floor(second / puzzle.size) - Math.floor(first / puzzle.size);
+        return dy === 0 ? 'horizontal' : dx === 0 ? 'vertical' : 'diagonal';
+      }));
+      assert.deepEqual([...directions].sort(), ['diagonal', 'horizontal', 'vertical'], `${language} activity ${activity + 1}, level ${level + 1}`);
+    }
+  }
+  assert.deepEqual(Array.from(context.testLevels, config => config.directions.length), Array(6).fill(8));
+});
+
+test('multi-stage games expose resume controls and restore saved activity state', () => {
+  const gameSource = slice('const MINI_GAMES=[', 'const ACTIVITY_NAMES=');
+  const progressStart = html.indexOf('const miniGameProgress=new Map();');
+  const progressEnd = html.indexOf('function gameUnlocked(id){', progressStart);
+  assert.ok(progressStart >= 0 && progressEnd > progressStart);
+  const captureSource = html.slice(progressStart, progressEnd);
+  for (const match of gameSource.matchAll(/id:'([^']+)'/g)) {
+    if (match[1] !== 'coloring') assert.ok(captureSource.includes(`'${match[1]}'`), `${match[1]} checkpoint support`);
+  }
+  assert.match(html, /continueGameProgress:'Continue \{activity\}'/);
+  assert.match(html, /continueGameProgress:'המשך ב־\{activity\}'/);
+  assert.match(html, /continueGameProgress:'Продолжить: \{activity\}'/);
+
+  const gameContent = { innerHTML: 'Question 4', className: 'quiz' };
+  const feedback = { classList: { contains: () => false } };
+  const context = vm.createContext({
+    $: (selector) => selector === '#gameContent' ? gameContent : feedback,
+    closeM() {},
+    showGameFeedback() {},
+  });
+  vm.runInContext(`let selectedMiniGame='math',selectedLevel=3,miniGameScene='play';
+    let genericAnswer='12',riddleQuestionIndex=4,questionHintCount=1,gameFeedbackAction=null;
+    let selectedPathLevel=0,selectedBoxLevel=2,selectedRailwayLevel=0,selectedWordSearchLevel=0,selectedMagneticStage=0;
+    let interactivePuzzle={turns:7,walls:new Set(['2,3'])},puzzleTiles=[],puzzleImage='',puzzleSelected=-1,puzzleImages=[],puzzleImageIndex=0;
+    let differenceFound=new Set(),differenceSpots=[],differenceLeft=[],differenceRight=[];
+    let traceLetterIndex=0,traceDistance=0,traceHasInk=false,memoryCards=[],memoryOpen=[],memoryMatched=new Set();
+    let escapeRoomIndex=0,escapeRoomSolved=false,escapeRoomStarEarned=false,escapeRoomAnswer='',escapeRoomAnswerIndex=-1,escapeRoomExplanation='',escapeRoomPhase='riddles',escapeKeyFound=false,escapeKeyFeedback='';
+    let wordSearchPuzzle=null,magneticMaze=null;
+    function go(id){globalThis.lastScreen=id}
+    ${captureSource}
+    globalThis.saveProgress=saveMiniGameProgress;
+    globalThis.restoreProgress=restoreMiniGameProgress;
+  `, context);
+  context.saveProgress();
+  vm.runInContext(`riddleQuestionIndex=8;genericAnswer='changed';questionHintCount=0;`, context);
+  gameContent.innerHTML = 'Different game';
+  assert.equal(context.restoreProgress('math', 3), true);
+  assert.equal(vm.runInContext('riddleQuestionIndex', context), 4);
+  assert.equal(vm.runInContext('genericAnswer', context), '12');
+  assert.equal(vm.runInContext('questionHintCount', context), 1);
+  assert.equal(gameContent.innerHTML, 'Question 4');
+  assert.equal(context.lastScreen, 'gameStage');
+
+  vm.runInContext(`selectedMiniGame='gridSokoban';selectedLevel=2;miniGameScene='play';interactivePuzzle={turns:9,walls:new Set(['3,4'])};`, context);
+  gameContent.innerHTML = 'Sokoban board';
+  context.saveProgress();
+  vm.runInContext(`interactivePuzzle.turns=0;interactivePuzzle.walls.clear();`, context);
+  assert.equal(context.restoreProgress('gridSokoban', 2, 1), false, 'a different stage starts fresh');
+  assert.equal(context.restoreProgress('gridSokoban', 2, 2), true);
+  assert.equal(vm.runInContext('interactivePuzzle.turns', context), 9);
+  assert.deepEqual(Array.from(vm.runInContext('interactivePuzzle.walls', context)), ['3,4']);
+});
+
+test('pattern activities use symbols that match each activity theme', () => {
+  const context = vm.createContext({ Math });
+  const patternSource = slice('const PATTERN_THEMES=', 'function getLogicQuestion(');
+  vm.runInContext(`${patternSource}\nglobalThis.patternThemes=PATTERN_THEMES;globalThis.makePatternQuestion=getPatternQuestion;`, context);
+  const themes = Array.from(context.patternThemes, theme => Array.from(theme));
+  assert.deepEqual(themes, [
+    ['🔴','🔵','🟡','🟢'],
+    ['⭐','🌙','☀️','☁️'],
+    ['🐱','🐶','🐰','🦊'],
+    ['🍎','🍐','🍊','🍇'],
+    ['🌼','🌻','🌷','🌸'],
+    ['🔺','🟦','⚪','🔶'],
+    ['🚗','🚌','🚲','🚂'],
+    ['🐟','🐙','🦀','🐬'],
+    ['🦖','🥚','🦕','🦴'],
+    ['🥁','🎸','🎺','🎹'],
+    ['🪐','🚀','🌌','☄️'],
+    ['❄️','☃️','🧤','🧣'],
+  ]);
+  for (let activity = 0; activity < themes.length; activity++) for (let question = 0; question < 10; question++) {
+    const result = context.makePatternQuestion(activity, question);
+    const sequence = result.question.trim().split(/\s+/).slice(0, 8);
+    assert.ok(sequence.every(symbol => themes[activity].includes(symbol)), `activity ${activity + 1}, question ${question + 1} sequence`);
+    assert.ok(themes[activity].includes(result.answer), `activity ${activity + 1}, question ${question + 1} answer`);
+    assert.ok(result.options.every(option => themes[activity].includes(option)), `activity ${activity + 1}, question ${question + 1} options`);
+  }
 });
 
 test('pastel background is applied across screens and cached for offline use', async () => {
