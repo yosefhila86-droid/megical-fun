@@ -53,6 +53,7 @@ nav button.on{color:#7c4dff;background:#f3eeff}
 .modal{position:fixed;inset:0;background:#000a;display:none;align-items:center;justify-content:center;z-index:9;padding:20px}
 .modal.on{display:flex}.box{background:#fff;border-radius:24px;padding:22px;max-width:360px;width:100%;text-align:center;max-height:92vh;overflow-y:auto}
 .box button{margin:6px 3px}
+#gameFeedbackM{z-index:30}
 #cv{width:100%;max-width:min(100%,52vh);aspect-ratio:1;background:#fff;border-radius:16px;box-shadow:0 3px 10px #0003;display:block;margin:0 auto;touch-action:none}
 .tools{display:flex;gap:8px;justify-content:center;margin:4px 0 8px}
 .tools button{flex:1;max-width:190px;background:#ece6ff;color:#3b2a66}
@@ -144,7 +145,6 @@ video{width:100%;max-width:420px;border-radius:16px;background:#222;display:bloc
 .magnet-pole{background:#ece6ff;color:#3b2a66}
 .magnet-pole.on{background:#7c4dff;color:#fff}
 .magnet-maze-status{min-height:0;margin:6px 0;text-align:center;font-weight:800}
-.magnet-result{text-align:center;font-size:1.15em;font-weight:800;color:#3b2a66}
 .magnetic-howto{max-width:680px;margin:10px auto;padding:10px 16px;background:#f5f0ff;border-radius:14px;text-align:start}
 .magnetic-howto ol{margin:0;padding-inline-start:24px;line-height:1.7}
 .magnetic-preview{display:flex;align-items:center;justify-content:center;gap:8px;margin:10px auto;padding:8px;background:#e8f7ff;border-radius:12px;font-weight:800}
@@ -269,7 +269,6 @@ video{width:100%;max-width:420px;border-radius:16px;background:#222;display:bloc
 .puzzle-piece{position:relative;overflow:hidden;border-radius:8px;padding:0;min-width:0;background:#fff;box-shadow:0 2px 6px #0002}
 .puzzle-piece::before{content:"";position:absolute;inset:0;background-image:var(--puzzle-image);background-repeat:no-repeat;background-size:300% 200%;background-position:var(--puzzle-position);filter:grayscale(1)}
 .puzzle-piece.selected{outline:5px solid #7c4dff;outline-offset:-5px;box-shadow:0 0 0 5px #ffd166,0 4px 12px #36205a66;transform:scale(.96)}
-#puzzleStatus.puzzle-success{max-width:320px;margin:12px auto;padding:12px;background:#d8fff2;border:2px solid #00b894;border-radius:16px;font-weight:800}
 .game-image{width:min(58vw,220px);height:min(58vw,220px);object-fit:contain;background:#fff;border-radius:16px;box-shadow:0 3px 10px #0002;margin:8px auto}
 .answer-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;max-width:420px;margin:14px auto}
 .answer-grid button{min-height:54px}
@@ -279,7 +278,6 @@ video{width:100%;max-width:420px;border-radius:16px;background:#222;display:bloc
 .difference-cell{aspect-ratio:1;padding:0;background:#fff7e6;color:#3b2a66;font-size:clamp(28px,6vw,48px);border:2px solid transparent;border-radius:8px;overflow:hidden}
 .difference-cell img{display:block;width:100%;height:100%;object-fit:contain;transform:scale(1.2)}
 .difference-cell.found{border-color:#00b894;background:#d8fff2}
-#differenceStatus.difference-success{max-width:320px;margin:12px auto;padding:12px;background:#d8fff2;border:2px solid #00b894;border-radius:16px;font-weight:800}
 @media(max-width:600px){.difference-boards{grid-template-columns:1fr;max-width:440px}.difference-board{grid-template-columns:repeat(4,1fr);gap:6px}.difference-cell{border-radius:12px}}
 .draw-canvas{display:block;width:100%;max-width:560px;height:auto;aspect-ratio:4/3;margin:10px auto;background:#fff;border-radius:16px;box-shadow:0 3px 10px #0003;touch-action:none}
 .draw-tools{display:flex;gap:8px;justify-content:center;align-items:center;flex-wrap:wrap}
@@ -291,17 +289,14 @@ video{width:100%;max-width:420px;border-radius:16px;background:#222;display:bloc
 .level-choice.locked{background:#ece6ff;color:#6a55a5}
 .play-status{margin:8px auto;padding:8px 12px;border-radius:14px;background:#fffdf6eF;box-shadow:0 2px 10px #36205a20;font-weight:700;color:#6a55a5;text-align:center}
 .play-status:empty{display:none}
-.sokoban-success{position:relative;z-index:1;max-width:520px;margin:6px auto;padding:8px 12px;border:2px solid #00b894;border-radius:14px;background:#d8fff2;box-shadow:0 2px 10px #00b89433;font-weight:800;color:#08734d;text-align:center}
 .trace-wrap{position:relative;width:min(78vw,320px);margin:12px auto;background:#fff;border-radius:20px}
 .trace-canvas{position:relative;z-index:2;display:block;width:100%;height:auto;aspect-ratio:1;background:transparent;border:3px dashed #d9ccff;border-radius:20px;touch-action:none}
 .trace-guide{position:absolute;z-index:0;inset:0;width:100%;height:100%;border:3px solid transparent;pointer-events:none}
-.trace-directions{position:absolute;z-index:1;inset:0;width:100%;height:100%;border:3px solid transparent;pointer-events:none}
 #traceStatus:not(:empty){margin:8px auto;font-weight:700}
 .learning-tools{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin:8px auto}
 .learning-hint{min-height:0;margin:3px auto;color:#6a55a5;font-weight:700}
 .path-board+p{margin:3px auto 5px}
 .interactive-puzzle .puzzle-controls{margin:4px auto}
-.path-success{max-width:520px;margin:6px auto;padding:8px 12px;border:2px solid #00b894;border-radius:14px;background:#d8fff2;box-shadow:0 2px 10px #00b89433;font-weight:800;color:#08734d;text-align:center}
 .parent-section{background:#f8f5ff;border-radius:16px;padding:12px;margin:12px 0;text-align:start}
 .parent-section h4{margin:4px 0 8px}
 .parent-section p{margin:6px 0}
@@ -467,6 +462,10 @@ video{width:100%;max-width:420px;border-radius:16px;background:#222;display:bloc
   </div>
 </div></div>
 
+<div class="modal" id="gameFeedbackM" role="dialog" aria-modal="true" aria-labelledby="gameFeedbackTitle" aria-describedby="gameFeedbackMessage">
+  <div class="box"><div id="gameFeedbackIcon" aria-hidden="true" style="font-size:48px"></div><h2 id="gameFeedbackTitle"></h2><p id="gameFeedbackMessage"></p><button id="gameFeedbackAction" class="alt"></button></div>
+</div>
+
 <div id="toast"></div>
 
 <script>
@@ -617,6 +616,7 @@ Object.assign(TEXT.en,{
   boxNextLevel:'Next level',boxAllComplete:'Finish activity',
   boxMoves:'Moves: {n}',boxPushes:'Box pushes: {n}',
   pathWin:'The path is connected!',pathFail:'Out of turns. Try the path again.',pathRestart:'Restart path',puzzleRetry:'Try this activity again',
+  sokobanDeadEnd:'The box is stuck, and it can no longer reach the star. Try again.',
   sokobanInstruction:'Push the box onto the star. You cannot pull it, so plan each move!',
   sokobanMoves:'Moves: {n}',sokobanHint:'Stand on the opposite side of the box from the goal, then push it toward the star.',
   sokobanWin:'Box delivered!',sokobanRestart:'Restart board',
@@ -645,6 +645,7 @@ Object.assign(TEXT.he,{
   boxNextLevel:'לשלב הבא',boxAllComplete:'סיום הפעילות',
   boxMoves:'צעדים: {n}',boxPushes:'דחיפות: {n}',
   pathWin:'המסלול התחבר!',pathFail:'נגמרו הסיבובים. נסו שוב.',pathRestart:'התחלת המסלול מחדש',puzzleRetry:'ניסיון נוסף לפעילות',
+  sokobanDeadEnd:'הארגז הגיע למבוי סתום ואי אפשר עוד לדחוף אותו אל הכוכב. נסו שוב.',
   sokobanInstruction:'דחפו את הקופסה אל הכוכב. אי אפשר למשוך אותה, לכן תכננו כל צעד!',
   sokobanMoves:'צעדים: {n}',sokobanHint:'עמדו בצד השני של הקופסה, מול הכוכב, ודחפו אותה אליו.',
   sokobanWin:'הקופסה הגיעה ליעד!',sokobanRestart:'התחלת הלוח מחדש',
@@ -673,6 +674,7 @@ Object.assign(TEXT.ru,{
   boxNextLevel:'Следующий уровень',boxAllComplete:'Завершить занятие',
   boxMoves:'Ходы: {n}',boxPushes:'Толчки ящика: {n}',
   pathWin:'Путь соединён!',pathFail:'Ходы закончились. Попробуй ещё раз.',pathRestart:'Начать путь заново',puzzleRetry:'Повторить задание',
+  sokobanDeadEnd:'Ящик оказался в тупике, и доставить его к звезде больше нельзя. Попробуй ещё раз.',
   sokobanInstruction:'Передвинь ящик на звезду. Его нельзя тянуть - планируй каждый ход!',
   sokobanMoves:'Ходы: {n}',sokobanHint:'Встань с противоположной от цели стороны ящика и толкай его к звезде.',
   sokobanWin:'Ящик доставлен!',sokobanRestart:'Начать уровень заново',
@@ -892,7 +894,7 @@ function setLanguage(language){
   if($('#gamePurchaseM').classList.contains('on'))renderParentPurchaseOptions();
   if(typeof BILLING_ENABLED!=='undefined'&&BILLING_ENABLED&&$('#vipM').classList.contains('on'))loadBillingPrices();
   if($('#drawIdea')&&miniGameScene==='play')$('#drawIdea').textContent=DRAWING_IDEAS[currentLanguage][selectedLevel%DRAWING_IDEAS[currentLanguage].length];
-  if($('#paint').classList.contains('on'))refreshTools();
+  if($('#paint').classList.contains('on')){renderPalette();refreshTools()}
   if($('#items').classList.contains('on'))openCat(curCat);
   if($('#gameStage').classList.contains('on')&&miniGameScene==='play'){
     if(selectedMiniGame==='escapeRoom')renderEscapeRoom();
@@ -919,7 +921,7 @@ let usageTimer=null,usageStartedAt=null,pendingParentAction=null;
 let BILLING_ENABLED=false;
 let billingAccess=[],billingVerifiedAt=0,billingRefreshTimer=null,billingBusy=false,billingPrices={};
 function defaultUserData(name){
-  return {name,av:'🐶',stars:0,vip:false,art:[],custom:[],music:true,track:'auto',vol:0.6,language:currentLanguage,unlockedGames:[],allGamesUnlocked:false,completedEscapeRooms:[],completedPuzzleStars:[],dailyUsageDate:'',dailyUsageSeconds:0,dailyLimitMinutes:0};
+  return {name,av:'🐶',stars:0,vip:false,art:[],custom:[],music:true,track:'auto',vol:0.6,language:currentLanguage,unlockedGames:[],allGamesUnlocked:false,completedEscapeRooms:[],completedPuzzleStars:[],streak:0,lastDay:'',dailyUsageDate:'',dailyUsageSeconds:0,dailyLimitMinutes:0};
 }
 
 function loadUserData(userId,fallbackName=userId){
@@ -1003,9 +1005,15 @@ function applyCloudProfile(profile,pendingStars=0,localOverrides={}){
   profileSyncApplying=true;
   try{
     for(const key of PROFILE_SYNC_FIELDS){
-      if(key==='stars'||['art','custom','completedEscapeRooms','completedPuzzleStars'].includes(key))continue;
+      if(key==='stars'||['art','custom','completedEscapeRooms','completedPuzzleStars','streak','lastDay'].includes(key))continue;
       if(Object.hasOwn(localOverrides,key))S[key]=localOverrides[key];
       else if(Object.hasOwn(profile,key))S[key]=profile[key];
+    }
+    const localLastDay=S.lastDay||'',remoteLastDay=profile.lastDay||'';
+    if(remoteLastDay>localLastDay){
+      S.lastDay=remoteLastDay;S.streak=Number(profile.streak)||0;
+    }else if(remoteLastDay===localLastDay){
+      S.lastDay=localLastDay;S.streak=Math.max(Number(S.streak)||0,Number(profile.streak)||0);
     }
     S.art=Object.hasOwn(localOverrides,'art')
       ?unionProfileItems(localOverrides.art,profile.art,20)
@@ -1067,9 +1075,8 @@ async function syncProfileNow(){
 function queueProfileStarReward(stars,id){
   if(!Number.isInteger(stars)||stars<=0)throw new Error('Star rewards must be positive integers.');
   const rewards=loadPendingProfileRewards();
-  if(!rewards.some(reward=>reward.id===id)){
-    rewards.push({id,stars});savePendingProfileRewards(rewards);
-  }
+  if(rewards.some(reward=>reward.id===id))return;
+  rewards.push({id,stars});savePendingProfileRewards(rewards);
   S.stars+=stars;sv();
   $('#hStars').textContent='⭐ '+S.stars+(S.vip?' 👑':'');
 }
@@ -1127,7 +1134,7 @@ const CATS=[
 ["nature","🌻","Nature & Garden",1,"images/Nature1.png images/Nature2.png images/Nature3.png images/Nature4.png images/Nature5.png images/Nature6.png images/Nature7.png images/Nature8.png images/Nature9.png images/Nature10.png"],
 ["dragon","🐉","Fantasy Dragons",1,"images/Dragon1.png images/Dragon2.png images/Dragon3.png images/Dragon4.png images/Dragon5.png images/Dragon6.png images/Dragon7.png images/Dragon8.png images/Dragon9.png images/Dragon10.png"],
 ].map(c=>({id:c[0],icon:c[1],name:c[2],vip:c[3],items:c[4].split(' ')}));
-const COLORS=["#ff4d4d","#ff9f1c","#ffd60a","#7ed957","#00b894","#4dc3ff","#3a6bff","#9b5de5","#ff7eb6","#8d5524","#9e9e9e","#ffffff"];
+const COLORS=["#ff4d4d","#ff9f1c","#ffd60a","#7ed957","#00b894","#4dc3ff","#3a6bff","#9b5de5","#ff7eb6","#8d5524","#9e9e9e","#ffffff","#000000"];
 const SIZES=[["Small",4],["Medium",8],["Large",16],["Extra Large",28],["Jumbo",44]];
 const OPT_EMOJI={blur:1,passes:1,levels:4,minArea:90,thick:1};
 const OPT_PHOTO={photo:true};
@@ -1137,6 +1144,32 @@ let mode='fill',sizeIdx=1,drawing=false,lx=0,ly=0,brad=3,dirty=null;
 const cv=$('#cv'),ctx=cv.getContext('2d',{willReadFrequently:true});
 
 function toast(t){const e=$('#toast');e.textContent=t;e.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(()=>{e.style.display='none'},2200)}
+let gameFeedbackAction=null;
+function showGameFeedback(message,actionLabel,action,success=false){
+  if(selectedMiniGame==='coloring')return;
+  if(typeof action!=='function')throw new TypeError('Game feedback requires a follow-up action.');
+  $('#gameFeedbackIcon').textContent=success?'🎉':'💪';
+  $('#gameFeedbackTitle').textContent=tr(success?'done':'tryAgain');
+  $('#gameFeedbackMessage').textContent=message;
+  const button=$('#gameFeedbackAction');
+  button.textContent=actionLabel;
+  gameFeedbackAction=action;
+  button.onclick=()=>{
+    const next=gameFeedbackAction;
+    gameFeedbackAction=null;
+    closeM('gameFeedbackM');
+    next();
+  };
+  $('#gameFeedbackM').classList.add('on');
+  button.focus();
+}
+function gameActivityAdvanceLabel(id=selectedMiniGame){
+  return selectedLevel+1<activityNames(id,currentLanguage).length?tr('next'):tr('back');
+}
+function advanceGameActivity(id=selectedMiniGame){
+  if(selectedLevel+1<activityNames(id,currentLanguage).length)launchMiniGame(id,selectedLevel+1);
+  else renderGameLevels();
+}
 function closeM(id){
   $('#'+id).classList.remove('on');
   if(id==='gate'&&pendingParentAction==='dashboard'){pendingParentAction=null;enforceDailyTimeLimit()}
@@ -1796,12 +1829,9 @@ function movePuzzlePiece(index){
 function renderPuzzleSuccess(){
   const status=$('#puzzleStatus');
   if(!status)return;
-  status.classList.add('puzzle-success');
-  const next=puzzleImageIndex+1<puzzleImages.length
-    ?`<button class="alt" onclick="nextPuzzlePicture()">${tr('puzzleNextPicture')}</button>`
-    :`<button class="alt" onclick="nextPuzzleActivity()">${tr(puzzleActivityAdvanceLabel())}</button>`;
-  status.innerHTML=`<span>${tr('done')}</span><br>${next}`;
-  toast('🎉 '+tr('done'));
+  const hasNextPicture=puzzleImageIndex+1<puzzleImages.length;
+  showGameFeedback(tr('done'),hasNextPicture?tr('puzzleNextPicture'):tr(puzzleActivityAdvanceLabel()),
+    hasNextPicture?nextPuzzlePicture:nextPuzzleActivity,true);
 }
 function nextPuzzlePicture(){
   if(!puzzleTiles.every((tile,index)=>tile===index)||puzzleImageIndex+1>=puzzleImages.length)return;
@@ -1829,8 +1859,7 @@ function startDifferences(){
 }
 function renderDifferences(){
   const board=images=>images.map((src,i)=>`<button class="difference-cell ${differenceFound.has(i)?'found':''}" onclick="findDifference(${i})" aria-label="Picture ${i+1}" ${differenceFound.has(i)?'aria-pressed="true"':''}><img src="${src}" alt=""></button>`).join('');
-  const action=differenceFound.size===3?'nextDifferenceActivity()':'startDifferences()';
-  $('#gameContent').innerHTML=`<h2 data-i18n="differences">🔎 ${tr('differences')}</h2><p data-i18n="differencesPrompt">${tr('differencesPrompt')}</p><div class="difference-boards"><div><b>1</b><div class="difference-board">${board(differenceLeft)}</div></div><div><b>2</b><div class="difference-board">${board(differenceRight)}</div></div></div><p id="differenceStatus" aria-live="polite">${differenceFound.size} / 3</p><button class="alt" onclick="${action}" data-i18n="playAgain">${tr('playAgain')}</button>`;
+  $('#gameContent').innerHTML=`<h2 data-i18n="differences">🔎 ${tr('differences')}</h2><p data-i18n="differencesPrompt">${tr('differencesPrompt')}</p><div class="difference-boards"><div><b>1</b><div class="difference-board">${board(differenceLeft)}</div></div><div><b>2</b><div class="difference-board">${board(differenceRight)}</div></div></div><p id="differenceStatus" aria-live="polite">${differenceFound.size} / 3</p>`;
 }
 function nextDifferenceActivity(){
   if(differenceFound.size!==3)return;
@@ -1840,15 +1869,11 @@ function nextDifferenceActivity(){
 }
 function findDifference(index){
   if(differenceFound.has(index)||differenceFound.size===3)return;
-  if(!differenceSpots.includes(index)){toast(tr('tryAgain'));return;}
+  if(!differenceSpots.includes(index)){showGameFeedback(tr('tryAgain'),tr('tryAgain'),()=>{});return;}
   differenceFound.add(index);
   renderDifferences();
   if(differenceFound.size===3){
-    const status=$('#differenceStatus');
-    status.classList.add('difference-success');
-    status.innerHTML=`<span>${tr('done')}</span>`;
-    const action=$('#gameContent button[data-i18n="playAgain"]');
-    if(action)action.onclick=nextDifferenceActivity;
+    showGameFeedback(tr('done'),gameActivityAdvanceLabel('differences'),()=>advanceGameActivity('differences'),true);
   }
 }
 
@@ -2244,8 +2269,16 @@ function renderMagneticMaze(){
     return `<button class="magnet-direction ${position}${selected?' selected':''}" onclick="magneticMazeDirection('${direction}')" aria-label="${tr(label)}" aria-pressed="${selected}" ${puzzle.finished?'disabled':''}>${arrow}</button>`;
   }).join('');
   const won=puzzle.finished&&puzzle.won,completed=puzzle.newStar?` ${tr('starEarned')}`:'';
-  const result=puzzle.finished?`<p class="magnet-result" role="status">${won?tr('magneticComplete')+completed:tr('magneticFall')}</p>${won&&selectedMagneticStage<5?` <button class="alt" onclick="startMagneticMaze(selectedLevel,${selectedMagneticStage+1})">${tr('magneticNextStage')}</button>`:''} <button class="ghost" onclick="startMagneticMaze(selectedLevel,selectedMagneticStage)">${tr('magneticRestart')}</button>`:'';
-  $('#gameContent').innerHTML=`<h2>${tr('magneticMaze')} - ${activityNames('magneticMaze',currentLanguage)[selectedLevel]}</h2><h3>${tr('magneticStageLabel',{n:selectedMagneticStage+1,difficulty:tr(`magneticDifficulty${selectedMagneticStage+1}`)})}</h3><section class="magnetic-howto"><b>${tr('magneticHowToTitle')}</b><ol><li>${tr('magneticHowTo1')}</li><li>${tr('magneticHowTo2')}</li><li>${tr('magneticHowTo3')}</li></ol></section><div class="magnet-maze"><div class="magnet-maze-board" style="--magnet-size:${puzzle.size}" aria-label="${tr('magneticMaze')}">${cells}</div><div class="magnetic-legend"><span>🔵 ${tr('magneticBall')}</span><span>🧱 ${tr('magneticWall')}</span><span>🕳️ ${tr('magneticHole')}</span><span>🏁 ${tr('magneticGoal')}</span></div><div class="magnet-direction-grid" role="group" aria-label="${tr('magneticChooseDirection')}">${directions}</div><div class="magnetic-preview" aria-live="polite">${tr('magneticMovePreview')} <strong>${puzzle.finished?'—':magneticMazeMovePreview(puzzle)}</strong></div><div class="magnet-controls"><button class="alt" onclick="activateMagnet()" ${puzzle.finished?'disabled':''}>${tr('magneticActivate')}</button></div><p class="magnet-maze-status" aria-live="polite">${puzzle.status}</p></div>${result}<button class="ghost" onclick="renderMagneticMazeStages()">${tr('magneticBackToStages')}</button><button class="ghost" onclick="renderGameLevels()">${tr('back')}</button>`;
+  $('#gameContent').innerHTML=`<h2>${tr('magneticMaze')} - ${activityNames('magneticMaze',currentLanguage)[selectedLevel]}</h2><h3>${tr('magneticStageLabel',{n:selectedMagneticStage+1,difficulty:tr(`magneticDifficulty${selectedMagneticStage+1}`)})}</h3><section class="magnetic-howto"><b>${tr('magneticHowToTitle')}</b><ol><li>${tr('magneticHowTo1')}</li><li>${tr('magneticHowTo2')}</li><li>${tr('magneticHowTo3')}</li></ol></section><div class="magnet-maze"><div class="magnet-maze-board" style="--magnet-size:${puzzle.size}" aria-label="${tr('magneticMaze')}">${cells}</div><div class="magnetic-legend"><span>🔵 ${tr('magneticBall')}</span><span>🧱 ${tr('magneticWall')}</span><span>🕳️ ${tr('magneticHole')}</span><span>🏁 ${tr('magneticGoal')}</span></div><div class="magnet-direction-grid" role="group" aria-label="${tr('magneticChooseDirection')}">${directions}</div><div class="magnetic-preview" aria-live="polite">${tr('magneticMovePreview')} <strong>${puzzle.finished?'—':magneticMazeMovePreview(puzzle)}</strong></div><div class="magnet-controls"><button class="alt" onclick="activateMagnet()" ${puzzle.finished?'disabled':''}>${tr('magneticActivate')}</button></div><p class="magnet-maze-status" aria-live="polite">${puzzle.status}</p></div><button class="ghost" onclick="renderMagneticMazeStages()">${tr('magneticBackToStages')}</button><button class="ghost" onclick="renderGameLevels()">${tr('back')}</button>`;
+  if(puzzle.finished&&won){
+    const nextStage=selectedMagneticStage+1;
+    const hasNextStage=nextStage<6,nextActivity=selectedLevel+1<activityNames('magneticMaze',currentLanguage).length;
+    const label=hasNextStage?tr('magneticNextStage'):nextActivity?tr('next'):tr('magneticBackToStages');
+    const action=hasNextStage?()=>startMagneticMaze(selectedLevel,nextStage):nextActivity?()=>startMagneticMaze(selectedLevel+1,0):renderMagneticMazeStages;
+    showGameFeedback(`${tr('magneticComplete')}${completed}`,label,action,true);
+  }else if(puzzle.finished){
+    showGameFeedback(tr('magneticFall'),tr('magneticRestart'),()=>startMagneticMaze(selectedLevel,selectedMagneticStage));
+  }
 }
 const PATH_LEVEL_CELL_COUNTS=[11,17,23,29,35];
 const INTERACTIVE_DIRECTIONS=[{dx:0,dy:-1,bit:1},{dx:1,dy:0,bit:2},{dx:0,dy:1,bit:4},{dx:-1,dy:0,bit:8}];
@@ -2630,12 +2663,14 @@ function renderInteractivePuzzle(){
   const feedback=interactivePuzzle.feedback?`<p class="play-status">${interactivePuzzle.feedback}</p>`:'<p class="play-status"></p>';
   const progress=id==='physicsPaths'?tr('pathLevelProgress',{n:selectedPathLevel+1}):id==='gridSokoban'?tr('boxLevelProgress',{n:selectedBoxLevel+1}):id==='railwayControl'?tr('railwayProgress',{n:selectedRailwayLevel+1}):'';
   const continueLabel=id==='physicsPaths'?tr(selectedPathLevel<4?'pathNextLevel':'pathAllComplete'):id==='gridSokoban'?tr(selectedBoxLevel<4?'boxNextLevel':'boxAllComplete'):id==='railwayControl'?tr(selectedRailwayLevel<4?'railwayNextLevel':'railwayAllComplete'):tr('next');
-  const topSuccess=['physicsPaths','gridSokoban','codeBreaker'].includes(id);
-  const success=interactivePuzzle.won?`<p class="${id==='gridSokoban'?'sokoban-success':id==='physicsPaths'?'path-success':'play-status'}" aria-live="polite"><b>${tr('correct')} ${interactivePuzzle.newStar?tr('starEarned'):''}</b><br>${tr(interactivePuzzle.successKey)}${progress?`<br>${progress}`:''}<br><button class="alt" onclick="continueInteractivePuzzle()">${continueLabel}</button></p>`:'';
-  const restart=interactivePuzzle.finished&&!interactivePuzzle.won?`<button class="alt" onclick="startInteractivePuzzle('${id}')">${tr('puzzleRetry')}</button>`:'';
   $('#gameContent').classList.toggle('railway-game',id==='railwayControl');
-  $('#gameContent').innerHTML=`<h2>${tr(MINI_GAMES.find(game=>game.id===id).name)}</h2><p>${interactiveGamePrompt(id)}</p>${topSuccess?success:''}<section class="interactive-puzzle${id==='railwayControl'?' railway-puzzle':''}">${board}${hint}<div class="puzzle-controls"><button class="ghost" onclick="showInteractiveHint()">${tr('hintButton')}</button></div>${feedback}${topSuccess?'':success}${restart}</section><button class="ghost" onclick="backFromGame()" data-i18n="back">${tr('back')}</button>`;
-  if(topSuccess&&interactivePuzzle.won)$('#gameStage').scrollTop=0;
+  $('#gameContent').innerHTML=`<h2>${tr(MINI_GAMES.find(game=>game.id===id).name)}</h2><p>${interactiveGamePrompt(id)}</p><section class="interactive-puzzle${id==='railwayControl'?' railway-puzzle':''}">${board}${hint}<div class="puzzle-controls"><button class="ghost" onclick="showInteractiveHint()">${tr('hintButton')}</button></div>${feedback}</section><button class="ghost" onclick="backFromGame()" data-i18n="back">${tr('back')}</button>`;
+  if(interactivePuzzle.won){
+    showGameFeedback(`${tr('correct')} ${interactivePuzzle.newStar?tr('starEarned'):''} ${tr(interactivePuzzle.successKey)} ${progress}`,
+      continueLabel,continueInteractivePuzzle,true);
+  }else if(interactivePuzzle.finished){
+    showGameFeedback(interactivePuzzle.feedback,tr('puzzleRetry'),()=>startInteractivePuzzle(id));
+  }
 }
 function showInteractiveHint(){
   if(!interactivePuzzle||interactivePuzzle.finished)return;
@@ -2657,14 +2692,18 @@ function moveSokoban(dx,dy){
   if(interactivePuzzle.finished)return;
   const {player,box,goal,walls,size}=interactivePuzzle,nx=player.x+dx,ny=player.y+dy,nextKey=`${nx},${ny}`;
   if(nx<=0||nx>=size-1||ny<=0||ny>=size-1||walls.has(nextKey))return;
+  let pushed=false;
   if(box.x===nx&&box.y===ny){
     const bx=box.x+dx,by=box.y+dy;
     if(bx<=0||bx>=size-1||by<=0||by>=size-1||walls.has(`${bx},${by}`))return;
     box.x=bx;box.y=by;
-    interactivePuzzle.pushes++;
+    interactivePuzzle.pushes++;pushed=true;
   }
   player.x=nx;player.y=ny;interactivePuzzle.turns++;
   if(box.x===goal.x&&box.y===goal.y){completeInteractivePuzzle('sokobanWin');return}
+  if(pushed&&!sokobanHasSolution(size,player,box,goal,walls)){
+    interactivePuzzle.finished=true;interactivePuzzle.feedback=tr('sokobanDeadEnd');
+  }
   renderInteractivePuzzle();
 }
 function selectCodePeg(index){if(interactivePuzzle.finished)return;interactivePuzzle.activePeg=index;renderInteractivePuzzle()}
@@ -2755,14 +2794,15 @@ function renderEscapeKeyRoom(completed=false){
   const objects=room.objects.map((icon,index)=>`<button class="escape-room-object escape-object-slot-${index}" aria-label="${tr('escapeSearchObject')} ${index+1}" onclick="searchEscapeKey(${index})" ${escapeKeyFound?'disabled':''}><span aria-hidden="true">${escapeKeyFound&&index===room.target?'🗝️':icon}</span></button>`).join('');
   const style=`--escape-wall:${room.wall};--escape-floor:${room.floor}`;
   const message=completed?tr('escapeComplete'):escapeKeyFound?tr('escapeKeyFound'):escapeKeyFeedback;
-  const action=completed?`<button class="alt" onclick="renderGameLevels()" data-i18n="next">${tr('next')}</button>`:escapeKeyFound?`<button class="alt" onclick="finishEscapeRoom()">${tr('escapeKeyFinish')}</button>`:'';
+  const action=completed?'':escapeKeyFound?`<button class="alt" onclick="finishEscapeRoom()">${tr('escapeKeyFinish')}</button>`:'';
   $('#gameContent').innerHTML=`<h2>${activity} · ${tr('escapeKeyRoomTitle')}</h2>${completed?'':`<p>${tr('escapeKeyRoomPrompt')}</p><ol class="escape-key-clues">${clueList}</ol>`}<section class="escape-key-room" style="${style}" aria-label="${activity}"><div class="escape-room-window" aria-hidden="true">${room.window}</div>${objects}</section><p class="escape-key-feedback" aria-live="polite">${message}</p>${action}<button class="ghost" onclick="backFromGame()" data-i18n="back">${tr('back')}</button>`;
+  if(completed)showGameFeedback(tr('escapeComplete'),gameActivityAdvanceLabel('escapeRoom'),()=>advanceGameActivity('escapeRoom'),true);
 }
 function searchEscapeKey(place){
   if(escapeRoomPhase!=='keyRoom'||escapeKeyFound)return;
   const room=getEscapeKeyRoom();
   if(!Number.isInteger(place)||place<0||place>=room.objects.length)throw new Error(`Unknown escape-room hiding place: ${place}`);
-  if(place!==room.target){escapeKeyFeedback=tr('escapeKeyWrong');renderEscapeKeyRoom();return}
+  if(place!==room.target){escapeKeyFeedback=tr('escapeKeyWrong');renderEscapeKeyRoom();showGameFeedback(tr('escapeKeyWrong'),tr('tryAgain'),()=>{});return}
   escapeKeyFound=true;
   escapeKeyFeedback='';
   renderEscapeKeyRoom();
@@ -2784,17 +2824,15 @@ function awardEscapeRoomStar(){
   return true;
 }
 function renderEscapeRoomSuccess(){
-  const feedback=$('#learningFeedback');
-  if(!feedback)return;
   document.querySelectorAll('#gameContent .answer-grid button').forEach(button=>button.disabled=true);
   const reward=escapeRoomStarEarned?` ${tr('starEarned')}`:'';
   const clue=getEscapeKeyRoom().clues[currentLanguage][escapeRoomIndex];
-  const explanation=`<span class="escape-explanation">${escapeRoomExplanation}</span><span class="escape-explanation"><b>${tr('escapeKeyClueLabel')}</b> ${clue}</span>`;
+  const message=`${tr('correct')} ${reward} ${tr('escapeRoomCleared')} ${escapeRoomExplanation} ${tr('escapeKeyClueLabel')} ${clue}`;
   if(escapeRoomIndex<4){
-    feedback.innerHTML=`<span>${tr('correct')} ${reward}</span><br><span>${tr('escapeRoomCleared')}</span>${explanation}<button class="alt" onclick="nextEscapeRoom()" data-i18n="escapeNextRoom">${tr('escapeNextRoom')}</button>`;
+    showGameFeedback(message,tr('escapeNextRoom'),nextEscapeRoom,true);
     return;
   }
-  feedback.innerHTML=`<span>${tr('correct')} ${reward}</span><br><span>${tr('escapeRoomCleared')}</span>${explanation}<button class="alt" onclick="enterEscapeKeyRoom()">${tr('escapeKeyEnter')}</button>`;
+  showGameFeedback(message,tr('escapeKeyEnter'),enterEscapeKeyRoom,true);
 }
 function enterEscapeKeyRoom(){
   if(!escapeRoomSolved||escapeRoomIndex!==4||escapeRoomPhase!=='riddles')return;
@@ -2812,10 +2850,9 @@ function answerEscapeRoom(button){
   clearLearningHint();
   const buttons=document.querySelectorAll('#gameContent .answer-grid button');
   buttons.forEach(item=>item.disabled=true);
-  const feedback=$('#learningFeedback');
   if(Number(button.dataset.answerIndex)!==escapeRoomAnswerIndex){
     revealLearningHint();
-    feedback.innerHTML=`<button class="alt" onclick="retryLearningAnswer()" data-i18n="tryAgain">${tr('tryAgain')}</button>`;
+    showGameFeedback(tr('tryAgain'),tr('tryAgain'),retryLearningAnswer);
     return;
   }
   escapeRoomSolved=true;
@@ -3086,10 +3123,14 @@ function renderWordSearchGame(){
   }).join('');
   const words=puzzle.words.map(item=>`<li class="${puzzle.found.has(item.word)?'found':''}">${item.word}</li>`).join('');
   const complete=puzzle.found.size===puzzle.words.length;
-  const completion=complete?selectedWordSearchLevel===5
-    ?`<button class="alt" onclick="renderGameLevels()">${tr('wordSearchFinishActivity')}</button>`
-    :`<button class="alt" onclick="renderWordSearchLevels()">${tr('wordSearchNextLevel')}</button>`:'';
-  $('#gameContent').innerHTML=`<h2>${tr('wordSearch')} - ${activityNames('wordSearch',currentLanguage)[selectedLevel]}</h2><p>${tr('wordSearchLevel',{n:selectedWordSearchLevel+1})} · ${tr('wordSearchGrid',{size:puzzle.size,cols:puzzle.size,words:puzzle.words.length})}</p><p data-i18n="wordSearchPrompt">${tr('wordSearchPrompt')}</p><ul class="word-search-words">${words}</ul><div class="word-search-board" style="--word-grid-size:${puzzle.size}" aria-label="${tr('wordSearch')}">${cells}</div><p class="play-status" aria-live="polite">${complete?tr('wordSearchComplete'):puzzle.status||progress}</p><div class="puzzle-controls"><button class="ghost" onclick="clearWordSearchSelection()" data-i18n="wordSearchClear">${tr('wordSearchClear')}</button>${completion}</div>`;
+  $('#gameContent').innerHTML=`<h2>${tr('wordSearch')} - ${activityNames('wordSearch',currentLanguage)[selectedLevel]}</h2><p>${tr('wordSearchLevel',{n:selectedWordSearchLevel+1})} · ${tr('wordSearchGrid',{size:puzzle.size,cols:puzzle.size,words:puzzle.words.length})}</p><p data-i18n="wordSearchPrompt">${tr('wordSearchPrompt')}</p><ul class="word-search-words">${words}</ul><div class="word-search-board" style="--word-grid-size:${puzzle.size}" aria-label="${tr('wordSearch')}">${cells}</div><p class="play-status" aria-live="polite">${complete?tr('wordSearchComplete'):puzzle.status||progress}</p><div class="puzzle-controls"><button class="ghost" onclick="clearWordSearchSelection()" data-i18n="wordSearchClear">${tr('wordSearchClear')}</button></div>`;
+  if(complete){
+    const hasNextLevel=selectedWordSearchLevel<5;
+    showGameFeedback(tr('wordSearchComplete'),hasNextLevel?tr('wordSearchNextLevel'):tr('wordSearchFinishActivity'),
+      hasNextLevel?renderWordSearchLevels:()=>advanceGameActivity('wordSearch'),true);
+  }else if(puzzle.status===tr('wordSearchTryAgain')){
+    showGameFeedback(tr('tryAgain'),tr('tryAgain'),clearWordSearchSelection);
+  }
 }
 function selectWordSearchCell(index){
   const puzzle=wordSearchPuzzle;
@@ -3134,7 +3175,7 @@ const STORY_MATH_ITEMS=[
   ['ticket','tickets','כרטיסים','билета','билетов','билет']
 ];
 const STORY_MATH_SETTINGS=[
-  {en:'at the marble tournament table',he:'בשולחן התחרות במשחק הגולות',ru:'за столом турнира по шарикам'},
+  {en:'at a marble tournament',he:'בתחרות במשחק הגולות',ru:'на турнире по игре в шарики'},
   {en:'in the apple orchard',he:'במטע התפוחים',ru:'в яблоневом саду'},
   {en:'in the classroom art corner',he:'בפינת היצירה בכיתה',ru:'в школьном уголке для рисования'},
   {en:'on a garden birdwatch',he:'בסיור צפרות בגינה',ru:'во время наблюдения за птицами в саду'},
@@ -3146,6 +3187,20 @@ const STORY_MATH_SETTINGS=[
   {en:'at a picnic in the park',he:'בפיקניק בפארק',ru:'на пикнике в парке'},
   {en:'at the orange fruit stand',he:'בדוכן התפוזים בשוק',ru:'у прилавка с апельсинами на рынке'},
   {en:'at the theater ticket booth',he:'בקופת הכרטיסים בתיאטרון',ru:'в театральной кассе'}
+];
+const STORY_MATH_ALT_SETTINGS=[
+  {en:'during the final round of the marble contest',he:'בשלב הגמר של תחרות הגולות',ru:'во время финального раунда турнира по игре в шарики'},
+  {en:'at the orchard packing shed',he:'בבית האריזה שבמטע',ru:'в упаковочном цехе при саде'},
+  {en:'at the classroom supply shelf',he:'ליד מדף הציוד בכיתה',ru:'у полки с принадлежностями в классе'},
+  {en:'beside the pond on a birdwatch',he:'ליד הבריכה במהלך תצפית בציפורים',ru:'у пруда во время наблюдения за птицами'},
+  {en:'at the balloon-decorating table',he:'ליד שולחן קישוט הבלונים',ru:'у стола для украшения зала шарами'},
+  {en:'at the shell-sorting table by the shore',he:'ליד שולחן מיון הצדפים שבחוף',ru:'у стола для сортировки ракушек на берегу'},
+  {en:'in the toy-car pit lane',he:'במתחם הטיפולים של מסלול המכוניות',ru:'в боксах трассы для игрушечных машинок'},
+  {en:'at the bakery cooling rack',he:'ליד רשת הקירור במאפייה',ru:'у решётки для остывания выпечки в кондитерской'},
+  {en:'in the school kitchen before the bake sale',he:'במטבח בית הספר לפני יריד האפייה',ru:'на школьной кухне перед ярмаркой выпечки'},
+  {en:'at the picnic blanket in the park',he:'ליד שמיכת הפיקניק בפארק',ru:'у пледа для пикника в парке'},
+  {en:'at the orange stall in the town market',he:'בדוכן התפוזים בשוק העירוני',ru:'у прилавка с апельсинами на городском рынке'},
+  {en:'outside the theater before the show',he:'מחוץ לתיאטרון לפני ההצגה',ru:'у входа в театр перед представлением'}
 ];
 const PATTERN_THEMES=[
   ['🔴','🔵','🟡','🟢'],['⭐','🌙','☀️','☁️'],['🐱','🐶','🐰','🦊'],['🍎','🍐','🍊','🍇'],
@@ -3225,7 +3280,7 @@ function getMathQuestion(activityIndex,questionIndex){
 }
 function getStoryMathQuestion(activityIndex,questionIndex){
   const item=STORY_MATH_ITEMS[activityIndex];
-  const setting=STORY_MATH_SETTINGS[activityIndex];
+  const setting=questionIndex%2?STORY_MATH_ALT_SETTINGS[activityIndex]:STORY_MATH_SETTINGS[activityIndex];
   if(!item||!setting)throw new Error(`Unknown story math activity: ${activityIndex}`);
   const p=(questionIndex*7+activityIndex*3)%10;
   const answer=24+p*6;
@@ -3260,7 +3315,7 @@ function getStoryMathQuestion(activityIndex,questionIndex){
           ru=`${setting.ru}: ${child.ru} насчитала ${total} птиц у пруда. Затем ${removed} птиц улетели. Сколько птиц осталось?`;
         }else{
           en=`${setting.en}, there were ${total} ${item[1]} on display. ${removed} were taken away. How many remain?`;
-          he=`${setting.he}, הוצגו ${total} ${item[2]}. לקחו משם ${removed}. כמה נשארו?`;
+          he=`${setting.he}, היו ${total} ${item[2]} בתצוגה. לקחו משם ${removed}. כמה נשארו?`;
           ru=`${setting.ru}: на витрине было ${total} ${getRussianCountedItem(item,total)}. ${removed} забрали. Сколько осталось?`;
         }
       }
@@ -3287,9 +3342,9 @@ function getStoryMathQuestion(activityIndex,questionIndex){
           he=`${setting.he}, ${child.he} חילקה ${total} תצפיות בציפורים באופן שווה בין ${friends} עמודים ביומן טבע. כמה תצפיות נרשמו בכל עמוד?`;
           ru=`${setting.ru}: ${child.ru} поровну распределила ${total} наблюдений за птицами по ${friends} страницам дневника природы. Сколько наблюдений записано на каждой странице?`;
         }else{
-          en=`${setting.en}, ${child.en} packed ${total} ${item[1]} equally into ${friends} gift bags. How many ${item[1]} went in each bag?`;
-          he=`${setting.he}, ${child.he} ארזה ${total} ${item[2]} באופן שווה ב-${friends} שקיות מתנה. כמה ${item[2]} נכנסו לכל שקית?`;
-          ru=`${setting.ru}: ${child.ru} поровну разложила ${total} ${getRussianCountedItem(item,total)} по ${friends} подарочным пакетам. Сколько ${item[4]} оказалось в каждом пакете?`;
+          en=`${setting.en}, ${child.en} shared ${total} ${item[1]} equally among ${friends} friends. How many did each friend get?`;
+          he=`${setting.he}, ${child.he} חילקה ${total} ${item[2]} באופן שווה בין ${friends} חברים. כמה קיבל כל חבר?`;
+          ru=`${setting.ru}: ${child.ru} поровну разделила ${total} ${getRussianCountedItem(item,total)} между ${friends} друзьями. Сколько получил каждый?`;
         }
       }
       break;
@@ -3359,6 +3414,7 @@ function getStoryMathQuestion(activityIndex,questionIndex){
       }
     }
   }
+  ru=ru.replace(/(^|[.!?]\s+|:\s+)([\p{Ll}])/gu,(_,boundary,letter)=>boundary+letter.toLocaleUpperCase('ru'));
   const options=makeChoices(answer,Math.max(0,answer-8),answer+8).map(String);
   return {answer:String(answer),question:{en,he,ru},options};
 }
@@ -3956,8 +4012,7 @@ function playLearningGame(id,level){
   genericAnswer=correct;questionHintCount=0;
   const game=MINI_GAMES.find(item=>item.id===id);
   const questionLabel=learningGameHasTenQuestions(id)?getLearningQuestionLabel(id,riddleQuestionIndex):tr('question',{n:level+1});
-  const choiceLabels=currentLanguage==='he'?['א','ב','ג','ד']:currentLanguage==='ru'?['А','Б','В','Г']:['A','B','C','D'];
-  $('#gameContent').innerHTML=`<h2 data-i18n="${game.name}">${game.icon} ${tr(game.name)}</h2><p>${questionLabel}</p><p data-i18n="${promptKey}">${prompt}</p><div id="learningQuestion" class="quiz-swatch" ${id==='math'?'dir="ltr"':''} style="width:auto;height:auto;min-height:60px;border:0;box-shadow:none;font-size:${['storyMath','scienceQuest','logicQuest','riddles'].includes(id)?'18':'32'}px">${question}</div><div class="answer-grid">${options.map((option,index)=>`<button data-answer="${encodeURIComponent(option)}" onclick="answerLearningGame(this)">${id==='riddles'?`${choiceLabels[index]}) `:''}${option}</button>`).join('')}</div><div class="learning-tools"><button class="ghost" onclick="revealLearningHint()" data-i18n="hintButton">${tr('hintButton')}</button></div><p id="learningHint" class="learning-hint" aria-live="polite"></p><p id="learningFeedback" class="play-status" aria-live="polite"></p>`;
+  $('#gameContent').innerHTML=`<h2 data-i18n="${game.name}">${game.icon} ${tr(game.name)}</h2><p>${questionLabel}</p><p data-i18n="${promptKey}">${prompt}</p><div id="learningQuestion" class="quiz-swatch" ${id==='math'?'dir="ltr"':''} style="width:auto;height:auto;min-height:60px;border:0;box-shadow:none;font-size:${['storyMath','scienceQuest','logicQuest','riddles'].includes(id)?'18':'32'}px">${question}</div><div class="answer-grid">${options.map(option=>`<button data-answer="${encodeURIComponent(option)}" onclick="answerLearningGame(this)">${option}</button>`).join('')}</div><div class="learning-tools"><button class="ghost" onclick="revealLearningHint()" data-i18n="hintButton">${tr('hintButton')}</button></div><p id="learningHint" class="learning-hint" aria-live="polite"></p><p id="learningFeedback" class="play-status" aria-live="polite"></p>`;
 }
 function revealLearningHint(){
   const question=$('#learningQuestion'),feedback=$('#learningHint');
@@ -4038,24 +4093,23 @@ function answerLearningGame(button){
   clearLearningHint();
   const answer=decodeURIComponent(button.dataset.answer);
   document.querySelectorAll('.answer-grid button').forEach(item=>item.disabled=true);
-  const feedback=$('#learningFeedback'),correct=answer===genericAnswer;
-  const resultKey=correct?'correct':'tryAgain';
+  const correct=answer===genericAnswer;
   if(correct)queueProfileStarReward(1,newProfileRewardId());
   if(!correct){
     revealLearningHint();
-    feedback.innerHTML=`<button class="alt" onclick="retryLearningAnswer()" data-i18n="tryAgain">${tr('tryAgain')}</button>`;
+    showGameFeedback(tr('tryAgain'),tr('tryAgain'),retryLearningAnswer);
     return;
   }
   if(learningGameHasTenQuestions(selectedMiniGame)){
     if(riddleQuestionIndex===9){
       const completionKey=selectedMiniGame==='riddles'?'riddleComplete':selectedMiniGame==='scienceQuest'?'scienceComplete':'learningComplete';
-      feedback.innerHTML=`<span>${tr('correct')} ${tr('starEarned')}</span><br><span>${tr(completionKey)}</span><br><button class="alt" onclick="renderGameLevels()" data-i18n="next">${tr('next')}</button>`;
+      showGameFeedback(`${tr('correct')} ${tr('starEarned')} ${tr(completionKey)}`,gameActivityAdvanceLabel(),()=>advanceGameActivity(),true);
       return;
     }
-    feedback.innerHTML=`<span data-i18n="correct">${tr('correct')} ${tr('starEarned')}</span><br><button class="alt" onclick="nextRiddleQuestion()" data-i18n="next">${tr('next')}</button>`;
+    showGameFeedback(`${tr('correct')} ${tr('starEarned')}`,tr('next'),nextRiddleQuestion,true);
     return;
   }
-  feedback.innerHTML=`<span data-i18n="${resultKey}">${tr(resultKey)} ${tr('starEarned')}</span><br><button class="alt" onclick="renderGameLevels()" data-i18n="next">${tr('next')}</button>`;
+  showGameFeedback(`${tr('correct')} ${tr('starEarned')}`,gameActivityAdvanceLabel(),()=>advanceGameActivity(),true);
 }
 function nextRiddleQuestion(){
   if(!learningGameHasTenQuestions(selectedMiniGame)||riddleQuestionIndex>=9)return;
@@ -4096,110 +4150,14 @@ function flipMemoryCard(index){
     const [a,b]=memoryOpen;
     if(memoryCards[a]===memoryCards[b]){
       memoryMatched.add(a);memoryMatched.add(b);memoryOpen=[];
-      if(memoryMatched.size===memoryCards.length){$('#memoryStatus').innerHTML=`<span data-i18n="memoryComplete">${tr('memoryComplete')}</span><br><button class="alt" onclick="renderGameLevels()" data-i18n="next">${tr('next')}</button>`}
-    }else setTimeout(()=>{if($(`#memory${a}`)&&$(`#memory${b}`)){$(`#memory${a}`).textContent='❔';$(`#memory${b}`).textContent='❔'}memoryOpen=[]},750);
-  }
-}
-const TRACE_STROKES={
-  A:[[[22,82],[50,18],[78,82]],[[34,58],[67,58]]],
-  B:[[[30,18],[30,82]],[[30,20],[60,20],[70,28],[68,42],[58,49],[30,49]],[[30,49],[60,49],[72,59],[70,74],[60,82],[30,82]]],
-  C:[[[72,28],[60,20],[43,20],[29,31],[25,50],[29,69],[43,80],[61,80],[73,72]]],
-  D:[[[30,18],[30,82]],[[30,20],[51,20],[68,31],[74,50],[68,69],[51,80],[30,80]]],
-  E:[[[32,20],[32,80]],[[32,21],[70,21]],[[32,50],[63,50]],[[32,79],[70,79]]],
-  F:[[[32,80],[32,20],[70,20]],[[32,49],[62,49]]],
-  G:[[[72,29],[60,20],[43,20],[29,31],[25,50],[29,69],[43,80],[62,80],[73,70],[73,54],[55,54]]],
-  H:[[[30,20],[30,80]],[[70,20],[70,80]],[[30,50],[70,50]]],
-  I:[[[32,20],[68,20]],[[50,20],[50,80]],[[32,80],[68,80]]],
-  J:[[[34,20],[70,20]],[[64,20],[64,65],[57,78],[42,82],[30,74]]],
-  K:[[[31,20],[31,80]],[[69,21],[34,51],[71,80]]],
-  L:[[[32,20],[32,79],[70,79]]],
-  M:[[[22,80],[22,20],[50,55],[78,20],[78,80]]],
-  N:[[[28,80],[28,20],[72,80],[72,20]]],
-  O:[[[50,18],[35,20],[25,34],[23,50],[27,68],[40,80],[58,81],[72,68],[77,50],[73,33],[62,21],[50,18]]],
-  P:[[[31,81],[31,20],[58,20],[70,29],[70,42],[60,50],[31,50]]],
-  Q:[[[50,18],[35,20],[25,34],[23,50],[27,68],[40,80],[58,81],[72,68],[77,50],[73,33],[62,21],[50,18]],[[57,64],[77,84]]],
-  R:[[[31,81],[31,20],[58,20],[70,29],[70,42],[60,50],[31,50]],[[52,50],[73,81]]],
-  S:[[[70,27],[60,20],[43,20],[30,29],[30,40],[42,48],[60,53],[70,62],[68,73],[57,80],[40,80],[29,73]]],
-  T:[[[24,20],[76,20]],[[50,20],[50,80]]],
-  U:[[[29,20],[29,61],[35,74],[48,81],[62,78],[71,66],[71,20]]],
-  V:[[[26,20],[50,81],[75,20]]],
-  W:[[[20,20],[32,80],[50,47],[68,80],[80,20]]],
-  X:[[[28,20],[72,80]],[[72,20],[28,80]]],
-  Y:[[[25,20],[50,49],[75,20]],[[50,49],[50,80]]],
-  Z:[[[26,20],[74,20],[26,80],[74,80]]],
-  א:[[[72,24],[39,49]],[[39,49],[69,78]],[[37,53],[27,78]]],
-  ב:[[[72,25],[31,25],[31,72],[68,72]]],
-  ג:[[[38,25],[69,25],[60,72]]],
-  ד:[[[70,25],[30,25],[30,72]]],
-  ה:[[[69,25],[31,25],[31,72]],[[69,25],[69,44]]],
-  ו:[[[52,23],[52,74]]],
-  ז:[[[30,25],[71,25]],[[67,25],[34,73]]],
-  ח:[[[69,25],[31,25],[31,72]],[[69,25],[69,72]]],
-  ט:[[[32,72],[32,25],[69,25],[69,72],[49,72],[38,60]]],
-  י:[[[59,32],[50,42]]],
-  כ:[[[69,25],[37,25],[31,53],[39,72],[65,72]]],
-  ל:[[[42,71],[42,33],[32,33]],[[42,33],[66,22],[66,72]]],
-  מ:[[[69,25],[31,25],[31,72],[69,72],[69,25]]],
-  נ:[[[68,25],[68,72],[34,72],[34,53]]],
-  ס:[[[68,26],[34,26],[29,38],[31,65],[42,73],[62,72],[70,61],[68,26]]],
-  ע:[[[69,25],[49,50],[30,72]],[[49,50],[31,25]]],
-  פ:[[[68,72],[68,25],[32,25],[32,72]],[[48,34],[48,48]]],
-  צ:[[[68,25],[43,49],[31,72]],[[43,49],[69,72]]],
-  ק:[[[68,25],[48,51],[31,72]],[[68,25],[68,50]]],
-  ר:[[[31,25],[68,25],[68,72]]],
-  ש:[[[30,26],[30,72]],[[50,26],[50,72]],[[70,26],[70,72]],[[30,72],[70,72]]],
-  ת:[[[30,25],[70,25]],[[50,25],[50,72]],[[30,72],[70,72]]],
-  Ё:[[[32,80],[32,20],[70,20]],[[32,49],[62,49]],[[43,10],[43,10]],[[59,10],[59,10]]],
-  Ж:[[[50,18],[50,82]],[[24,22],[50,50],[76,78]],[[76,22],[50,50],[24,78]]],
-  З:[[[31,28],[43,20],[60,21],[71,32],[65,45],[51,50],[65,54],[72,67],[62,79],[43,81],[30,73]]],
-  И:[[[28,80],[28,20],[72,80],[72,20]]],
-  Й:[[[28,80],[28,20],[72,80],[72,20]],[[40,10],[50,5],[60,10]]],
-  Л:[[[25,80],[50,20],[76,80]]],
-  П:[[[30,80],[30,20],[70,20],[70,80]]],
-  Ф:[[[50,18],[50,82]],[[50,25],[34,25],[25,37],[25,64],[35,76],[50,76],[65,76],[75,64],[75,37],[65,25],[50,25]]],
-  Ц:[[[28,20],[28,72],[65,72],[65,20]],[[65,72],[74,82]]],
-  Ч:[[[30,20],[30,48],[43,53],[68,48],[68,20]],[[68,48],[68,80]]],
-  Ш:[[[24,20],[24,72],[76,72],[76,20]],[[50,20],[50,72]]],
-  Щ:[[[24,20],[24,72],[76,72],[76,20]],[[50,20],[50,72]],[[76,72],[82,82]]],
-  Ъ:[[[25,20],[73,20]],[[52,20],[52,80],[68,80],[76,70],[76,58],[68,50],[52,50]]],
-  Ы:[[[25,20],[25,80],[42,80],[50,70],[50,60],[42,52],[25,52]],[[72,20],[72,80]]],
-  Ь:[[[30,20],[30,80],[57,80],[70,70],[70,60],[60,52],[30,52]]],
-  Э:[[[68,30],[57,20],[40,20],[28,32],[25,50],[28,68],[40,80],[58,80],[70,68]],[[45,50],[69,50]]],
-  Ю:[[[27,20],[27,80]],[[27,50],[48,50]],[[62,20],[51,30],[49,50],[53,69],[64,80],[75,69],[78,50],[75,31],[62,20]]],
-  Я:[[[70,80],[70,20],[43,20],[30,30],[30,43],[42,50],[70,50]],[[48,50],[28,80]]]
-};
-Object.assign(TRACE_STROKES,{
-  'А':TRACE_STROKES.A,
-  'Б':[[[70,20],[31,20],[31,80],[54,80],[69,69],[69,59],[59,51],[31,51]]],
-  'В':[[[31,20],[31,80]],[[31,21],[57,21],[69,30],[67,42],[57,50],[31,50]],[[31,50],[59,50],[71,60],[69,72],[59,80],[31,80]]],
-  'Г':[[[30,80],[30,20],[70,20]]],
-  'Д':[[[25,80],[50,20],[75,80]],[[25,80],[75,80]]],
-  'Е':TRACE_STROKES.E,
-  'К':TRACE_STROKES.K,'М':TRACE_STROKES.M,'Н':TRACE_STROKES.H,
-  'О':TRACE_STROKES.O,'Р':TRACE_STROKES.P,'С':TRACE_STROKES.C,
-  'Т':TRACE_STROKES.T,'У':TRACE_STROKES.Y,'Х':TRACE_STROKES.X,
-  'Ё':TRACE_STROKES.E.concat([[[40,10],[45,10]],[[58,10],[63,10]]]),
-  'Й':TRACE_STROKES.И.concat([[[40,10],[50,5],[60,10]]])
-});
-function drawTraceDirections(canvas,letter){
-  const context=canvas.getContext('2d');
-  if(!context)throw new Error('Could not draw letter directions.');
-  const strokes=TRACE_STROKES[letter];
-  if(!strokes)throw new Error(`Missing writing directions for letter ${letter}`);
-  context.clearRect(0,0,320,320);context.strokeStyle='#7c4dff';context.fillStyle='#ffb703';
-  context.lineWidth=5;context.lineCap='round';context.lineJoin='round';
-  for(const stroke of strokes){
-    if(stroke.length<2)continue;
-    const points=stroke.map(([x,y])=>({x:48+x*2.24,y:48+y*2.24}));
-    context.beginPath();context.moveTo(points[0].x,points[0].y);
-    for(let i=1;i<points.length;i++)context.lineTo(points[i].x,points[i].y);
-    context.stroke();
-    const target=points.length-1,previous=points[target-1],end=points[target];
-    const angle=Math.atan2(end.y-previous.y,end.x-previous.x),size=10;
-    context.beginPath();context.moveTo(end.x,end.y);
-    context.lineTo(end.x-size*Math.cos(angle-.48),end.y-size*Math.sin(angle-.48));
-    context.lineTo(end.x-size*Math.cos(angle+.48),end.y-size*Math.sin(angle+.48));
-    context.closePath();context.fill();
+      if(memoryMatched.size===memoryCards.length)showGameFeedback(tr('memoryComplete'),gameActivityAdvanceLabel('memory'),()=>advanceGameActivity('memory'),true);
+    }else setTimeout(()=>{
+      const first=$(`#memory${a}`),second=$(`#memory${b}`);
+      if(!first||!second){memoryOpen=[];return}
+      first.textContent='❔';second.textContent='❔';
+      memoryOpen=[];
+      showGameFeedback(tr('tryAgain'),tr('tryAgain'),()=>{});
+    },750);
   }
 }
 let traceLetterIndex=0,traceDistance=0;
@@ -4207,13 +4165,12 @@ function renderLetterTrace(level){
   const letters=traceLetterGroups(currentLanguage)[level],letter=letters[traceLetterIndex];
   if(!letter)throw new Error(`Missing letter ${traceLetterIndex+1} in activity ${level+1}`);
   traceHasInk=false;traceDistance=0;go('gameStage');
-  $('#gameContent').innerHTML=`<h2 data-i18n="letters">✍️ ${tr('letters')}</h2><p>${tr('traceProgress',{n:traceLetterIndex+1,total:letters.length})}</p><p data-i18n="tracePrompt">${tr('tracePrompt')}</p><p id="traceStatus" aria-live="polite"></p><div class="trace-wrap"><canvas id="traceCanvas" class="trace-canvas" width="320" height="320" aria-label="${tr('traceLetter')}: ${letter}"></canvas><canvas id="traceGuide" class="trace-guide" width="320" height="320" aria-hidden="true"></canvas><canvas id="traceDirections" class="trace-directions" width="320" height="320" aria-hidden="true"></canvas></div><button class="ghost" onclick="clearTrace()" data-i18n="clear">${tr('clear')}</button> <button class="alt" onclick="finishTrace()" data-i18n="check">${tr('check')}</button>`;
+  $('#gameContent').innerHTML=`<h2 data-i18n="letters">✍️ ${tr('letters')}</h2><p>${tr('traceProgress',{n:traceLetterIndex+1,total:letters.length})}</p><p data-i18n="tracePrompt">${tr('tracePrompt')}</p><p id="traceStatus" aria-live="polite"></p><div class="trace-wrap"><canvas id="traceCanvas" class="trace-canvas" width="320" height="320" aria-label="${tr('traceLetter')}: ${letter}"></canvas><canvas id="traceGuide" class="trace-guide" width="320" height="320" aria-hidden="true"></canvas></div><button class="ghost" onclick="clearTrace()" data-i18n="clear">${tr('clear')}</button> <button class="alt" onclick="finishTrace()" data-i18n="check">${tr('check')}</button>`;
   const canvas=$('#traceCanvas'),context=canvas.getContext('2d',{willReadFrequently:true});let drawing=false;
   const guide=$('#traceGuide').getContext('2d',{willReadFrequently:true});
   if(!context||!guide)throw new Error('Could not prepare the letter tracing canvas.');
   guide.font='220px system-ui,Arial,sans-serif';guide.textAlign='center';guide.textBaseline='middle';
   guide.fillStyle='#ddd';guide.fillText(letter,160,160);
-  drawTraceDirections($('#traceDirections'),letter);
   function point(event){
     const rect=canvas.getBoundingClientRect();
     const scale=rect.width/canvas.offsetWidth;
@@ -4278,10 +4235,9 @@ function finishTrace(){
   const status=$('#traceStatus');
   const letters=traceLetterGroups(currentLanguage)[selectedLevel];
   status.style.minHeight='';
-  if(!traceHasInk||!traceMatchesLetter()){status.textContent=tr('tryAgain');status.scrollIntoView({block:'nearest'});return}
+  if(!traceHasInk||!traceMatchesLetter()){showGameFeedback(tr('tryAgain'),tr('tryAgain'),clearTrace);return}
   const hasNextLetter=traceLetterIndex+1<letters.length;
-  status.innerHTML=`<span data-i18n="traceDone">${tr('traceDone')}</span><br><button class="alt" onclick="${hasNextLetter?'nextTraceLetter()':'renderGameLevels()'}" data-i18n="next">${tr('next')}</button>`;
-  status.scrollIntoView({block:'nearest'});
+  showGameFeedback(tr('traceDone'),tr('next'),hasNextLetter?nextTraceLetter:()=>advanceGameActivity('letters'),true);
 }
 function nextTraceLetter(){
   const letters=traceLetterGroups(currentLanguage)[selectedLevel];
