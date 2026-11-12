@@ -74,6 +74,53 @@ test('star rewards persist locally until the server confirms their idempotent ID
   assert.equal(elements.get('#hStars').textContent, '⭐ 12');
 });
 
+test('duplicate pending reward IDs cannot add stars a second time', () => {
+  const { context, values } = syncContext(async () => ({ data: {}, error: null }));
+  context.queueProfileStarReward(2, 'daily:2026-11-12');
+  context.queueProfileStarReward(2, 'daily:2026-11-12');
+  assert.equal(vm.runInContext('S.stars', context), 2);
+  assert.equal(JSON.parse(values.get('megical_profile_rewards_user-id')).length, 1);
+});
+
+test('daily login bonus is awarded only once per local calendar day', () => {
+  const today = new Date(2026, 10, 12, 12);
+  class FixedDate extends Date {
+    constructor(...args) { super(...(args.length ? args : [today])); }
+  }
+  let rewards = 0, popups = 0;
+  const elements = new Map([
+    ['#dailyT', { textContent: '' }], ['#dailyD', { textContent: '' }],
+    ['#dailyG', { textContent: '' }], ['#dailyB', { textContent: '' }],
+    ['#dailyM', { classList: { add() { popups++; } } }],
+  ]);
+  const context = vm.createContext({
+    Date: FixedDate,
+    S: { lastDay: '', streak: 0 },
+    tr: (key) => key,
+    queueProfileStarReward: () => { rewards++; },
+    renderProfile() {},
+    $: selector => elements.get(selector),
+    celebrate() {},
+  });
+  const start = html.indexOf('let dailyFor=null;');
+  const end = html.indexOf('const _go=go;', start);
+  assert.ok(start >= 0 && end > start);
+  vm.runInContext(html.slice(start, end), context);
+  context.dailyBonus();
+  context.dailyBonus();
+  assert.equal(rewards, 1);
+  assert.equal(popups, 1);
+  assert.equal(vm.runInContext('S.lastDay', context), '2026-11-12');
+});
+
+test('cloud profile synchronization does not replace a newer local daily claim date', () => {
+  const { context } = syncContext(async () => ({ data: {}, error: null }));
+  vm.runInContext("S.lastDay='2026-11-12';S.streak=4", context);
+  context.applyCloudProfile({ stars: 0, lastDay: '2026-11-11', streak: 3 });
+  assert.equal(vm.runInContext('S.lastDay', context), '2026-11-12');
+  assert.equal(vm.runInContext('S.streak', context), 4);
+});
+
 test('local edits made during an in-flight sync are not overwritten by its older response', async () => {
   let completeRequest;
   const { context } = syncContext(() => new Promise((resolve) => { completeRequest = resolve; }));

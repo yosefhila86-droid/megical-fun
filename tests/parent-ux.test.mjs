@@ -46,6 +46,8 @@ test('each escape-room activity has its own themed room and five localized key c
         activityNames: () => Array.from({ length: 12 }, (_, index) => `Activity ${index + 1}`),
         $: () => content,
         tr: (key) => text[language][key] ?? key,
+        showGameFeedback() {},
+        gameActivityAdvanceLabel: () => text[language].next,
       });
       vm.runInContext(source('const ESCAPE_KEY_ROOMS=', 'const GAME_WORDS='), context);
       vm.runInContext("escapeRoomIndex=4;escapeRoomSolved=true;escapeRoomPhase='keyRoom';renderEscapeKeyRoom()", context);
@@ -75,7 +77,7 @@ test('each escape-room activity has its own themed room and five localized key c
     }
   }
   assert.match(source('function renderEscapeRoomSuccess()', 'function enterEscapeKeyRoom()'), /getEscapeKeyRoom\(\)\.clues\[currentLanguage\]\[escapeRoomIndex\]/);
-  assert.match(source('function renderEscapeRoomSuccess()', 'function enterEscapeKeyRoom()'), /<b>\$\{tr\('escapeKeyClueLabel'\)\}<\/b>/);
+  assert.match(source('function renderEscapeRoomSuccess()', 'function enterEscapeKeyRoom()'), /tr\('escapeKeyClueLabel'\)\} \$\{clue\}/);
   for (const language of ['en', 'he', 'ru']) assert.ok(text[language].escapeKeyClueLabel, `${language} labels each clue as a hidden-key hint`);
 });
 

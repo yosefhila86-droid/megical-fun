@@ -37,31 +37,43 @@ test('tracing requires near-complete coverage and rejects unrelated ink', () => 
   assert.equal(tracing.traceMasksMatch(target, mask(width, height, () => false), width, height), false);
 });
 
-test('every traced English, Hebrew, and Russian letter has writing-direction strokes', () => {
-  const directions = vm.createContext({});
-  vm.runInContext(slice('const TRACE_STROKES=', 'let traceLetterIndex=0,traceDistance=0;'), directions);
-  vm.runInContext(slice('const TRACE_LETTERS=', 'function activityNames('), directions);
-  const missing = [];
-  const drawing = { arrows: 0 };
-  const canvas = { getContext: () => ({
-    clearRect() {}, beginPath() {}, moveTo() {}, lineTo() {}, stroke() {},
-    closePath() {}, fill() { drawing.arrows++; },
-  }) };
-  vm.runInContext('globalThis.drawAllTraceDirections=(canvas,letter)=>drawTraceDirections(canvas,letter)', directions);
-  for (const language of ['en', 'he', 'ru']) {
-    for (const letter of vm.runInContext(`traceLetterGroups('${language}').flat()`, directions)) {
-      const hasStrokes = vm.runInContext(`Boolean(TRACE_STROKES[${JSON.stringify(letter)}])`, directions);
-      if (!hasStrokes) missing.push(`${language}:${letter}`);
-      else {
-        const before = drawing.arrows;
-        directions.drawAllTraceDirections(canvas, letter);
-        if (drawing.arrows === before) missing.push(`${language}:${letter} (no arrow)`);
-      }
-    }
-  }
-  assert.deepEqual(missing, []);
-  assert.match(html, /id="traceDirections" class="trace-directions"/);
-  assert.match(slice('let traceLetterIndex=0', 'function clearTrace()'), /drawTraceDirections\(\$\('#traceDirections'\),letter\)/);
+test('letter tracing keeps its guide without incorrect direction arrows', () => {
+  const tracingUi = slice('let traceLetterIndex=0', 'function clearTrace()');
+  assert.match(tracingUi, /id="traceGuide" class="trace-guide"/);
+  assert.match(tracingUi, /guide\.fillText\(letter,160,160\)/);
+  assert.doesNotMatch(tracingUi, /traceDirections|drawTraceDirections/);
+  assert.doesNotMatch(html, /\.trace-directions/);
+});
+
+test('game feedback stays open until its action is selected and excludes coloring', () => {
+  const modal = { classList: { add(value) { this.added = value; }, remove(value) { this.removed = value; } } };
+  const title = { textContent: '' }, message = { textContent: '' }, icon = { textContent: '' };
+  const button = { textContent: '', onclick: null, focus() { this.focused = true; } };
+  const elements = new Map([
+    ['#gameFeedbackM', modal], ['#gameFeedbackTitle', title], ['#gameFeedbackMessage', message],
+    ['#gameFeedbackIcon', icon], ['#gameFeedbackAction', button],
+  ]);
+  let actionCalls = 0;
+  const context = vm.createContext({
+    selectedMiniGame: 'math',
+    tr: key => key,
+    $: selector => elements.get(selector),
+  });
+  vm.runInContext(slice('function toast(t)', '/* ---------- background music'), context);
+  context.showGameFeedback('Correct answer', 'Next level', () => actionCalls++, true);
+  assert.equal(modal.classList.added, 'on');
+  assert.equal(title.textContent, 'done');
+  assert.equal(message.textContent, 'Correct answer');
+  assert.equal(button.textContent, 'Next level');
+  assert.equal(button.focused, true);
+  assert.equal(actionCalls, 0);
+  button.onclick();
+  assert.equal(modal.classList.removed, 'on');
+  assert.equal(actionCalls, 1);
+
+  context.selectedMiniGame = 'coloring';
+  context.showGameFeedback('Saved', 'Close', () => actionCalls++);
+  assert.equal(actionCalls, 1);
 });
 
 test('Russian counted story items use singular, few and many forms', () => {
@@ -85,11 +97,17 @@ test('story math uses varied scenarios and keeps bird questions observational', 
     const prompts = [];
     for (let question = 0; question < 10; question++) {
       const result = vm.runInContext(`getStoryMathQuestion(${activity},${question})`, context);
+      const setting = vm.runInContext(`${question % 2 ? 'STORY_MATH_ALT_SETTINGS' : 'STORY_MATH_SETTINGS'}[${activity}]`, context);
       assert.ok(result.question.en);
       assert.ok(result.question.he);
       assert.ok(result.question.ru);
+      for (const language of ['en', 'he', 'ru']) {
+        const phrase = language === 'ru' ? setting.ru[0].toLocaleUpperCase('ru') + setting.ru.slice(1) : setting[language];
+        assert.ok(result.question[language].includes(phrase), `activity ${activity}, question ${question} uses its setting in ${language}`);
+      }
       assert.ok(result.options.includes(result.answer));
       assert.doesNotMatch(result.question.he, /[A-Za-zА-Яа-яЁё־—]/u, `activity ${activity}, question ${question}`);
+      assert.doesNotMatch(result.question.ru, /(^|[.!?]\s+|:\s+)[а-яё]/u, `Russian sentence must start with a capital: activity ${activity}, question ${question}`);
       prompts.push(result.question.en);
     }
     assert.equal(new Set(prompts).size, 10, `activity ${activity} repeats a story`);
@@ -99,9 +117,88 @@ test('story math uses varied scenarios and keeps bird questions observational', 
     const prompt = vm.runInContext(`getStoryMathQuestion(3,${question}).question.en`, context).toLowerCase();
     assert.doesNotMatch(prompt, /basket|used|share|pack|collect/);
   }
+  assert.match(vm.runInContext('getStoryMathQuestion(0,1).question.he', context), /היו/);
+  assert.doesNotMatch(vm.runInContext('getStoryMathQuestion(0,1).question.he', context), /הוצגו/);
   assert.match(vm.runInContext('getStoryMathQuestion(3,1).question.en', context), /flew away/);
   assert.match(vm.runInContext('getStoryMathQuestion(3,2).question.en', context), /garden areas/);
   assert.match(vm.runInContext('getStoryMathQuestion(3,3).question.en', context), /journal/);
+});
+
+test('Sokoban shows retry feedback when a push makes the box unsolvable', () => {
+  const puzzle = {
+    finished: false,
+    player: { x: 1, y: 3 },
+    box: { x: 2, y: 3 },
+    goal: { x: 1, y: 1 },
+    walls: new Set(['4,3', '3,4']),
+    size: 6,
+    pushes: 0,
+    turns: 0,
+  };
+  let renders = 0;
+  const context = vm.createContext({
+    interactivePuzzle: puzzle,
+    tr: key => key,
+    renderInteractivePuzzle: () => renders++,
+  });
+  vm.runInContext(slice('function sokobanHasSolution(', 'function setupCodeBreaker()'), context);
+  vm.runInContext(slice('function moveSokoban(', 'function selectCodePeg('), context);
+  context.moveSokoban(1, 0);
+  assert.equal(puzzle.finished, true);
+  assert.equal(puzzle.feedback, 'sokobanDeadEnd');
+  assert.equal(puzzle.box.x, 3);
+  assert.equal(puzzle.box.y, 3);
+  assert.equal(renders, 1);
+});
+
+test('riddle answers render without letter or number prefixes', () => {
+  const element = { innerHTML: '' };
+  const context = vm.createContext({
+    currentLanguage: 'he',
+    riddleQuestionIndex: 0,
+    selectedLevel: 0,
+    MINI_GAMES: [{ id: 'riddles', name: 'riddles', icon: '❓' }],
+    createLearningQuestion: () => ({ answer: 'תשובה א', question: 'חידה', options: ['תשובה א', 'תשובה ב', 'תשובה ג', 'תשובה ד'], promptKey: 'riddlePrompt' }),
+    learningGameHasTenQuestions: () => true,
+    getLearningQuestionLabel: () => 'שאלה 1',
+    tr: key => key,
+    $: () => element,
+  });
+  vm.runInContext(slice('function playLearningGame(id,level){', 'function revealLearningHint(){'), context);
+  context.playLearningGame('riddles', 0);
+  assert.match(element.innerHTML, />תשובה א<\/button>/);
+  assert.doesNotMatch(element.innerHTML, /[א-ד]\)\s|[A-D]\)\s|[А-Г]\)\s/);
+});
+
+test('coloring palette includes black and refreshes translated labels when language changes', () => {
+  const colors = vm.createContext({});
+  vm.runInContext(slice('const COLORS=', 'const SIZES='), colors);
+  assert.equal(vm.runInContext("COLORS.includes('#000000')", colors), true);
+
+  const nodes = new Map();
+  for (const selector of ['#language', '#welcomeLanguage', '#profileLanguage', '#privacyLink', '#parentPrivacyLink', '#deleteAccountLink', '#parentDeleteAccountLink', '#auth', '#aSubmit', '#drawIdea', '#paint', '#items', '#games', '#profile', '#parentM', '#gamePurchaseM', '#vipM', '#gameStage']) {
+    nodes.set(selector, { value: '', href: '', textContent: '', style: { display: 'none' }, classList: { contains: name => selector === '#paint' && name === 'on' } });
+  }
+  let palettesRendered = 0, toolsRefreshed = 0;
+  const context = vm.createContext({
+    TEXT: { en: {}, he: {}, ru: {} },
+    currentLanguage: 'en',
+    miniGameScene: 'levels',
+    S: {},
+    authErrorState: false,
+    authStatusState: false,
+    localStorage: { setItem() {} },
+    document: { documentElement: {}, querySelectorAll: () => [] },
+    $: selector => nodes.get(selector) || null,
+    sv() {},
+    tr: key => key,
+    renderPalette: () => palettesRendered++,
+    refreshTools: () => toolsRefreshed++,
+  });
+  vm.runInContext(slice('function setLanguage(language){', '/* ---------- User Isolation & Storage'), context);
+  context.setLanguage('ru');
+  assert.equal(palettesRendered, 1);
+  assert.equal(toolsRefreshed, 1);
 });
 
 test('math exercises render left to right in Hebrew', () => {
@@ -268,11 +365,12 @@ test('code-breaker opens one animated rules screen before activity selection in 
   assert.deepEqual(displayed, ['activities']);
 });
 
-test('code-breaker success feedback is rendered above the board and scrolls into view', () => {
+test('interactive puzzle results use a blocking popup with a game-specific action', () => {
   const renderer = slice('function renderInteractivePuzzle(){', 'function showInteractiveHint(){');
-  assert.match(renderer, /const topSuccess=\['physicsPaths','gridSokoban','codeBreaker'\]\.includes\(id\)/);
-  assert.match(renderer, /<h2>[\s\S]*?\$\{interactiveGamePrompt\(id\)\}<\/p>\$\{topSuccess\?success:''\}<section/);
-  assert.match(renderer, /if\(topSuccess&&interactivePuzzle\.won\)\$\('#gameStage'\)\.scrollTop=0/);
+  assert.match(renderer, /showGameFeedback\(`\$\{tr\('correct'\)\}/);
+  assert.match(renderer, /continueLabel,continueInteractivePuzzle,true/);
+  assert.match(renderer, /showGameFeedback\(interactivePuzzle\.feedback,tr\('puzzleRetry'\)/);
+  assert.match(html, /id="gameFeedbackM" role="dialog" aria-modal="true"/);
 });
 
 test('all other mini games have localized animated demos and continue to activity selection', () => {
@@ -537,13 +635,11 @@ test('coloring picture navigation is below the canvas and translated', () => {
   }
 });
 
-test('Sokoban, path and code-breaker success feedback is shown above the board and resets scroll', () => {
+test('Sokoban, path and code-breaker success feedback is shown in a popup', () => {
   const render = slice('function renderInteractivePuzzle()', 'function showInteractiveHint()');
-  assert.ok(render.indexOf("${topSuccess?success:''}") < render.indexOf('<section class="interactive-puzzle'));
-  assert.match(render, /const topSuccess=\['physicsPaths','gridSokoban','codeBreaker'\]\.includes\(id\)/);
-  assert.match(render, /\$\{topSuccess\?'':success\}/);
-  assert.match(render, /if\(topSuccess&&interactivePuzzle\.won\)\$\('#gameStage'\)\.scrollTop=0/);
-  assert.match(html, /\.sokoban-success\{[^}]*background:#d8fff2[^}]*text-align:center/);
+  assert.match(render, /if\(interactivePuzzle\.won\)\s*\{\s*showGameFeedback/);
+  assert.match(render, /showGameFeedback\(interactivePuzzle\.feedback,tr\('puzzleRetry'\)/);
+  assert.match(html, /#gameFeedbackM\{z-index:30\}/);
 });
 
 test('coloring navigation wraps within the category and stays hidden for photos', () => {
