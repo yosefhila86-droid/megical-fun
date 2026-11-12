@@ -318,6 +318,12 @@ test('Russian science activity label and first garden question use the requested
   assert.doesNotMatch(html, /Какое маленькое садовое животное может поедать тлю с листьев\?/);
 });
 
+test('Russian riddle explorer label is exact and does not split awkwardly', () => {
+  assert.match(html, /riddles:\[[^\]]*'Исследователь загадок'/);
+  assert.match(html, /\.level-choice\.riddle-explorer-level\{[^}]*overflow-wrap:normal;word-break:normal/);
+  assert.match(html, /game\.id==='riddles'&&currentLanguage==='ru'&&i===4\?' riddle-explorer-level'/);
+});
+
 test('bee-pollen question is clear in all languages and keeps the correct answer', () => {
   const scienceQuestions = slice('const SCIENCE_QUESTION_DATA=', 'const SCIENCE_ACTIVITY_DATA=');
   assert.match(scienceQuestions, /\['What do bees carry from one flower to another\?','מה דבורים מעבירות מפרח אחד לפרח אחר\?','Что пчёлы переносят с одного цветка на другой\?'[\s\S]*?'Pollen','אבקה','Пыльца'\]/);
@@ -447,7 +453,7 @@ test('all other mini games have localized animated demos and continue to activit
 test('pastel background is applied across screens and cached for offline use', async () => {
   assert.match(html, /body\{[^}]*background:#fff7e6 url\('\.\/images\/magical-fun-background\.png'\)/);
   assert.match(html, /\.screen:not\(#welcome\)\{background-color:rgba\(255,247,230,\.15\)\}/);
-  assert.match(html, /@media\(min-aspect-ratio:1\/1\)\{body\{background-size:auto 100%/);
+  assert.match(html, /@media\(min-aspect-ratio:1\/1\)\{body\{background-size:100% 100%;background-color:#fff7e6\}\}/);
   assert.match(html, /#welcome\{[^}]*background:radial-gradient\([^}]*#ffffff22/i);
   assert.match(html, /#cv\{[^}]*background:#fff/);
   assert.match(html, /\.interactive-puzzle\{[^}]*background:#fff/);

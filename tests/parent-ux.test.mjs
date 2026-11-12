@@ -30,6 +30,53 @@ test('translation keys and interpolation placeholders are consistent across lang
   }
 });
 
+test('coloring studio keeps its category cards and navigation actions in a scrollable layout', () => {
+  const content = { innerHTML: '', classList: { remove() {} } };
+  const context = vm.createContext({
+    selectedMiniGame: 'coloring',
+    currentLanguage: 'ru',
+    CATS: [{ id: 'nature', icon: '🌿', vip: false }, { id: 'animals', icon: '🐾', vip: false }],
+    MINI_GAMES: [{ id: 'coloring', icon: '🎨', name: 'coloring' }],
+    miniGameScene: '',
+    tr: key => key,
+    categoryName: id => id,
+    gameUnlocked: () => true,
+    launchFreeDrawFromStudio() {},
+    go() {},
+    openCat() {},
+    $: () => content,
+  });
+  vm.runInContext(source('function renderGameLevels(){', 'const WORD_SEARCH_LEVELS='), context);
+  context.renderGameLevels();
+  assert.match(content.innerHTML, /class="grid coloring-category-grid"/);
+  assert.match(content.innerHTML, /class="coloring-level-actions"/);
+  assert.ok(content.innerHTML.indexOf('coloring-category-grid') < content.innerHTML.indexOf('coloring-level-actions'));
+  assert.equal((content.innerHTML.match(/<button/g) || []).length, 5);
+  assert.match(html, /\.screen\{[^}]*min-height:0;[^}]*overflow-y:auto/);
+  assert.match(html, /#gameStage\.screen\.on\{[^}]*overflow-y:auto;[^}]*padding-bottom:calc\(24px \+ env\(safe-area-inset-bottom\)\)/);
+  assert.match(html, /\.coloring-level-actions\{display:grid;grid-template-columns:repeat\(auto-fit,minmax\(min\(100%,180px\),1fr\)\)/);
+});
+
+test('space-station riddle uses a unique meteor question with its correct answer', () => {
+  const context = vm.createContext({ TEXT: { en: {}, he: {}, ru: {} } });
+  vm.runInContext(`${source('const ESCAPE_RIDDLE_BANK=', 'function createEscapeRiddlesLegacy(')}\nglobalThis.testBank=ESCAPE_RIDDLE_BANK;`, context);
+  for (const [language, expectedAnswer, expectedPrompt] of [
+    ['en', 'A meteor', 'A small space rock burns as it enters Earth’s atmosphere, making a bright streak of light. What is that streak called?'],
+    ['he', 'מטאור', 'סלע קטן מהחלל נשרף כשהוא נכנס לאטמוספרה של כדור הארץ, ונראה כפס אור בשמיים. איך נקרא פס האור?'],
+    ['ru', 'Метеор', 'Небольшой космический камень сгорает в атмосфере Земли и оставляет яркую полосу света. Как называется эта полоса?'],
+  ]) {
+    const riddle = context.createEscapeRiddles(language, 2)[0];
+    assert.equal(riddle.prompt, expectedPrompt);
+    assert.equal(riddle.options[riddle.answer], expectedAnswer);
+    const allEscapePrompts = Object.values(context.testBank).flatMap(activities => activities.flatMap(riddles => riddles.map(([prompt]) => prompt)));
+    assert.equal(allEscapePrompts.filter(prompt => prompt === expectedPrompt).length, 1);
+    assert.doesNotMatch(riddle.prompt, /shine in the night sky|מנצנץ בשמי הלילה|мерцаю на ночном небе/i);
+    assert.ok(riddle.explanation);
+    assert.equal(riddle.options.length, 4);
+    assert.equal(new Set(riddle.options).size, 4);
+  }
+});
+
 test('each escape-room activity has its own themed room and five localized key clues', () => {
   for (const language of ['en', 'he', 'ru']) {
     const rooms = vm.createContext({});
