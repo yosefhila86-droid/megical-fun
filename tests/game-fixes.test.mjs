@@ -504,13 +504,32 @@ test('multi-stage games expose resume controls and restore saved activity state'
   assert.match(html, /continueGameProgress:'Продолжить: \{activity\}'/);
 
   const gameContent = { innerHTML: 'Question 4', className: 'quiz' };
-  const feedback = { classList: { contains: () => false } };
-  const context = vm.createContext({
-    $: (selector) => selector === '#gameContent' ? gameContent : feedback,
-    closeM() {},
-    showGameFeedback() {},
-  });
-  vm.runInContext(`let selectedMiniGame='math',selectedLevel=3,miniGameScene='play';
+  const feedback = {
+    active: false,
+    classList: { contains: () => feedback.active },
+    message: { textContent: 'Correct!' },
+    action: { textContent: 'Next' },
+    icon: { textContent: '🎉' },
+  };
+  const storage = new Map();
+  const setupContext = () => {
+    const restoredContent = { innerHTML: gameContent.innerHTML, className: gameContent.className };
+    const context = vm.createContext({
+      $: (selector) => ({
+        '#gameContent': restoredContent,
+        '#gameFeedbackM': feedback,
+        '#gameFeedbackMessage': feedback.message,
+        '#gameFeedbackAction': feedback.action,
+        '#gameFeedbackIcon': feedback.icon,
+      })[selector] || null,
+      localStorage: { getItem: key => storage.get(key) || null, setItem: (key, value) => storage.set(key, value) },
+      btoa, atob, MINI_GAMES: [{ id: 'math' }, { id: 'gridSokoban' }],
+      activityNames: () => Array(12).fill('activity'),
+      closeM() {},
+      showGameFeedback: (message, label, action) => { context.restoredAction = action },
+    });
+    vm.runInContext(`let currentUserId='account:test',currentLanguage='en';
+    let selectedMiniGame='math',selectedLevel=3,miniGameScene='play';
     let genericAnswer='12',riddleQuestionIndex=4,questionHintCount=1,gameFeedbackAction=null;
     let selectedPathLevel=0,selectedBoxLevel=2,selectedRailwayLevel=0,selectedWordSearchLevel=0,selectedMagneticStage=0;
     let interactivePuzzle={turns:7,walls:new Set(['2,3'])},puzzleTiles=[],puzzleImage='',puzzleSelected=-1,puzzleImages=[],puzzleImageIndex=0;
@@ -518,29 +537,55 @@ test('multi-stage games expose resume controls and restore saved activity state'
     let traceLetterIndex=0,traceDistance=0,traceHasInk=false,memoryCards=[],memoryOpen=[],memoryMatched=new Set();
     let escapeRoomIndex=0,escapeRoomSolved=false,escapeRoomStarEarned=false,escapeRoomAnswer='',escapeRoomAnswerIndex=-1,escapeRoomExplanation='',escapeRoomPhase='riddles',escapeKeyFound=false,escapeKeyFeedback='';
     let wordSearchPuzzle=null,magneticMaze=null;
+    function learningGameHasTenQuestions(){return true}
+    function traceLetterGroups(){return Array.from({length:12},()=>Array(10).fill('A'))}
+    function retryLearningAnswer(){} function nextRiddleQuestion(){riddleQuestionIndex++} function advanceGameActivity(){}
+    function nextPuzzlePicture(){} function nextPuzzleActivity(){} function clearTrace(){} function nextTraceLetter(){}
+    function nextEscapeRoom(){} function enterEscapeKeyRoom(){} function continueInteractivePuzzle(){}
+    function startInteractivePuzzle(){} function clearWordSearchSelection(){} function renderWordSearchLevels(){}
+    function startMagneticMaze(){} function renderMagneticMazeStages(){}
     function go(id){globalThis.lastScreen=id}
     ${captureSource}
     globalThis.saveProgress=saveMiniGameProgress;
     globalThis.restoreProgress=restoreMiniGameProgress;
-  `, context);
+    globalThis.encodeProgress=encodeMiniGameProgressValue;
+    globalThis.decodeProgress=decodeMiniGameProgressValue;
+    `, context);
+    context.content = restoredContent;
+    return context;
+  };
+  const context = setupContext();
+  feedback.active = true;
   context.saveProgress();
+  feedback.active = false;
   vm.runInContext(`riddleQuestionIndex=8;genericAnswer='changed';questionHintCount=0;`, context);
-  gameContent.innerHTML = 'Different game';
-  assert.equal(context.restoreProgress('math', 3), true);
-  assert.equal(vm.runInContext('riddleQuestionIndex', context), 4);
-  assert.equal(vm.runInContext('genericAnswer', context), '12');
-  assert.equal(vm.runInContext('questionHintCount', context), 1);
-  assert.equal(gameContent.innerHTML, 'Question 4');
-  assert.equal(context.lastScreen, 'gameStage');
+  context.content.innerHTML = 'Different game';
+  const reloadedContext = setupContext();
+  vm.runInContext(`loadMiniGameProgress();`, reloadedContext);
+  vm.runInContext(`currentUserId='account:other';loadMiniGameProgress();`, reloadedContext);
+  assert.equal(reloadedContext.restoreProgress('math', 3), false, 'progress is isolated by account');
+  vm.runInContext(`currentUserId='account:test';loadMiniGameProgress();`, reloadedContext);
+  assert.equal(reloadedContext.restoreProgress('math', 3), true);
+  assert.equal(vm.runInContext('riddleQuestionIndex', reloadedContext), 4);
+  assert.equal(vm.runInContext('genericAnswer', reloadedContext), '12');
+  assert.equal(vm.runInContext('questionHintCount', reloadedContext), 1);
+  assert.equal(reloadedContext.content.innerHTML, 'Question 4');
+  assert.equal(reloadedContext.lastScreen, 'gameStage');
+  assert.equal(typeof reloadedContext.restoredAction, 'function');
+  reloadedContext.restoredAction();
+  assert.equal(vm.runInContext('riddleQuestionIndex', reloadedContext), 5, 'feedback action survives reload');
+  const encoded = reloadedContext.encodeProgress(vm.runInContext('new Uint8ClampedArray([0,128,255])', reloadedContext));
+  assert.deepEqual(Array.from(reloadedContext.decodeProgress(encoded)), [0, 128, 255]);
 
-  vm.runInContext(`selectedMiniGame='gridSokoban';selectedLevel=2;miniGameScene='play';interactivePuzzle={turns:9,walls:new Set(['3,4'])};`, context);
-  gameContent.innerHTML = 'Sokoban board';
-  context.saveProgress();
-  vm.runInContext(`interactivePuzzle.turns=0;interactivePuzzle.walls.clear();`, context);
-  assert.equal(context.restoreProgress('gridSokoban', 2, 1), false, 'a different stage starts fresh');
-  assert.equal(context.restoreProgress('gridSokoban', 2, 2), true);
-  assert.equal(vm.runInContext('interactivePuzzle.turns', context), 9);
-  assert.deepEqual(Array.from(vm.runInContext('interactivePuzzle.walls', context)), ['3,4']);
+  vm.runInContext(`selectedMiniGame='gridSokoban';selectedLevel=2;miniGameScene='play';interactivePuzzle={turns:9,walls:new Set(['3,4'])};`, reloadedContext);
+  reloadedContext.content.innerHTML = 'Sokoban board';
+  reloadedContext.saveProgress();
+  const stageReloadedContext = setupContext();
+  vm.runInContext(`loadMiniGameProgress();`, stageReloadedContext);
+  assert.equal(stageReloadedContext.restoreProgress('gridSokoban', 2, 1), false, 'a different stage starts fresh');
+  assert.equal(stageReloadedContext.restoreProgress('gridSokoban', 2, 2), true);
+  assert.equal(vm.runInContext('interactivePuzzle.turns', stageReloadedContext), 9);
+  assert.deepEqual(Array.from(vm.runInContext('interactivePuzzle.walls', stageReloadedContext)), ['3,4']);
 });
 
 test('pattern activities use symbols that match each activity theme', () => {
