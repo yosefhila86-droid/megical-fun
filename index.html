@@ -205,6 +205,19 @@ video{width:100%;max-width:420px;border-radius:16px;background:#222;display:bloc
   .paint-actions button{width:auto;flex:1 1 calc(33.333% - 4px);min-width:84px}
   .paint-zoom-tools{grid-column:1;grid-row:7;width:min(100%,360px);justify-self:center}
 }
+@media(max-height:700px){
+  .paint-workspace{grid-template-rows:max-content max-content max-content minmax(0,1fr) max-content max-content max-content}
+  .paint-workspace>.tools button{padding:6px 8px}
+  .paint-workspace>.sizes .bs{padding:3px 2px}
+  .paint-workspace>.sizes .bs .dw{height:16px}
+  .paint-workspace>.hint{font-size:11px;min-height:12px;margin:0}
+  .paint-canvas-wrap{width:auto;height:100%;max-width:100%;max-height:100%;justify-self:center}
+  .paint-item-nav{margin-top:0}
+  .paint-item-nav button{padding:4px 6px}
+  .paint-actions button{padding:4px 3px}
+  .paint-zoom-tools button{padding:4px 6px}
+  #paint>.paint-palette{max-height:90px}
+}
 .rail-status{min-height:22px}
 .code-row,.code-palette{display:flex;justify-content:center;align-items:center;gap:7px;flex-wrap:wrap;margin:12px auto}
 .code-peg{width:48px;height:48px;padding:0;border:3px solid #d9ccff;border-radius:50%;font-size:25px}

@@ -1,6 +1,6 @@
 'use strict';
 
-const CACHE_NAME='magical-fun-shell-v26-coloring-no-overlap';
+const CACHE_NAME='magical-fun-shell-v28-coloring-fit-gap';
 const APP_ROOT=new URL('./',self.registration.scope);
 const APP_SHELL=[
   APP_ROOT.href,
