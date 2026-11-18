@@ -45,6 +45,15 @@ test('letter tracing keeps its guide without incorrect direction arrows', () => 
   assert.doesNotMatch(html, /\.trace-directions/);
 });
 
+test('Hebrew cursive tracing uses a bundled handwriting font', () => {
+  const fontPattern = /@font-face\{[^}]*font-family:'Gveret Levin'[^}]*src:url\('\.\/fonts\/GveretLevin-Regular\.ttf'\)/;
+  assert.match(html, fontPattern);
+  const trace = slice('function renderLetterStyleSelection(level){', 'function clearTrace()');
+  assert.match(trace, /hebrew-cursive-preview/);
+  assert.match(trace, /document\.fonts\.load\('220px "Gveret Levin"'/);
+  assert.match(trace, /guide\.font=.*"Gveret Levin",cursive/);
+});
+
 test('game feedback stays open until its action is selected and excludes coloring', () => {
   const modal = { classList: { add(value) { this.added = value; }, remove(value) { this.removed = value; } } };
   const title = { textContent: '' }, message = { textContent: '' }, icon = { textContent: '' };
@@ -126,6 +135,43 @@ test('all 120 story-math questions use the supplied multilingual stories and exa
   assert.match(vm.runInContext('getStoryMathQuestion(6,9).question.he', context), /28 הזמנות.*7 הזמנות/);
   assert.equal(vm.runInContext('getStoryMathQuestion(6,9).answer', context), '21');
   assert.match(vm.runInContext('getStoryMathQuestion(11,6).question.he', context), /15 בלונים אדומים ו-15 בלונים כחולים.*שליש/);
+});
+
+test('ten-question games offer previous-question navigation and do not repeat rewards', () => {
+  const element = { innerHTML: '' };
+  let renders = 0, rewards = 0;
+  const buttons = [];
+  const context = vm.createContext({
+    selectedMiniGame: 'math',
+    selectedLevel: 0,
+    riddleQuestionIndex: 1,
+    learningAnsweredQuestions: new Set(),
+    learningGameHasTenQuestions: () => true,
+    getLearningQuestionLabel: () => 'Question 2 of 10',
+    createLearningQuestion: () => ({ answer: '2', question: '1 + 1', options: ['1','2','3','4'], promptKey: 'mathPrompt' }),
+    MINI_GAMES: [{ id: 'math', name: 'math', icon: '+' }],
+    currentLanguage: 'he',
+    tr: key => key === 'previousQuestion' ? '→ שאלה קודמת' : key,
+    playLearningGame: () => { renders++; },
+    clearLearningHint() {},
+    document: { querySelectorAll: () => buttons },
+    queueProfileStarReward: () => { rewards++; },
+    newProfileRewardId: () => 'id',
+    showGameFeedback() {},
+    nextRiddleQuestion() {},
+    genericAnswer: '2',
+    $: () => element,
+  });
+  vm.runInContext(slice('function playLearningGame(id,level){', 'function revealLearningHint(){'), context);
+  context.playLearningGame('math', 0);
+  assert.match(element.innerHTML, /onclick="previousLearningQuestion\(\)"/);
+  vm.runInContext(slice('function previousLearningQuestion(){', 'function retryLearningAnswer(){'), context);
+  vm.runInContext(slice('function answerLearningGame(button){', 'function nextRiddleQuestion(){'), context);
+  context.previousLearningQuestion();
+  assert.equal(vm.runInContext('riddleQuestionIndex', context), 0);
+  context.answerLearningGame({ dataset: { answer: '2' } });
+  context.answerLearningGame({ dataset: { answer: '2' } });
+  assert.equal(rewards, 1);
 });
 
 test('Sokoban shows retry feedback when a push makes the box unsolvable', () => {
