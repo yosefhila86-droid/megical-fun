@@ -712,7 +712,7 @@ test('pastel background is applied across screens and cached for offline use', a
   assert.match(html, /#welcome\{[^}]*background:radial-gradient\([^}]*#ffffff22/i);
   assert.match(html, /#cv\{[^}]*background:#fff/);
   assert.match(html, /\.interactive-puzzle\{[^}]*background:#fff/);
-  assert.match(serviceWorker, /magical-fun-shell-v22/);
+  assert.match(serviceWorker, /magical-fun-shell-v25-short-coloring-layout/);
   assert.match(serviceWorker, /new URL\('images\/magical-fun-background\.png',APP_ROOT\)\.href/);
   await access(new URL('../images/magical-fun-background.png', import.meta.url));
 });
@@ -778,10 +778,13 @@ test('coloring palette stays docked above navigation and scrolls horizontally', 
   assert.match(html, /#paint>\.paint-palette\{[^}]*flex-direction:column[^}]*overflow-y:auto/);
   assert.match(html, /\.paint-color-swatches\{[^}]*flex-wrap:nowrap[^}]*justify-content:safe center[^}]*overflow-x:auto/);
   assert.match(html, /\.paint-canvas-wrap\{[^}]*grid-column:1[^}]*width:min\(100%,400px\)[^}]*aspect-ratio:1/);
+  assert.match(html, /\.paint-canvas-wrap\{[^}]*width:min\(100%,360px,max\(120px,calc\(100vh - 540px\)\)\);width:min\(100%,360px,max\(120px,calc\(100dvh - 540px\)\)\)/);
   assert.doesNotMatch(html, /\.paint-canvas-wrap\{[^}]*52dvh/);
   assert.match(html, /\.paint-workspace\{display:grid[^}]*grid-template-columns:minmax\(0,1fr\) minmax\(76px,128px\)/);
   assert.match(html, /\.paint-actions button\{margin:0;padding:6px 4px;font-size:12px/);
   assert.match(html, /\.paint-actions\{grid-column:2;grid-row:4\/span 3;flex-direction:column[^}]*gap:3px/);
+  assert.match(html, /@media\(max-width:600px\),\(max-height:700px\)\{[\s\S]*?\.paint-actions\{grid-column:1;grid-row:6;flex-direction:row/);
+  assert.match(html, /@media\(max-width:600px\),\(max-height:700px\)\{[\s\S]*?\.paint-canvas-wrap\{grid-column:1;grid-row:4;width:min\(100%,360px,max\(120px,calc\(100vh - 540px\)\)\)/);
 
   const palette = { innerHTML: '' };
   const context = vm.createContext({
@@ -893,6 +896,49 @@ test('coloring picture navigation is below the canvas and translated', () => {
     for (const key of ['basicColors', 'createdColors', 'noCreatedColors']) {
       assert.ok(translations.TEXT[language][key]);
     }
+  }
+});
+
+test('picture puzzle success stays on screen and offers next and replay actions', () => {
+  const gameContent = { innerHTML: '' };
+  const board = { innerHTML: '' };
+  const status = { textContent: '' };
+  const actions = { innerHTML: '' };
+  const elements = new Map([
+    ['#gameContent', gameContent], ['#puzzleBoard', board], ['#puzzleStatus', status], ['#puzzleActions', actions],
+  ]);
+  let successPopups = 0;
+  const context = vm.createContext({
+    selectedLevel: 0,
+    currentLanguage: 'he',
+    CATS: [],
+    activityNames: () => Array(12).fill('Activity'),
+    tr: key => translations.TEXT.he[key] || key,
+    $: selector => elements.get(selector),
+    showGameFeedback: () => successPopups++,
+  });
+  vm.runInContext(`let puzzleTiles=[1,0,2,3,4,5],puzzleImage='images/one.png',puzzleSelected=-1,
+    puzzleImages=['images/one.png','images/two.png'],puzzleImageIndex=0;
+    ${slice('const PUZZLE_CATEGORIES=', 'let differenceFound=')}`, context);
+
+  context.renderPuzzlePicture();
+  context.movePuzzlePiece(0);
+  context.movePuzzlePiece(1);
+
+  assert.equal(status.textContent, translations.TEXT.he.puzzleComplete);
+  assert.match(actions.innerHTML, /nextPuzzlePicture\(\)/);
+  assert.match(actions.innerHTML, /replayPuzzlePicture\(\)/);
+  assert.match(actions.innerHTML, new RegExp(translations.TEXT.he.puzzleReplay));
+  assert.equal(successPopups, 0);
+  assert.match(board.innerHTML, /disabled/);
+
+  context.replayPuzzlePicture();
+  assert.equal(vm.runInContext('puzzleImageIndex', context), 0);
+  assert.equal(vm.runInContext('puzzleImage', context), 'images/one.png');
+  assert.equal(vm.runInContext('puzzleTiles.every((tile,index)=>tile===index)', context), false);
+  for (const language of ['en', 'he', 'ru']) {
+    assert.ok(translations.TEXT[language].puzzleComplete);
+    assert.ok(translations.TEXT[language].puzzleReplay);
   }
 });
 
