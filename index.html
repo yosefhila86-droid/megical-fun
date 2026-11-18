@@ -1667,6 +1667,9 @@ async function enterAccount(user){
     S.vip=data.vip===true;
     S.allGamesUnlocked=data.all_games===true;
     S.unlockedGames=Array.isArray(data.unlocked_games)?data.unlocked_games:[];
+    if(S.vip||S.allGamesUnlocked){
+      clearTimeout(billingRefreshTimer);billingRefreshTimer=null;
+    }
     sv();
     if($('#games').classList.contains('on'))renderMiniGames();
     if($('#parentM').classList.contains('on'))renderParentDashboard();
@@ -1676,7 +1679,7 @@ async function enterAccount(user){
     toast(tr('entitlementsLoadFailed'));
   });
   void syncProfileNow();
-  if(BILLING_ENABLED)restorePurchases(true);
+  if(BILLING_ENABLED&&!(S.vip||S.allGamesUnlocked))restorePurchases(true);
 }
 async function authGo(){
   if(authBusy)return;
@@ -4919,7 +4922,7 @@ async function initializeBilling(){
     if(!result||typeof result.enabled!=='boolean')throw new Error('Invalid billing availability response.');
     BILLING_ENABLED=result.enabled;
     repaintBilling();
-    if(BILLING_ENABLED&&currentAuthUserId)await restorePurchases(true);
+    if(BILLING_ENABLED&&currentAuthUserId&&!(S.vip||S.allGamesUnlocked))await restorePurchases(true);
   }catch(error){
     console.error('Could not determine whether purchases are available:',error);
   }
@@ -4960,6 +4963,11 @@ async function restorePurchases(quiet=false){
   if(!BILLING_ENABLED||billingBusy)return false;
   const plugins=billingPlugins(),userId=currentAuthUserId;
   if(!userId||!supabaseClient){if(!quiet)toast(billingText('signIn'));return false}
+  if(S.vip||S.allGamesUnlocked){
+    if(billingRefreshTimer!==null)clearTimeout(billingRefreshTimer);
+    billingRefreshTimer=null;
+    return true;
+  }
   if(!plugins||!plugins.BillingCatalog){if(!quiet)toast(billingText('unavailable'));return false}
   billingBusy=true;
   try{
@@ -4974,8 +4982,11 @@ async function restorePurchases(quiet=false){
     return true;
   }catch(error){
     if(userId===currentAuthUserId){
-      clearBillingAccess();repaintBilling();toast(billingText('error'));
-      billingRefreshTimer=setTimeout(()=>restorePurchases(true),30000);
+      if(!quiet)toast(billingText('error'));
+      if(billingRefreshTimer!==null)clearTimeout(billingRefreshTimer);
+      billingRefreshTimer=setTimeout(()=>{
+        if(currentAuthUserId===userId&&!(S.vip||S.allGamesUnlocked)&&document.visibilityState==='visible')restorePurchases(true);
+      },300000);
     }
     console.error('Subscription verification failed:',error);return false;
   }finally{billingBusy=false}
