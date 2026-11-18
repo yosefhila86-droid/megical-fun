@@ -1,6 +1,6 @@
 'use strict';
 
-const CACHE_NAME='magical-fun-shell-v22-hebrew-cursive';
+const CACHE_NAME='magical-fun-shell-v25-short-coloring-layout';
 const APP_ROOT=new URL('./',self.registration.scope);
 const APP_SHELL=[
   APP_ROOT.href,

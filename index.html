@@ -196,10 +196,10 @@ video{width:100%;max-width:420px;border-radius:16px;background:#222;display:bloc
 .rail-piece-button.connected,.rail-piece-button.disconnected{box-shadow:none}
 .rail-depot{position:relative;z-index:4;display:grid;place-items:center;width:90%;height:84%;border:4px solid #fff;border-radius:10px;background:var(--train-color);font-size:clamp(14px,4vw,25px);box-shadow:0 4px 0 #332d2566}
 .rail-tree,.rail-fence{position:absolute;z-index:2;color:#fff7d8;opacity:.8;font-size:clamp(10px,2vw,16px)}
-@media(max-width:600px){
+@media(max-width:600px),(max-height:700px){
   .paint-workspace{grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto auto auto auto auto auto;column-gap:0;align-content:start}
   .paint-workspace>.tools:not(.paint-zoom-tools),.paint-workspace>.sizes,.paint-workspace>.hint{grid-column:1}
-  .paint-canvas-wrap{grid-column:1;grid-row:4;width:min(100%,360px,max(200px,calc(100dvh - 540px)));justify-self:center}
+  .paint-canvas-wrap{grid-column:1;grid-row:4;width:min(100%,360px,max(120px,calc(100vh - 540px)));width:min(100%,360px,max(120px,calc(100dvh - 540px)));justify-self:center}
   .paint-item-nav{grid-column:1;grid-row:5;width:min(100%,360px)}
   .paint-actions{grid-column:1;grid-row:6;flex-direction:row;align-self:auto;width:min(100%,360px);margin:2px auto;gap:4px}
   .paint-actions button{width:auto;flex:1 1 calc(33.333% - 4px);min-width:84px}
@@ -294,6 +294,7 @@ video{width:100%;max-width:420px;border-radius:16px;background:#222;display:bloc
 .escape-key-clues li{margin:5px 0}
 .escape-key-feedback{min-height:28px;margin:10px auto;font-weight:800}
 .game-board{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));gap:4px;width:min(78vw,320px);aspect-ratio:1;margin:14px auto;direction:ltr}
+.puzzle-actions{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;margin:12px auto}
 .word-search-board{direction:ltr;display:grid;grid-template-columns:repeat(var(--word-grid-size),minmax(0,1fr));gap:3px;width:min(94vw,480px);margin:14px auto;padding:8px;background:#eee8ff;border-radius:16px}
 .word-search-cell{display:grid;place-items:center;min-width:0;aspect-ratio:1;padding:0;border:2px solid #ded5f5;border-radius:8px;background:#fff;color:#3b2a66;font-size:clamp(14px,5vw,25px);font-weight:800;line-height:1}
 .word-search-cell.selected{background:#ffdf80;border-color:#f0a800}
@@ -789,9 +790,9 @@ Object.assign(TEXT.ru,{unlockAll:'Подписка на все 17 игр - $14.9
 Object.assign(TEXT.en,{miniGames:'🎮 17 Mini Games'});
 Object.assign(TEXT.he,{miniGames:'🎮 17 משחקי מיני'});
 Object.assign(TEXT.ru,{miniGames:'🎮 17 мини-игр'});
-Object.assign(TEXT.en,{puzzlePrompt:'Tap a piece and watch it highlight, then tap another piece to swap them. Complete every picture in the activity!',puzzlePictureProgress:'Picture {n} of {total}',puzzleSelection:'Piece selected. Choose another piece to swap.',puzzleNextPicture:'Next picture',puzzleNextActivity:'Next activity',puzzleActivityList:'Back to activities',railwayManualSwitch:'Set each turn manually and switch it back to straight after the train passes.',traceProgress:'Letter {n} of {total}'});
-Object.assign(TEXT.he,{puzzlePrompt:'בחרו חלק וראו שהוא מסומן, ואז בחרו חלק נוסף כדי להחליף ביניהם. השלימו את כל התמונות בפעילות!',puzzlePictureProgress:'תמונה {n} מתוך {total}',puzzleSelection:'החלק סומן. בחרו חלק נוסף כדי להחליף ביניהם.',puzzleNextPicture:'לתמונה הבאה',puzzleNextActivity:'לפעילות הבאה',puzzleActivityList:'חזרה לפעילויות',railwayManualSwitch:'שנו כל פנייה ידנית והחזירו את המתג לישר אחרי שהרכבת עוברת.',traceProgress:'אות {n} מתוך {total}'});
-Object.assign(TEXT.ru,{puzzlePrompt:'Нажмите на деталь — она выделится, затем выберите другую, чтобы поменять их местами. Соберите все картинки в задании!',puzzlePictureProgress:'Картинка {n} из {total}',puzzleSelection:'Деталь выбрана. Выберите другую деталь для обмена.',puzzleNextPicture:'Следующая картинка',puzzleNextActivity:'Следующее задание',puzzleActivityList:'К списку заданий',railwayManualSwitch:'Переключайте каждый поворот вручную и возвращайте стрелку прямо после поезда.',traceProgress:'Буква {n} из {total}'});
+Object.assign(TEXT.en,{puzzlePrompt:'Tap a piece and watch it highlight, then tap another piece to swap them. Complete every picture in the activity!',puzzlePictureProgress:'Picture {n} of {total}',puzzleSelection:'Piece selected. Choose another piece to swap.',puzzleComplete:'You assembled the picture!',puzzleReplay:'Assemble this picture again',puzzleNextPicture:'Next picture',puzzleNextActivity:'Next activity',puzzleActivityList:'Back to activities',railwayManualSwitch:'Set each turn manually and switch it back to straight after the train passes.',traceProgress:'Letter {n} of {total}'});
+Object.assign(TEXT.he,{puzzlePrompt:'בחרו חלק וראו שהוא מסומן, ואז בחרו חלק נוסף כדי להחליף ביניהם. השלימו את כל התמונות בפעילות!',puzzlePictureProgress:'תמונה {n} מתוך {total}',puzzleSelection:'החלק סומן. בחרו חלק נוסף כדי להחליף ביניהם.',puzzleComplete:'הרכבתם את התמונה בהצלחה!',puzzleReplay:'להרכיב את התמונה שוב',puzzleNextPicture:'לתמונה הבאה',puzzleNextActivity:'לפעילות הבאה',puzzleActivityList:'חזרה לפעילויות',railwayManualSwitch:'שנו כל פנייה ידנית והחזירו את המתג לישר אחרי שהרכבת עוברת.',traceProgress:'אות {n} מתוך {total}'});
+Object.assign(TEXT.ru,{puzzlePrompt:'Нажмите на деталь — она выделится, затем выберите другую, чтобы поменять их местами. Соберите все картинки в задании!',puzzlePictureProgress:'Картинка {n} из {total}',puzzleSelection:'Деталь выбрана. Выберите другую деталь для обмена.',puzzleComplete:'Картинка собрана!',puzzleReplay:'Собрать эту картинку ещё раз',puzzleNextPicture:'Следующая картинка',puzzleNextActivity:'Следующее задание',puzzleActivityList:'К списку заданий',railwayManualSwitch:'Переключайте каждый поворот вручную и возвращайте стрелку прямо после поезда.',traceProgress:'Буква {n} из {total}'});
 Object.assign(TEXT.ru,{volume:'Громкость',musicToggle:'Включить или выключить музыку',drawingArea:'Область рисования'});
 Object.assign(TEXT.en,{privacyPolicyLink:'Privacy policy',termsOfUseLink:'Terms of use',connectedEmail:'Connected email',accessibilityTitle:'Accessibility',largeText:'Larger text',highContrast:'High contrast',reduceMotion:'Reduce motion',letterStylePrompt:'Which letter style would you like to practise?',letterStyleUpper:'Uppercase letters',letterStyleLower:'Lowercase letters',letterStylePrint:'Block letters',letterStyleCursive:'Cursive letters'});
 Object.assign(TEXT.he,{privacyPolicyLink:'מדיניות פרטיות',termsOfUseLink:'תנאי שימוש',connectedEmail:'כתובת המייל המחוברת',accessibilityTitle:'נגישות',largeText:'טקסט גדול',highContrast:'ניגודיות גבוהה',reduceMotion:'הפחתת אנימציות',letterStylePrompt:'באילו סוגי אותיות תרצו לתרגל?',letterStyleUpper:'אותיות גדולות',letterStyleLower:'אותיות קטנות',letterStylePrint:'אותיות דפוס',letterStyleCursive:'אותיות כתב'});
@@ -1920,7 +1921,7 @@ function nextPuzzleActivity(){
   launchMiniGame('puzzle',selectedLevel+1);
 }
 function renderPuzzlePicture(){
-  $('#gameContent').innerHTML=`<h2 data-i18n="puzzle">🧩 ${tr('puzzle')}</h2><p>${tr('puzzlePictureProgress',{n:puzzleImageIndex+1,total:puzzleImages.length})}</p><p data-i18n="puzzlePrompt">${tr('puzzlePrompt')}</p><div id="puzzleBoard" class="game-board"></div><p id="puzzleStatus" class="play-status" aria-live="polite"></p>`;
+  $('#gameContent').innerHTML=`<h2 data-i18n="puzzle">🧩 ${tr('puzzle')}</h2><p>${tr('puzzlePictureProgress',{n:puzzleImageIndex+1,total:puzzleImages.length})}</p><p data-i18n="puzzlePrompt">${tr('puzzlePrompt')}</p><div id="puzzleBoard" class="game-board"></div><p id="puzzleStatus" class="play-status" aria-live="polite"></p><div id="puzzleActions" class="puzzle-actions"></div>`;
   drawPuzzle();
   if(puzzleTiles.every((tile,index)=>tile===index))renderPuzzleSuccess();
 }
@@ -1929,7 +1930,7 @@ function drawPuzzle(){
   if(!board)return;
   board.innerHTML=puzzleTiles.map((tile,index)=>{
     const row=Math.floor(tile/3),col=tile%3;
-    return `<button class="puzzle-piece${puzzleSelected===index?' selected':''}" aria-label="Puzzle piece ${tile+1}" aria-pressed="${puzzleSelected===index}" onclick="movePuzzlePiece(${index})" style="--puzzle-image:url('${puzzleImage}');--puzzle-position:${col*50}% ${row*100}%"></button>`;
+    return `<button class="puzzle-piece${puzzleSelected===index?' selected':''}" aria-label="Puzzle piece ${tile+1}" aria-pressed="${puzzleSelected===index}" onclick="movePuzzlePiece(${index})" ${puzzleTiles.every((piece,position)=>piece===position)?'disabled':''} style="--puzzle-image:url('${puzzleImage}');--puzzle-position:${col*50}% ${row*100}%"></button>`;
   }).join('');
 }
 function movePuzzlePiece(index){
@@ -1945,12 +1946,16 @@ function renderPuzzleSuccess(){
   const status=$('#puzzleStatus');
   if(!status)return;
   const hasNextPicture=puzzleImageIndex+1<puzzleImages.length;
-  showGameFeedback(tr('done'),hasNextPicture?tr('puzzleNextPicture'):tr(puzzleActivityAdvanceLabel()),
-    hasNextPicture?nextPuzzlePicture:nextPuzzleActivity,true);
+  status.textContent=tr('puzzleComplete');
+  $('#puzzleActions').innerHTML=`<button class="alt" onclick="${hasNextPicture?'nextPuzzlePicture()':'nextPuzzleActivity()'}">${tr(hasNextPicture?'puzzleNextPicture':puzzleActivityAdvanceLabel())}</button><button class="ghost" onclick="replayPuzzlePicture()">${tr('puzzleReplay')}</button>`;
 }
 function nextPuzzlePicture(){
   if(!puzzleTiles.every((tile,index)=>tile===index)||puzzleImageIndex+1>=puzzleImages.length)return;
   puzzleImageIndex++;
+  startPuzzlePicture();
+}
+function replayPuzzlePicture(){
+  if(!puzzleTiles.every((tile,index)=>tile===index))return;
   startPuzzlePicture();
 }
 
@@ -2347,11 +2352,12 @@ function restoreMiniGameProgress(id,level,stage){
     playLearningGame(id,level);
   }else{
     $('#gameContent').className=progress.className;
-    $('#gameContent').innerHTML=progress.html;
+    if(id==='puzzle')renderPuzzlePicture();
+    else $('#gameContent').innerHTML=progress.html;
     go('gameStage');
   }
   if(id==='memory'&&memoryOpen.length===2&&memoryCards[memoryOpen[0]]!==memoryCards[memoryOpen[1]])scheduleMemoryMismatch();
-  if(progress.feedback&&id!=='storyMath')showGameFeedback(progress.feedback.message,progress.feedback.label,progress.feedback.action,progress.feedback.success);
+  if(progress.feedback&&id!=='storyMath'&&id!=='puzzle')showGameFeedback(progress.feedback.message,progress.feedback.label,progress.feedback.action,progress.feedback.success);
   return true;
 }
 function continueMiniGameProgress(id,level){restoreMiniGameProgress(id,level)}
