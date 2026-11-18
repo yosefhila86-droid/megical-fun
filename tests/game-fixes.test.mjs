@@ -712,7 +712,7 @@ test('pastel background is applied across screens and cached for offline use', a
   assert.match(html, /#welcome\{[^}]*background:radial-gradient\([^}]*#ffffff22/i);
   assert.match(html, /#cv\{[^}]*background:#fff/);
   assert.match(html, /\.interactive-puzzle\{[^}]*background:#fff/);
-  assert.match(serviceWorker, /magical-fun-shell-v25-short-coloring-layout/);
+  assert.match(serviceWorker, /magical-fun-shell-v33-coloring-side-arrows/);
   assert.match(serviceWorker, /new URL\('images\/magical-fun-background\.png',APP_ROOT\)\.href/);
   await access(new URL('../images/magical-fun-background.png', import.meta.url));
 });
@@ -777,14 +777,23 @@ test('coloring palette stays docked above navigation and scrolls horizontally', 
   assert.match(html, /\.paint-workspace\{[^}]*overflow-y:auto/);
   assert.match(html, /#paint>\.paint-palette\{[^}]*flex-direction:column[^}]*overflow-y:auto/);
   assert.match(html, /\.paint-color-swatches\{[^}]*flex-wrap:nowrap[^}]*justify-content:safe center[^}]*overflow-x:auto/);
-  assert.match(html, /\.paint-canvas-wrap\{[^}]*grid-column:1[^}]*width:min\(100%,400px\)[^}]*aspect-ratio:1/);
-  assert.match(html, /\.paint-canvas-wrap\{[^}]*width:min\(100%,360px,max\(120px,calc\(100vh - 540px\)\)\);width:min\(100%,360px,max\(120px,calc\(100dvh - 540px\)\)\)/);
+  assert.match(html, /\.paint-workspace\{display:grid[^}]*grid-template-rows:repeat\(5,max-content\)/);
+  assert.match(html, /@media\(max-width:600px\)\{[\s\S]*?\.paint-workspace\{grid-template-columns:minmax\(0,1fr\);grid-template-rows:repeat\(6,max-content\)/);
+  assert.match(html, /\.paint-canvas-stage\{[^}]*grid-column:1;grid-row:4;grid-template-columns:44px minmax\(0,1fr\) 44px/);
+  assert.match(html, /\.paint-canvas-wrap\{[^}]*grid-column:2;grid-row:1[^}]*width:min\(100%,400px\)[^}]*aspect-ratio:1/);
+  assert.match(html, /@media\(max-width:600px\)\{[\s\S]*?\.paint-canvas-stage\{grid-column:1;grid-row:4;grid-template-columns:minmax\(0,1fr\) 65% minmax\(0,1fr\)/);
   assert.doesNotMatch(html, /\.paint-canvas-wrap\{[^}]*52dvh/);
   assert.match(html, /\.paint-workspace\{display:grid[^}]*grid-template-columns:minmax\(0,1fr\) minmax\(76px,128px\)/);
   assert.match(html, /\.paint-actions button\{margin:0;padding:6px 4px;font-size:12px/);
-  assert.match(html, /\.paint-actions\{grid-column:2;grid-row:4\/span 3;flex-direction:column[^}]*gap:3px/);
-  assert.match(html, /@media\(max-width:600px\),\(max-height:700px\)\{[\s\S]*?\.paint-actions\{grid-column:1;grid-row:6;flex-direction:row/);
-  assert.match(html, /@media\(max-width:600px\),\(max-height:700px\)\{[\s\S]*?\.paint-canvas-wrap\{grid-column:1;grid-row:4;width:min\(100%,360px,max\(120px,calc\(100vh - 540px\)\)\)/);
+  assert.match(html, /\.paint-actions\{grid-column:2;grid-row:4\/span 2;flex-direction:column[^}]*gap:3px/);
+  assert.match(html, /@media\(max-width:600px\)\{[\s\S]*?\.paint-actions\{grid-column:1;grid-row:5;flex-direction:row/);
+  assert.match(html, /\.paint-item-nav\{display:flex;grid-column:1\/-1;grid-row:1/);
+  assert.match(html, /@media\(max-width:600px\)\{[\s\S]*?\.paint-actions button\{width:auto;flex:1 1 30%;min-width:0\}/);
+  assert.match(html, /@media\(max-height:700px\) and \(min-width:601px\)\{[\s\S]*?grid-template-rows:max-content max-content max-content minmax\(0,1fr\) max-content/);
+  assert.match(html, /@media\(max-height:700px\) and \(min-width:601px\)\{[\s\S]*?\.paint-canvas-stage\{grid-column:1;grid-row:4;height:100%\}/);
+  assert.match(html, /@media\(max-height:700px\) and \(min-width:601px\)\{[\s\S]*?\.paint-canvas-wrap\{grid-column:2;grid-row:1;width:auto;height:100%;max-width:100%;max-height:100%;justify-self:center;margin:0\}/);
+  assert.match(html, /@media\(max-height:700px\) and \(min-width:601px\)\{[\s\S]*?\.paint-actions\{grid-column:2;grid-row:4\/span 2;flex-direction:column/);
+  assert.match(html, /@media\(max-height:700px\) and \(min-width:601px\)\{[\s\S]*?#paint>\.paint-palette\{max-height:90px\}/);
 
   const palette = { innerHTML: '' };
   const context = vm.createContext({
@@ -879,14 +888,15 @@ test('coloring progress is saved per user and restored for the same picture', as
   assert.equal(context.img.data[0], 255);
 });
 
-test('coloring picture navigation is below the canvas and translated', () => {
+test('coloring picture navigation uses side arrows with localized accessible labels', () => {
   const paint = slice('<div id="paint" class="screen center">', '<div id="camera"');
+  assert.match(paint, /<div class="paint-canvas-stage">[\s\S]*?<div id="cvWrap"[\s\S]*?<div id="paintItemNav" class="paint-item-nav">/);
   assert.ok(paint.indexOf('id="cvWrap"') < paint.indexOf('id="paintItemNav"'));
-  assert.match(html, /\.paint-item-nav\{[^}]*grid-column:1[^}]*flex-wrap:nowrap[^}]*width:min\(100%,400px\)/);
-  assert.match(html, /\.paint-item-nav button\{[^}]*flex:1 1 0[^}]*min-width:0[^}]*white-space:nowrap/);
+  assert.match(html, /\.paint-item-nav\{display:flex;grid-column:1\/-1;grid-row:1[^}]*justify-content:space-between[^}]*direction:ltr/);
+  assert.match(html, /\.paint-item-nav button\{display:grid;place-items:center;flex:0 0 44px;width:44px;height:44px/);
   assert.ok(paint.indexOf('id="paintItemNav"') < paint.indexOf('onclick="zm.by(1.4)"'));
-  assert.match(paint, /id="paintPrevItem"[^>]*onclick="navItem\(-1\)"[^>]*data-i18n="previousColoringPicture"/);
-  assert.match(paint, /id="paintNextItem"[^>]*onclick="navItem\(1\)"[^>]*data-i18n="nextColoringPicture"/);
+  assert.match(paint, /id="paintPrevItem"[^>]*onclick="navItem\(-1\)"[^>]*data-i18n-aria="previousColoringPicture"><span aria-hidden="true">←<\/span>/);
+  assert.match(paint, /id="paintNextItem"[^>]*onclick="navItem\(1\)"[^>]*data-i18n-aria="nextColoringPicture"><span aria-hidden="true">→<\/span>/);
   const translations = vm.createContext({});
   vm.runInContext(slice('const TEXT=', "let currentLanguage='en';") + '\nglobalThis.TEXT=TEXT;', translations);
   for (const language of ['en', 'he', 'ru']) {
