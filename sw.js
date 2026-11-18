@@ -1,6 +1,6 @@
 'use strict';
 
-const CACHE_NAME='magical-fun-shell-v31-coloring-actions-below-canvas';
+const CACHE_NAME='magical-fun-shell-v33-coloring-side-arrows';
 const APP_ROOT=new URL('./',self.registration.scope);
 const APP_SHELL=[
   APP_ROOT.href,
