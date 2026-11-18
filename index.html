@@ -7,6 +7,7 @@
 <meta name="theme-color" content="#7c4dff">
 <link rel="manifest" href="./manifest.json">
 <style>
+@font-face{font-family:'Gveret Levin';font-style:normal;font-weight:400;font-display:swap;src:url('./fonts/GveretLevin-Regular.ttf') format('truetype')}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{margin:0;font-family:system-ui,Arial,sans-serif;background:#fff7e6 url('./images/magical-fun-background.png') center center / cover no-repeat fixed;color:#3b2a66;height:100vh;height:100dvh;display:flex;flex-direction:column;overflow:hidden}
 button{font:inherit;cursor:pointer;border:0;border-radius:16px;padding:12px 16px;background:#7c4dff;color:#fff;font-weight:700}
@@ -327,6 +328,7 @@ video{width:100%;max-width:420px;border-radius:16px;background:#222;display:bloc
 .trace-wrap{position:relative;width:min(78vw,320px);margin:12px auto;background:#fff;border-radius:20px}
 .trace-canvas{position:relative;z-index:2;display:block;width:100%;height:auto;aspect-ratio:1;background:transparent;border:3px dashed #d9ccff;border-radius:20px;touch-action:none}
 .trace-guide{position:absolute;z-index:0;inset:0;width:100%;height:100%;border:3px solid transparent;pointer-events:none}
+.hebrew-cursive-preview{font-family:'Gveret Levin',cursive;font-weight:400}
 #traceStatus:not(:empty){margin:8px auto;font-weight:700}
 .learning-tools{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin:8px auto}
 .learning-hint{min-height:0;margin:3px auto;color:#6a55a5;font-weight:700}
@@ -794,6 +796,9 @@ Object.assign(TEXT.ru,{volume:'Громкость',musicToggle:'Включить
 Object.assign(TEXT.en,{privacyPolicyLink:'Privacy policy',termsOfUseLink:'Terms of use',connectedEmail:'Connected email',accessibilityTitle:'Accessibility',largeText:'Larger text',highContrast:'High contrast',reduceMotion:'Reduce motion',letterStylePrompt:'Which letter style would you like to practise?',letterStyleUpper:'Uppercase letters',letterStyleLower:'Lowercase letters',letterStylePrint:'Block letters',letterStyleCursive:'Cursive letters'});
 Object.assign(TEXT.he,{privacyPolicyLink:'מדיניות פרטיות',termsOfUseLink:'תנאי שימוש',connectedEmail:'כתובת המייל המחוברת',accessibilityTitle:'נגישות',largeText:'טקסט גדול',highContrast:'ניגודיות גבוהה',reduceMotion:'הפחתת אנימציות',letterStylePrompt:'באילו סוגי אותיות תרצו לתרגל?',letterStyleUpper:'אותיות גדולות',letterStyleLower:'אותיות קטנות',letterStylePrint:'אותיות דפוס',letterStyleCursive:'אותיות כתב'});
 Object.assign(TEXT.ru,{privacyPolicyLink:'Политика конфиденциальности',termsOfUseLink:'Условия использования',connectedEmail:'Подключённая почта',accessibilityTitle:'Специальные возможности',largeText:'Крупный текст',highContrast:'Высокая контрастность',reduceMotion:'Уменьшить анимацию',letterStylePrompt:'Какие буквы будем тренировать?',letterStyleUpper:'Прописные буквы',letterStyleLower:'Строчные буквы',letterStylePrint:'Печатные буквы',letterStyleCursive:'Рукописные буквы'});
+Object.assign(TEXT.en,{previousQuestion:'← Previous question'});
+Object.assign(TEXT.he,{previousQuestion:'→ שאלה קודמת'});
+Object.assign(TEXT.ru,{previousQuestion:'← Предыдущий вопрос'});
 Object.assign(TEXT.en,{railwayInstruction:'Use the green junctions to guide each train through the winding track network to its matching flag.',railwayNetworkInstruction:'The tracks bend and cross the board. Tap green junctions to choose a direction, then send the trains.',railwayMoving:'The trains are following the winding routes…',railwayReady:'Choose the junction directions, then send the trains!',railwayLaunch:'🚂 Start the trains',railwayHint:'Look from the top depot to the matching flag. Use each junction to take the winding branch instead of continuing straight.'});
 Object.assign(TEXT.he,{railwayInstruction:'לחצו על חלקי המסילה כדי לחבר את הענפים ולהוביל כל רכבת אל הדגל התואם.',railwayNetworkInstruction:'הפסים מסתעפים, מתעגלים וחוצים את הלוח. לחצו ישירות על חלק המסילה כדי לחבר פנייה או להחזיר אותה לישר, ואז שלחו את הרכבות.',railwayMoving:'הרכבות נעות במסלולים המפותלים…',railwayReady:'חברו את חלקי המסילה ואז שלחו את הרכבות!',railwayLaunch:'🚂 הפעלת הרכבות',railwayHint:'לחצו על קטע המסילה עצמו. כיוון הפסים משתנה בלחיצה ומראה אם המקטע ישר או מסתעף.'});
 Object.assign(TEXT.ru,{railwayInstruction:'Используй зелёные стрелки, чтобы провести каждый поезд по извилистой сети путей к флажку такого же цвета.',railwayNetworkInstruction:'Рельсы изгибаются и пересекаются. Нажимай на зелёные стрелки, чтобы выбрать направление, затем отправляй поезда.',railwayMoving:'Поезда движутся по извилистым путям…',railwayReady:'Выбери направления стрелок и отправляй поезда!',railwayLaunch:'🚂 Запустить поезда',railwayHint:'Проследи от верхнего депо до флажка такого же цвета. На стрелках выбирай извилистую ветку вместо прямого пути.'});
@@ -2268,7 +2273,7 @@ function miniGameProgressStage(id,state){
 function captureMiniGameState(id){
   if(id==='puzzle')return {puzzleTiles,puzzleImage,puzzleSelected,puzzleImages,puzzleImageIndex};
   if(id==='differences')return {differenceFound,differenceSpots,differenceLeft,differenceRight};
-  if(['logicQuest','math','words','storyMath','patterns','riddles','scienceQuest'].includes(id))return {genericAnswer,riddleQuestionIndex,questionHintCount};
+  if(['logicQuest','math','words','storyMath','patterns','riddles','scienceQuest'].includes(id))return {genericAnswer,riddleQuestionIndex,questionHintCount,learningAnsweredQuestions:typeof learningAnsweredQuestions==='undefined'?new Set():learningAnsweredQuestions};
   if(id==='letters'){
     const canvas=$('#traceCanvas');
     const traceImage=canvas?canvas.toDataURL('image/png'):null;
@@ -2299,7 +2304,12 @@ function saveMiniGameProgress(){
 function applyMiniGameProgressState(id,state){
   if(id==='puzzle')({puzzleTiles,puzzleImage,puzzleSelected,puzzleImages,puzzleImageIndex}=state);
   else if(id==='differences')({differenceFound,differenceSpots,differenceLeft,differenceRight}=state);
-  else if(['logicQuest','math','words','storyMath','patterns','riddles','scienceQuest'].includes(id))({genericAnswer,riddleQuestionIndex,questionHintCount}=state);
+  else if(['logicQuest','math','words','storyMath','patterns','riddles','scienceQuest'].includes(id)){
+    ({genericAnswer,riddleQuestionIndex,questionHintCount}=state);
+    const restoredAnswers=state.learningAnsweredQuestions instanceof Set?state.learningAnsweredQuestions:new Set();
+    if(typeof learningAnsweredQuestions!=='undefined')learningAnsweredQuestions=restoredAnswers;
+    else globalThis.learningAnsweredQuestions=restoredAnswers;
+  }
   else if(id==='letters')({traceLetterIndex,traceDistance,traceHasInk}=state,traceLetterStyle=state.traceLetterStyle||'primary');
   else if(id==='memory')({memoryCards,memoryOpen,memoryMatched}=state);
   else if(id==='escapeRoom')({escapeRoomIndex,escapeRoomSolved,escapeRoomStarEarned,escapeRoomAnswer,escapeRoomAnswerIndex,escapeRoomExplanation,escapeRoomPhase,escapeKeyFound,escapeKeyFeedback,genericAnswer,questionHintCount}=state);
@@ -2466,7 +2476,7 @@ function launchMiniGame(id,level){
   if(restoreMiniGameProgress(id,level))return;
   selectedMiniGame=id;selectedLevel=level;miniGameScene='play';
   if(id==='letters')traceLetterIndex=0;
-  if(learningGameHasTenQuestions(id))riddleQuestionIndex=0;
+  if(learningGameHasTenQuestions(id)){riddleQuestionIndex=0;learningAnsweredQuestions.clear()}
   if(id==='physicsPaths'){miniGameScene='pathLevels';renderPathLevels();go('gameStage');return}
   if(id==='gridSokoban'){miniGameScene='sokobanLevels';renderSokobanLevels();go('gameStage');return}
   if(id==='railwayControl'){miniGameScene='railwayLevels';renderRailwayLevels();go('gameStage');return}
@@ -4577,6 +4587,7 @@ function createRiddle(level){
   return {clue,answer,choices:[answer,...choices].sort(()=>Math.random()-.5)};
 }
 let genericAnswer=null,memoryCards=[],memoryOpen=[],memoryMatched=new Set(),traceHasInk=false,riddleQuestionIndex=0,questionHintCount=0;
+let learningAnsweredQuestions=new Set();
 function assertValidLearningQuestion(id,question,answer,options){
   const plainQuestion=String(question??'').replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim();
   const choices=Array.isArray(options)?options.map(option=>String(option)): [];
@@ -4610,7 +4621,9 @@ function playLearningGame(id,level){
   const game=MINI_GAMES.find(item=>item.id===id);
   const questionLabel=learningGameHasTenQuestions(id)?getLearningQuestionLabel(id,riddleQuestionIndex):tr('question',{n:level+1});
   const questionDirection=id==='math'?(currentLanguage==='he'&&level===2?'rtl':'ltr'):currentLanguage==='he'?'rtl':'ltr';
-  $('#gameContent').innerHTML=`<h2 data-i18n="${game.name}">${game.icon} ${tr(game.name)}</h2><p>${questionLabel}</p><p data-i18n="${promptKey}">${prompt}</p><div id="learningQuestion" class="quiz-swatch" dir="${questionDirection}" style="width:auto;height:auto;min-height:60px;border:0;box-shadow:none;font-size:${['storyMath','scienceQuest','logicQuest','riddles'].includes(id)?'18':'32'}px">${question}</div><div class="answer-grid">${options.map(option=>`<button data-answer="${encodeURIComponent(option)}" onclick="answerLearningGame(this)">${option}</button>`).join('')}</div><div class="learning-tools"><button class="ghost" onclick="revealLearningHint()" data-i18n="hintButton">${tr('hintButton')}</button></div><p id="learningHint" class="learning-hint" aria-live="polite"></p><p id="learningFeedback" class="play-status" aria-live="polite"></p>`;
+  const previousButton=learningGameHasTenQuestions(id)&&riddleQuestionIndex>0
+    ?`<button class="ghost" onclick="previousLearningQuestion()" data-i18n="previousQuestion">${tr('previousQuestion')}</button>`:'';
+  $('#gameContent').innerHTML=`<h2 data-i18n="${game.name}">${game.icon} ${tr(game.name)}</h2><p>${questionLabel}</p><p data-i18n="${promptKey}">${prompt}</p><div id="learningQuestion" class="quiz-swatch" dir="${questionDirection}" style="width:auto;height:auto;min-height:60px;border:0;box-shadow:none;font-size:${['storyMath','scienceQuest','logicQuest','riddles'].includes(id)?'18':'32'}px">${question}</div><div class="answer-grid">${options.map(option=>`<button data-answer="${encodeURIComponent(option)}" onclick="answerLearningGame(this)">${option}</button>`).join('')}</div><div class="learning-tools">${previousButton}<button class="ghost" onclick="revealLearningHint()" data-i18n="hintButton">${tr('hintButton')}</button></div><p id="learningHint" class="learning-hint" aria-live="polite"></p><p id="learningFeedback" class="play-status" aria-live="polite"></p>`;
 }
 function revealLearningHint(){
   const question=$('#learningQuestion'),feedback=$('#learningHint');
@@ -4692,7 +4705,11 @@ function answerLearningGame(button){
   const answer=decodeURIComponent(button.dataset.answer);
   document.querySelectorAll('.answer-grid button').forEach(item=>item.disabled=true);
   const correct=answer===genericAnswer;
-  if(correct)queueProfileStarReward(1,newProfileRewardId());
+  const questionKey=`${selectedMiniGame}:${selectedLevel}:${riddleQuestionIndex}`;
+  if(correct&&!learningAnsweredQuestions.has(questionKey)){
+    learningAnsweredQuestions.add(questionKey);
+    queueProfileStarReward(1,newProfileRewardId());
+  }
   if(!correct){
     revealLearningHint();
     showGameFeedback(tr('tryAgain'),tr('tryAgain'),retryLearningAnswer);
@@ -4712,6 +4729,11 @@ function answerLearningGame(button){
 function nextRiddleQuestion(){
   if(!learningGameHasTenQuestions(selectedMiniGame)||riddleQuestionIndex>=9)return;
   riddleQuestionIndex++;
+  playLearningGame(selectedMiniGame,selectedLevel);
+}
+function previousLearningQuestion(){
+  if(!learningGameHasTenQuestions(selectedMiniGame)||riddleQuestionIndex<=0)return;
+  riddleQuestionIndex--;
   playLearningGame(selectedMiniGame,selectedLevel);
 }
 function retryLearningAnswer(){
@@ -4770,7 +4792,7 @@ function renderLetterStyleSelection(level){
   const isHebrew=currentLanguage==='he';
   const primary=isHebrew?tr('letterStylePrint'):tr('letterStyleUpper');
   const secondary=isHebrew?tr('letterStyleCursive'):tr('letterStyleLower');
-  $('#gameContent').innerHTML=`<h2>✍️ ${tr('letters')}</h2><p>${tr('letterStylePrompt')}</p><div class="level-grid"><button class="level-choice" onclick="chooseTraceStyle('primary')">${primary}<br><strong>${(TRACE_LETTERS[currentLanguage]||TRACE_LETTERS.en).slice(0,3).join(' ')}</strong></button><button class="level-choice" onclick="chooseTraceStyle('secondary')">${secondary}<br><strong>${isHebrew?'א ב ג':(TRACE_LETTERS[currentLanguage]||TRACE_LETTERS.en).slice(0,3).map(letter=>letter.toLocaleLowerCase(currentLanguage)).join(' ')}</strong></button></div><button class="ghost" onclick="renderGameLevels()">${tr('back')}</button>`;
+  $('#gameContent').innerHTML=`<h2>✍️ ${tr('letters')}</h2><p>${tr('letterStylePrompt')}</p><div class="level-grid"><button class="level-choice" onclick="chooseTraceStyle('primary')">${primary}<br><strong>${(TRACE_LETTERS[currentLanguage]||TRACE_LETTERS.en).slice(0,3).join(' ')}</strong></button><button class="level-choice" onclick="chooseTraceStyle('secondary')">${secondary}<br><strong class="${isHebrew?'hebrew-cursive-preview':''}">${isHebrew?'א ב ג':(TRACE_LETTERS[currentLanguage]||TRACE_LETTERS.en).slice(0,3).map(letter=>letter.toLocaleLowerCase(currentLanguage)).join(' ')}</strong></button></div><button class="ghost" onclick="renderGameLevels()">${tr('back')}</button>`;
 }
 function chooseTraceStyle(style){
   if(!['primary','secondary'].includes(style))return;
@@ -4784,8 +4806,15 @@ function renderLetterTrace(level){
   const canvas=$('#traceCanvas'),context=canvas.getContext('2d',{willReadFrequently:true});let drawing=false;
   const guide=$('#traceGuide').getContext('2d',{willReadFrequently:true});
   if(!context||!guide)throw new Error('Could not prepare the letter tracing canvas.');
-  guide.font=`220px ${currentLanguage==='he'&&traceLetterStyle==='secondary'?'Narkisim,David,serif':'system-ui,Arial,sans-serif'}`;guide.textAlign='center';guide.textBaseline='middle';
-  guide.fillStyle='#ddd';guide.fillText(letter,160,160);
+  const drawGuide=()=>{
+    guide.clearRect(0,0,320,320);
+    guide.font=`220px ${currentLanguage==='he'&&traceLetterStyle==='secondary'?'"Gveret Levin",cursive':'system-ui,Arial,sans-serif'}`;guide.textAlign='center';guide.textBaseline='middle';
+    guide.fillStyle='#ddd';guide.fillText(letter,160,160);
+  };
+  drawGuide();
+  if(currentLanguage==='he'&&traceLetterStyle==='secondary'&&document.fonts&&document.fonts.load){
+    void document.fonts.load('220px "Gveret Levin"',letter).then(()=>drawGuide()).catch(error=>console.error('Could not load Hebrew cursive font:',error));
+  }
   function point(event){
     const rect=canvas.getBoundingClientRect();
     const scale=rect.width/canvas.offsetWidth;
