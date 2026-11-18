@@ -1,6 +1,6 @@
 'use strict';
 
-const CACHE_NAME='magical-fun-shell-v33-coloring-side-arrows';
+const CACHE_NAME='magical-fun-shell-v35-coloring-galaxy-fit';
 const APP_ROOT=new URL('./',self.registration.scope);
 const APP_SHELL=[
   APP_ROOT.href,
