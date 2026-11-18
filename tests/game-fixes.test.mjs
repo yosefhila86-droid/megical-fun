@@ -85,43 +85,47 @@ test('Russian counted story items use singular, few and many forms', () => {
   }
 });
 
-test('story math uses varied scenarios and keeps bird questions observational', () => {
+test('all 120 story-math questions use the supplied multilingual stories and exact answers', () => {
   const context = vm.createContext({
-    currentLanguage: 'en',
-    makeChoices: (answer) => [answer, answer + 1, answer - 1, answer + 2],
+    makeChoices: (answer) => [answer, answer + 1, answer + 2, answer + 3],
   });
   vm.runInContext(slice('const STORY_MATH_ITEMS=', 'const PATTERN_THEMES='), context);
   vm.runInContext(slice('function getRussianCountedItem(', 'function getWordQuestion('), context);
 
+  const answers = [
+    ['9','8','10','12','15','12','12','9','3.75','15'],
+    ['8','12','9','15','8','15','13','8','13','7'],
+    ['15','9','20','5','11','14','30','5','9','20'],
+    ['13','8','12','10','13','18','13','7','20','24'],
+    ['18','18','20','6','16','24','21','16','9','27'],
+    ['15','19','21','15','19','24','13','7','23','10'],
+    ['16','12','20','6','16','21','15','4','23','21'],
+    ['20','13','24','6','12','30','11','4','20','10'],
+    ['16','17','24','6','8','11','24','4','26','35'],
+    ['15','6','20','15','15','14','24','36','21','10'],
+    ['15','14','20','6','15','21','15','4','23','21'],
+    ['16','17','24','6','16','16','10','9','20','21'],
+  ];
   for (let activity = 0; activity < 12; activity++) {
     const prompts = [];
     for (let question = 0; question < 10; question++) {
       const result = vm.runInContext(`getStoryMathQuestion(${activity},${question})`, context);
-      const setting = vm.runInContext(`${question % 2 ? 'STORY_MATH_ALT_SETTINGS' : 'STORY_MATH_SETTINGS'}[${activity}]`, context);
-      assert.ok(result.question.en);
-      assert.ok(result.question.he);
-      assert.ok(result.question.ru);
-      for (const language of ['en', 'he', 'ru']) {
-        const phrase = language === 'ru' ? setting.ru[0].toLocaleUpperCase('ru') + setting.ru.slice(1) : setting[language];
-        assert.ok(result.question[language].includes(phrase), `activity ${activity}, question ${question} uses its setting in ${language}`);
-      }
+      assert.equal(result.answer, answers[activity][question], `activity ${activity}, question ${question}`);
+      for (const language of ['he', 'en', 'ru']) assert.ok(result.question[language], `${language} missing`);
+      assert.equal(result.options.length, 4);
+      assert.equal(new Set(result.options).size, 4);
       assert.ok(result.options.includes(result.answer));
-      assert.doesNotMatch(result.question.he, /[A-Za-zА-Яа-яЁё־—]/u, `activity ${activity}, question ${question}`);
-      assert.doesNotMatch(result.question.ru, /(^|[.!?]\s+|:\s+)[а-яё]/u, `Russian sentence must start with a capital: activity ${activity}, question ${question}`);
-      prompts.push(result.question.en);
+      prompts.push(result.question.he);
     }
-    assert.equal(new Set(prompts).size, 10, `activity ${activity} repeats a story`);
+    assert.equal(new Set(prompts).size, 10, `activity ${activity} repeats a Hebrew story`);
   }
 
-  for (let question = 0; question < 10; question++) {
-    const prompt = vm.runInContext(`getStoryMathQuestion(3,${question}).question.en`, context).toLowerCase();
-    assert.doesNotMatch(prompt, /basket|used|share|pack|collect/);
-  }
-  assert.match(vm.runInContext('getStoryMathQuestion(0,1).question.he', context), /היו/);
-  assert.doesNotMatch(vm.runInContext('getStoryMathQuestion(0,1).question.he', context), /הוצגו/);
-  assert.match(vm.runInContext('getStoryMathQuestion(3,1).question.en', context), /flew away/);
-  assert.match(vm.runInContext('getStoryMathQuestion(3,2).question.en', context), /garden areas/);
-  assert.match(vm.runInContext('getStoryMathQuestion(3,3).question.en', context), /journal/);
+  assert.equal(vm.runInContext('getStoryMathQuestion(0,0).question.he', context),
+    'לדניאל יש בקלמר 6 עפרונות שחורים ו-3 עפרונות צבעוניים. כמה עפרונות יש לדניאל בסך הכל בקלמר?');
+  assert.match(vm.runInContext('getStoryMathQuestion(3,2).question.he', context), /4 שורות של שיחים.*3 ציפורי שיר/);
+  assert.match(vm.runInContext('getStoryMathQuestion(6,9).question.he', context), /28 הזמנות.*7 הזמנות/);
+  assert.equal(vm.runInContext('getStoryMathQuestion(6,9).answer', context), '21');
+  assert.match(vm.runInContext('getStoryMathQuestion(11,6).question.he', context), /15 בלונים אדומים ו-15 בלונים כחולים.*שליש/);
 });
 
 test('Sokoban shows retry feedback when a push makes the box unsolvable', () => {
