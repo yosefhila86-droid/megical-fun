@@ -992,13 +992,20 @@ function setLanguage(language){
 let currentUserId = 'guest';
 let currentAccountEmail='';
 let S = {name:'Guest',av:'🐶',stars:0,vip:false,art:[],custom:[],music:true,track:'auto',vol:0.6,language:currentLanguage,unlockedGames:[],allGamesUnlocked:false,completedEscapeRooms:[],completedPuzzleStars:[],dailyUsageDate:'',dailyUsageSeconds:0,dailyLimitMinutes:0};
-let supabaseClient=null,authBusy=false,currentAuthUserId=null,authChoiceMade=false;
+let supabaseClient=null,authBusy=false,currentAuthUserId=null,authChoiceMade=false,authGeneration=0;
 let profileSyncReady=false,profileSyncApplying=false,profileSyncBusy=false,profileSyncAgain=false,profileSyncTimer=null,profileSyncRevision=0,profileSyncChannel=null,deviceHeartbeatTimer=null,profileSyncErrorShown=false;
 let usageTimer=null,usageStartedAt=null,pendingParentAction=null;
 let BILLING_ENABLED=false;
 let billingAccess=[],billingVerifiedAt=0,billingRefreshTimer=null,billingBusy=false,billingPrices={};
 function defaultUserData(name){
   return {name,av:'🐶',stars:0,vip:false,art:[],custom:[],music:true,track:'auto',vol:0.6,language:currentLanguage,unlockedGames:[],allGamesUnlocked:false,completedEscapeRooms:[],completedPuzzleStars:[],streak:0,lastDay:'',dailyUsageDate:'',dailyUsageSeconds:0,dailyLimitMinutes:0,accessibility:{largeText:false,contrast:false,reducedMotion:false}};
+}
+function withTimeout(promise,ms,message){
+  let timer;
+  return Promise.race([
+    promise,
+    new Promise((_,reject)=>{timer=setTimeout(()=>reject(new Error(message)),ms)})
+  ]).finally(()=>clearTimeout(timer));
 }
 
 function loadUserData(userId,fallbackName=userId){
@@ -1025,7 +1032,7 @@ function loadUserData(userId,fallbackName=userId){
   if(!Array.isArray(S.completedEscapeRooms))S.completedEscapeRooms=[];
   else S.completedEscapeRooms=S.completedEscapeRooms.filter(key=>typeof key==='string'&&/^\d+:\d+$/.test(key));
   if(!Array.isArray(S.completedPuzzleStars))S.completedPuzzleStars=[];
-  else S.completedPuzzleStars=S.completedPuzzleStars.filter(key=>typeof key==='string'&&/^(physicsPaths:\d+(?::path-\d+)?|gridSokoban:\d+(?::box-\d+)?|railwayControl:\d+:rail-\d+|codeBreaker:\d+|wordSearch:\d+:word-\d+)$/.test(key));
+  else S.completedPuzzleStars=S.completedPuzzleStars.filter(key=>typeof key==='string'&&/^(physicsPaths:\d+(?::path-\d+)?|gridSokoban:\d+(?::box-\d+)?|railwayControl:\d+:rail-\d+|codeBreaker:\d+|wordSearch:\d+:word-\d+|magneticMaze:\d+:magnet-\d+)$/.test(key));
   if(!Number.isFinite(S.dailyUsageSeconds)||S.dailyUsageSeconds<0)S.dailyUsageSeconds=0;
   if(![0,15,30,45,60,90,120].includes(S.dailyLimitMinutes))S.dailyLimitMinutes=0;
   currentLanguage=TEXT[S.language]?S.language:currentLanguage;
@@ -1622,41 +1629,53 @@ async function requestPasswordReset(){
 }
 function guest(){
   clearBillingAccess();
-  authChoiceMade=true;currentAuthUserId=null;currentAccountEmail='';loadUserData('Guest');
+  authChoiceMade=true;authGeneration++;currentAuthUserId=null;currentAccountEmail='';loadUserData('Guest');
   S.vip=false;S.allGamesUnlocked=false;S.unlockedGames=[];sv();go('games');
 }
 async function enterAccount(user){
   if(currentAuthUserId===user.id){currentAccountEmail=user.email||currentAccountEmail;renderProfile();return}
+  const generation=++authGeneration;
   const displayName=(user.user_metadata&&user.user_metadata.display_name)||(user.email||'Guest').split('@')[0];
   currentAccountEmail=user.email||'';
   loadUserData('account:'+user.id,displayName);
-  let deviceAllowed;
-  try{deviceAllowed=await registerCurrentDevice()}
-  catch(error){
-    console.error('Could not register this account device:',error);
+  let deviceAllowed=false;
+  const entitlementsPromise=withTimeout(supabaseClient.from('user_entitlements')
+    .select('vip,all_games,unlocked_games').eq('user_id',user.id).maybeSingle(),8000,'Entitlement loading timed out.');
+  try{
+    deviceAllowed=await withTimeout(registerCurrentDevice(),8000,'Device registration timed out.');
+  }catch(error){
+    console.error('Could not prepare this account:',error);
     authForm('login');setAuthError('form','profileSyncUnavailable');
     const {error:signOutError}=await supabaseClient.auth.signOut();
     if(signOutError)console.error('Could not sign out after device registration failed:',signOutError);
     return;
   }
+  if(generation!==authGeneration)return;
   if(!deviceAllowed){
     authForm('login');setAuthError('form','deviceLimitReached');
     const {error:signOutError}=await supabaseClient.auth.signOut();
     if(signOutError)console.error('Could not sign out after reaching the device limit:',signOutError);
     return;
   }
-  const {data,error}=await supabaseClient.from('user_entitlements')
-    .select('vip,all_games,unlocked_games').eq('user_id',user.id).maybeSingle();
-  if(error)throw new Error(tr('entitlementsLoadFailed')+` (${error.message})`);
-  if(!data)throw new Error(tr('entitlementsLoadFailed'));
-  S.vip=data.vip===true;
-  S.allGamesUnlocked=data.all_games===true;
-  S.unlockedGames=Array.isArray(data.unlocked_games)?data.unlocked_games:[];
   currentAuthUserId=user.id;
   profileSyncReady=true;
-  try{await syncProfileNow()}catch(error){console.error('Initial account synchronization failed:',error)}
   startProfileSyncChannel(user.id);startDeviceHeartbeat();
   sv();go('games');
+  void entitlementsPromise.then(({data,error})=>{
+    if(generation!==authGeneration||currentAuthUserId!==user.id)return;
+    if(error||!data)throw new Error(tr('entitlementsLoadFailed')+(error?` (${error.message})`:''));
+    S.vip=data.vip===true;
+    S.allGamesUnlocked=data.all_games===true;
+    S.unlockedGames=Array.isArray(data.unlocked_games)?data.unlocked_games:[];
+    sv();
+    if($('#games').classList.contains('on'))renderMiniGames();
+    if($('#parentM').classList.contains('on'))renderParentDashboard();
+  }).catch(error=>{
+    if(generation!==authGeneration||currentAuthUserId!==user.id)return;
+    console.error('Could not load account entitlements:',error);
+    toast(tr('entitlementsLoadFailed'));
+  });
+  void syncProfileNow();
   if(BILLING_ENABLED)restorePurchases(true);
 }
 async function authGo(){
@@ -1712,22 +1731,20 @@ async function authGo(){
   }
 }
 async function logout(){
-  if(supabaseClient&&currentAuthUserId){
-    const userId=currentAuthUserId;
-    clearTimeout(profileSyncTimer);clearInterval(deviceHeartbeatTimer);
-    if(profileSyncChannel){supabaseClient.removeChannel(profileSyncChannel);profileSyncChannel=null}
+  const userId=currentAuthUserId;
+  authGeneration++;
+  clearTimeout(profileSyncTimer);clearInterval(deviceHeartbeatTimer);
+  if(profileSyncChannel&&supabaseClient){supabaseClient.removeChannel(profileSyncChannel);profileSyncChannel=null}
+  profileSyncReady=false;profileSyncBusy=false;profileSyncAgain=false;profileSyncErrorShown=false;
+  clearBillingAccess();currentAuthUserId=null;currentAccountEmail='';loadUserData('Guest');go('welcome');
+  if(supabaseClient&&userId){
     try{
       const {error:releaseError}=await supabaseClient.rpc('release_app_device',{p_device_id:appDeviceId()});
       if(releaseError)console.error('Could not release this account device:',releaseError);
     }catch(error){console.error('Could not release this account device:',error)}
     const {error}=await supabaseClient.auth.signOut();
-    if(error){console.error('Could not sign out:',error);toast(error.message);return}
-    if(currentAuthUserId!==userId)return;
+    if(error){console.error('Could not sign out:',error);toast(error.message)}
   }
-  clearTimeout(profileSyncTimer);clearInterval(deviceHeartbeatTimer);
-  if(profileSyncChannel&&supabaseClient){supabaseClient.removeChannel(profileSyncChannel);profileSyncChannel=null}
-  profileSyncReady=false;profileSyncBusy=false;profileSyncAgain=false;profileSyncErrorShown=false;
-  clearBillingAccess();currentAuthUserId=null;currentAccountEmail='';loadUserData('Guest');go('welcome');
 }
 function loadSupabaseLibrary(){
   if(window.supabase&&typeof window.supabase.createClient==='function')return Promise.resolve();
@@ -6165,8 +6182,9 @@ function celebrate(label='⭐ +1'){
 /* daily bonus + streak (first visit to the home screen each day) */
 let dailyFor=null;
 const dayKey=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+let dailyBonusTimer=null;
 function dailyBonus(){
-  const now=new Date(),today=dayKey(now);if(S.lastDay===today)return;
+  const now=new Date(),today=dayKey(now);if((S.lastDay||'')>=today)return;
   const y=new Date(now);y.setDate(y.getDate()-1);
   S.streak=S.lastDay===dayKey(y)?(S.streak||0)+1:1;S.lastDay=today;
   const gain=1;queueProfileStarReward(gain,`daily:${today}`);renderProfile();
@@ -6175,7 +6193,12 @@ function dailyBonus(){
   $('#dailyM').classList.add('on');celebrate();
 }
 const _go=go;
-go=function(id){const r=_go.apply(this,arguments);if(id==='games')setTimeout(dailyBonus,500);return r};
+go=function(id){
+  const r=_go.apply(this,arguments);
+  clearTimeout(dailyBonusTimer);
+  if(id==='games')dailyBonusTimer=setTimeout(()=>{dailyBonusTimer=null;dailyBonus()},150);
+  return r;
+};
 setLanguage(currentLanguage);
 
 setLanguage(currentLanguage);

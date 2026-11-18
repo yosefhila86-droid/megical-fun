@@ -1,6 +1,6 @@
 'use strict';
 
-const CACHE_NAME='magical-fun-shell-v22-story-data';
+const CACHE_NAME='magical-fun-shell-v22-auth-stars';
 const APP_ROOT=new URL('./',self.registration.scope);
 const APP_SHELL=[
   APP_ROOT.href,
