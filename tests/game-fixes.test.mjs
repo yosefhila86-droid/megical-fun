@@ -429,6 +429,45 @@ test('interactive puzzle results use a blocking popup with a game-specific actio
   assert.match(html, /id="gameFeedbackM" role="dialog" aria-modal="true"/);
 });
 
+test('railway movement keeps the displayed track while following the connected path', () => {
+  const originalPath = [
+    { x: 0, y: 0 }, { x: 1, y: 0 }, { x: 2, y: 0 }, { x: 3, y: 0 },
+  ];
+  const connectedPath = [
+    { x: 1, y: 0 }, { x: 1, y: 1 }, { x: 2, y: 1 }, { x: 2, y: 0 },
+  ];
+  const puzzle = {
+    finished: false,
+    moving: false,
+    trackTiles: [{ rotation: 1 }],
+    routes: [{ path: originalPath, source: originalPath[0], target: originalPath[3] }],
+    trains: [{ status: 'queued', step: 0, position: originalPath[0], target: originalPath[3], direction: 'down' }],
+    trainCount: 1,
+  };
+  let tick;
+  const context = vm.createContext({
+    interactivePuzzle: puzzle,
+    tr: key => key,
+    renderInteractivePuzzle() {},
+    findConnectedRailwayPath: () => connectedPath,
+    setInterval(callback) { tick = callback; return 1; },
+    clearInterval() {},
+  });
+  vm.runInContext(slice('function advanceRailwayTrains(){', 'function findConnectedRailwayPath('), context);
+  vm.runInContext(slice('function railwayPositionFor(', 'function rotateConnectorMask('), context);
+
+  context.advanceRailwayTrains();
+
+  assert.deepEqual(JSON.parse(JSON.stringify(puzzle.routes[0].path)), originalPath);
+  assert.deepEqual(JSON.parse(JSON.stringify(puzzle.trains[0].path)), [
+    originalPath[0], ...connectedPath, originalPath[3],
+  ]);
+  assert.equal(puzzle.trackTiles[0].rotation, 1);
+  tick();
+  tick();
+  assert.deepEqual(JSON.parse(JSON.stringify(puzzle.trains[0].position)), { x: 1, y: 1 });
+});
+
 test('all other mini games have localized animated demos and continue to activity selection', () => {
   const dataStart = html.indexOf('const MINI_GAME_INTRO_COPY=');
   const dataEnd = html.indexOf("let currentLanguage='en';", dataStart);
