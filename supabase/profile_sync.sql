@@ -263,6 +263,8 @@ begin
     'lastDay', v_last_day,
     'dailyUsageDate', v_usage_date,
     'dailyUsageSeconds', v_usage_seconds,
+    'accessibility', coalesce(p_profile->'accessibility', v_old->'accessibility',
+      '{"largeText":false,"contrast":false,"reducedMotion":false}'::jsonb),
     'dailyLimitMinutes', coalesce(p_profile->'dailyLimitMinutes', v_old->'dailyLimitMinutes', '0'::jsonb)
   );
 
