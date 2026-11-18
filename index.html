@@ -2876,7 +2876,7 @@ function advanceRailwayTrains(){
     return;
   }
   puzzle.feedback='';
-  puzzle.routes.forEach((route,index)=>{route.path=activePaths[index]});
+  puzzle.trains.forEach((train,index)=>{train.path=activePaths[index]});
   puzzle.moving=true;
   puzzle.spawned=Math.min(puzzle.trainCount,1);
   for(let index=0;index<puzzle.spawned;index++)puzzle.trains[index].status='moving';
@@ -2889,8 +2889,7 @@ function advanceRailwayTrains(){
       if(train.status!=='moving')continue;
       moved=true;train.step++;
       train.position={...railwayPositionFor(train,puzzle)};
-      const route=puzzle.routes[puzzle.trains.indexOf(train)];
-      if(train.step>=route.path.length-1){
+      if(train.step>=train.path.length-1){
         train.status='arrived';
         train.position={...train.target};
         train.direction='down';
@@ -2929,7 +2928,7 @@ function findConnectedRailwayPath(start,target,puzzle){
 }
 function railwayPositionFor(train,puzzle){
   const route=puzzle.routes[puzzle.trains.indexOf(train)];
-  const index=Math.min(train.step,route.path.length-1),point=route.path[index];
+  const path=train.path||route.path,index=Math.min(train.step,path.length-1),point=path[index];
   return {...point};
 }
 function rotateConnectorMask(mask,turns){
