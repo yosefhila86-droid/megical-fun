@@ -196,25 +196,27 @@ video{width:100%;max-width:420px;border-radius:16px;background:#222;display:bloc
 .rail-piece-button.connected,.rail-piece-button.disconnected{box-shadow:none}
 .rail-depot{position:relative;z-index:4;display:grid;place-items:center;width:90%;height:84%;border:4px solid #fff;border-radius:10px;background:var(--train-color);font-size:clamp(14px,4vw,25px);box-shadow:0 4px 0 #332d2566}
 .rail-tree,.rail-fence{position:absolute;z-index:2;color:#fff7d8;opacity:.8;font-size:clamp(10px,2vw,16px)}
-@media(max-width:600px),(max-height:700px){
+@media(max-width:600px){
   .paint-workspace{grid-template-columns:minmax(0,1fr);grid-template-rows:repeat(7,max-content);column-gap:0;align-content:start}
   .paint-workspace>.tools:not(.paint-zoom-tools),.paint-workspace>.sizes,.paint-workspace>.hint{grid-column:1}
-  .paint-canvas-wrap{grid-column:1;grid-row:4;width:min(100%,360px,max(120px,calc(100vh - 540px)));width:min(100%,360px,max(120px,calc(100dvh - 540px)));justify-self:center}
-  .paint-item-nav{grid-column:1;grid-row:5;width:min(100%,360px)}
-  .paint-actions{grid-column:1;grid-row:6;flex-direction:row;align-self:auto;width:min(100%,360px);margin:2px auto;gap:4px}
-  .paint-actions button{width:auto;flex:1 1 calc(33.333% - 4px);min-width:84px}
+  .paint-canvas-wrap{grid-column:1;grid-row:4;width:65%;height:auto;max-width:100%;max-height:none;aspect-ratio:1;justify-self:center;margin:0 auto}
+  .paint-actions{grid-column:1;grid-row:5;flex-direction:row;align-self:auto;width:100%;margin:2px auto;gap:4px}
+  .paint-actions button{width:auto;flex:1 1 30%;min-width:0}
+  .paint-item-nav{grid-column:1;grid-row:6;width:100%;margin:2px auto}
   .paint-zoom-tools{grid-column:1;grid-row:7;width:min(100%,360px);justify-self:center}
 }
-@media(max-height:700px){
-  .paint-workspace{grid-template-rows:max-content max-content max-content minmax(0,1fr) max-content max-content max-content}
+@media(max-height:700px) and (min-width:601px){
+  .paint-workspace{grid-template-columns:minmax(0,1fr) minmax(76px,128px);grid-template-rows:max-content max-content max-content minmax(0,1fr) max-content max-content}
   .paint-workspace>.tools button{padding:6px 8px}
   .paint-workspace>.sizes .bs{padding:3px 2px}
   .paint-workspace>.sizes .bs .dw{height:16px}
   .paint-workspace>.hint{font-size:11px;min-height:12px;margin:0}
-  .paint-canvas-wrap{width:auto;height:100%;max-width:100%;max-height:100%;justify-self:center}
-  .paint-item-nav{margin-top:0}
+  .paint-canvas-wrap{grid-column:1;grid-row:4;width:auto;height:100%;max-width:100%;max-height:100%;justify-self:end;margin:0}
+  .paint-item-nav{grid-column:1;grid-row:5;width:min(100%,400px);margin-top:0}
+  .paint-actions{grid-column:2;grid-row:4/span 3;flex-direction:column;align-self:center;width:100%;margin:0;gap:3px}
+  .paint-actions button{width:100%;flex:0 1 auto;min-width:0;padding:4px 3px}
   .paint-item-nav button{padding:4px 6px}
-  .paint-actions button{padding:4px 3px}
+  .paint-zoom-tools{grid-column:1;grid-row:6;width:100%;justify-self:stretch}
   .paint-zoom-tools button{padding:4px 6px}
   #paint>.paint-palette{max-height:90px}
 }
