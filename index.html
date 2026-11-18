@@ -70,6 +70,7 @@ nav button.on{color:#7c4dff;background:#f3eeff}
 .hint{font-size:13px;min-height:18px;margin:4px 0 8px;color:#6a55a5}
 .pal{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:12px 0}
 .sw{width:36px;height:36px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 2px #ccc;padding:0;display:inline-flex;align-items:center;justify-content:center}
+.sw{flex:0 0 36px;aspect-ratio:1;overflow:hidden;background-clip:padding-box}
 .sw.on{box-shadow:0 0 0 4px #7c4dff}
 .sw.mix{background:conic-gradient(#f00,#ff0,#0f0,#0ff,#00f,#f0f,#f00);font-size:16px}
 .mixprev{height:70px;border-radius:18px;border:3px solid #ece6ff;margin:6px 0 2px}
@@ -101,6 +102,7 @@ video{width:100%;max-width:420px;border-radius:16px;background:#222;display:bloc
 .paint-color-section{flex:0 0 auto;min-width:0}
 .paint-color-section-title{margin:0 0 4px;font-size:12px;font-weight:700;text-align:start}
 .paint-color-swatches{display:flex;flex-wrap:nowrap;justify-content:safe center;gap:10px;min-height:38px;overflow-x:auto;overflow-y:hidden;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;scrollbar-width:thin}
+.paint-color-swatches{direction:ltr;justify-content:flex-start;min-height:46px;padding:5px 3px}
 .paint-color-swatches .sw{flex:0 0 36px}
 .paint-empty-colors{margin:0;font-size:12px;opacity:.75}
 .snd-grid{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:6px 0}
@@ -160,24 +162,48 @@ video{width:100%;max-width:420px;border-radius:16px;background:#222;display:bloc
 .control-pad{direction:ltr;display:grid;grid-template-columns:repeat(3,54px);gap:5px;justify-content:center;margin:10px auto}
 .control-pad button{height:48px;padding:4px;font-size:22px}
 .rail-board-scroll{max-width:100%;margin:14px auto;overflow-x:auto;overscroll-behavior-x:contain}
-.rail-board{direction:ltr;display:grid;grid-template-columns:repeat(var(--rail-cols),minmax(0,1fr));grid-template-rows:repeat(5,minmax(0,1fr));gap:2px;width:100%;min-width:var(--rail-min-width);max-width:700px;margin:0 auto;padding:10px;background:#d9d0e7;border-radius:18px}
-.rail-cell{position:relative;display:grid;place-items:center;min-width:0;aspect-ratio:1;background:#fff9ed}
+.railway-puzzle{background:radial-gradient(circle at 18% 16%,#fff5b899,transparent 22%),radial-gradient(circle at 82% 18%,#ffdff099,transparent 24%),linear-gradient(145deg,#fffbea,#e9f8ff 50%,#f2eaff);border-color:#cab8ff}
+.rail-board{direction:ltr;display:grid;grid-template-columns:repeat(var(--rail-cols),minmax(0,1fr));grid-template-rows:repeat(var(--rail-rows),minmax(0,1fr));gap:0;width:min(100%,680px);min-width:0;max-width:680px;aspect-ratio:1;margin:0 auto;padding:10px;background-color:#c5b5ee;background-image:radial-gradient(circle at 12px 12px,#fff9 0 2px,transparent 3px),repeating-linear-gradient(90deg,#d8caf5 0 3px,#c3b0ea 3px 25px,#ad97dd 26px 28px),linear-gradient(135deg,#c9efff88,#e3d7ff88);background-size:48px 48px,28px 100%,100% 100%;border:7px solid #a28ad8;border-radius:24px;box-shadow:inset 0 0 0 4px #fff6,inset 0 0 20px #8f77c444,0 7px 15px #7c66bd33}
+.rail-cell{position:relative;display:grid;place-items:center;min-width:0;aspect-ratio:1;padding:0;border:0;border-radius:0;background:transparent;color:#fff}
+.rail-cell.track{cursor:pointer}
+.rail-cell.track:hover{background:#ffffff15}
+.rail-cell.track:focus-visible{z-index:4}
 .rail-cell.empty{background:transparent}
-.rail-cell svg{position:absolute;inset:0;width:100%;height:100%;color:#9486a8}
+.rail-cell svg{position:absolute;inset:0;width:100%;height:100%;color:#f8f2df;filter:drop-shadow(0 2px 0 #423529)}
 .rail-switch-marker{position:absolute;z-index:2;top:0;right:0;display:grid;place-items:center;width:16px;height:16px;border:1px solid #fff;border-radius:50%;background:#ece6ff;color:#3b2a66;font-size:10px;line-height:1}
 .rail-switch-marker.on{background:#ffb703}
 .rail-switch-controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(72px,1fr));gap:6px;max-width:700px;margin:8px auto}
 .rail-switch-control{display:flex;justify-content:center;align-items:center;gap:4px;min-height:44px;padding:4px;border-radius:10px;background:#ece6ff;color:#3b2a66;font-size:13px}
 .rail-switch-control.on{background:#ffdf80}
 .rail-switch-control small{font-size:10px}
-.rail-station{position:relative;z-index:1;font-size:clamp(10px,2.4vw,20px)}
-.rail-station i{position:absolute;right:-1px;bottom:-1px;width:9px;height:9px;border:1px solid #fff;border-radius:50%;background:var(--train-color)}
-.rail-train{position:relative;z-index:3;display:grid;place-items:center;width:88%;height:88%;border:2px solid var(--train-color);border-radius:50%;background:#fff;font-size:clamp(10px,2.4vw,20px);line-height:1}
+.rail-station{position:relative;z-index:3;display:grid;place-items:center;width:76%;height:76%;border:4px solid var(--train-color);border-radius:12px;background:#fff7d8;font-size:clamp(12px,3.8vw,25px);box-shadow:0 3px 0 #332d2588}
+.rail-station i{position:absolute;right:-5px;bottom:-5px;width:12px;height:12px;border:2px solid #fff;border-radius:50%;background:var(--train-color)}
+.rail-train{position:relative;z-index:5;display:grid;place-items:center;width:94%;height:94%;border:3px solid #fff;border-radius:16px 16px 10px 10px;background:var(--train-color);font-size:clamp(14px,4.5vw,30px);line-height:1;box-shadow:0 4px 0 #332d2566}
+.rail-train .train-emoji{display:inline-block;transform:none}
 .rail-train i{position:absolute;right:-2px;bottom:-2px;width:9px;height:9px;border:1px solid #fff;border-radius:50%;background:var(--train-color)}
 .rail-queue{display:flex;justify-content:center;gap:5px;flex-wrap:wrap;margin:8px auto}
 .rail-queue span{padding:4px 7px;border:2px solid var(--train-color);border-radius:12px;background:#fff;font-size:16px}
 .rail-color-chip{display:inline-block;width:12px;height:12px;border:2px solid #fff;border-radius:50%;background:var(--train-color);box-shadow:0 0 0 1px #6a55a5;vertical-align:middle}
 .rail-controls{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
+.rail-go-button{min-width:min(240px,80vw);font-size:18px}
+.rail-route-status{min-height:24px;margin:8px auto;font-weight:800}
+.rail-feedback-top{position:sticky;top:0;z-index:8;max-width:560px;margin:6px auto 10px;padding:9px 12px;border:2px solid #ffb703;border-radius:14px;background:#fff8d8;color:#654400;box-shadow:0 3px 8px #65440022;font-weight:800}
+.rail-junction{position:absolute;z-index:4;right:4px;bottom:4px;display:grid;place-items:center;width:20px;height:20px;padding:0;border:2px solid #efffe8;border-radius:50%;background:#55b957;color:#fff;font-size:12px;line-height:1;box-shadow:0 2px 4px #1e3c2288}
+.rail-junction.on{background:#28a9e0}
+.rail-piece-button{cursor:pointer;background:transparent;color:inherit}
+.rail-piece-button:hover{background:#fff3}
+.rail-piece-button.connected,.rail-piece-button.disconnected{box-shadow:none}
+.rail-depot{position:relative;z-index:4;display:grid;place-items:center;width:90%;height:84%;border:4px solid #fff;border-radius:10px;background:var(--train-color);font-size:clamp(14px,4vw,25px);box-shadow:0 4px 0 #332d2566}
+.rail-tree,.rail-fence{position:absolute;z-index:2;color:#fff7d8;opacity:.8;font-size:clamp(10px,2vw,16px)}
+@media(max-width:600px){
+  .paint-workspace{grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto auto auto auto auto auto;column-gap:0;align-content:start}
+  .paint-workspace>.tools:not(.paint-zoom-tools),.paint-workspace>.sizes,.paint-workspace>.hint{grid-column:1}
+  .paint-canvas-wrap{grid-column:1;grid-row:4;width:min(100%,360px,max(200px,calc(100dvh - 540px)));justify-self:center}
+  .paint-item-nav{grid-column:1;grid-row:5;width:min(100%,360px)}
+  .paint-actions{grid-column:1;grid-row:6;flex-direction:row;align-self:auto;width:min(100%,360px);margin:2px auto;gap:4px}
+  .paint-actions button{width:auto;flex:1 1 calc(33.333% - 4px);min-width:84px}
+  .paint-zoom-tools{grid-column:1;grid-row:7;width:min(100%,360px);justify-self:center}
+}
 .rail-status{min-height:22px}
 .code-row,.code-palette{display:flex;justify-content:center;align-items:center;gap:7px;flex-wrap:wrap;margin:12px auto}
 .code-peg{width:48px;height:48px;padding:0;border:3px solid #d9ccff;border-radius:50%;font-size:25px}
@@ -218,6 +244,11 @@ video{width:100%;max-width:420px;border-radius:16px;background:#222;display:bloc
 .game-demo-token:nth-child(2){animation-delay:.15s}
 .game-demo-token:nth-child(3){animation-delay:.3s}
 .game-demo-token:nth-child(4){animation-delay:.45s}
+.railway-demo-frame .game-demo-board{width:min(100%,400px);padding:14px;background:linear-gradient(145deg,#f1eaff,#dff7ff);border:5px solid #aa91e5;border-radius:18px;box-shadow:inset 0 0 0 3px #fff8}
+.railway-demo-frame .game-demo-token{border-color:#fff;background:#8f76ce;color:#fff;box-shadow:0 3px 0 #513d82}
+.railway-demo-frame:nth-child(1) .game-demo-token:nth-child(2){transform:rotate(-90deg)}
+.railway-demo-frame:nth-child(2) .game-demo-token:nth-child(2){animation:rail-demo-click 1s ease-in-out infinite}
+@keyframes rail-demo-click{50%{transform:rotate(90deg) scale(.92)}}
 .game-demo-caption{max-width:94%;font-size:clamp(12px,3.2vw,17px);font-weight:700}
 .game-demo-play{position:absolute;right:10px;bottom:9px;font-size:11px;opacity:.8}
 .game-intro-rules{max-width:520px;margin:10px auto 16px;padding-inline-start:24px;text-align:start}
@@ -306,6 +337,16 @@ video{width:100%;max-width:420px;border-radius:16px;background:#222;display:bloc
 .parent-section p{margin:6px 0}
 .access-notice{background:#e2f8e9;border:2px solid #65b77d;border-radius:14px;padding:10px;font-weight:700}
 .parent-section button{max-width:100%;overflow-wrap:anywhere}
+.a11y-options{display:flex;flex-direction:column;gap:8px;text-align:start}
+.a11y-option{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:12px;background:#f8f5ff;font-weight:700}
+.a11y-option input{width:24px;height:24px;margin:0;accent-color:#7c4dff}
+.profile-email{overflow-wrap:anywhere;color:#5c477e}
+html.a11y-large-text{font-size:118%}
+html.a11y-contrast body{background:#fff;color:#201238}
+html.a11y-contrast button:not(.sw){border:2px solid #201238;box-shadow:none}
+html.a11y-contrast .screen,html.a11y-contrast .parent-section,html.a11y-contrast .a11y-option{background:#fff}
+html.a11y-reduced-motion *,html.a11y-reduced-motion *:before,html.a11y-reduced-motion *:after{scroll-behavior:auto!important;animation:none!important;transition:none!important}
+:focus-visible{outline:4px solid #ffb703;outline-offset:3px}
 [dir=rtl] .lock{right:auto;left:6px}
 </style>
 </head>
@@ -313,8 +354,8 @@ video{width:100%;max-width:420px;border-radius:16px;background:#222;display:bloc
 
 <div id="welcome" class="screen on center">
   <div class="logo">🎨✨</div><h1>Magical Fun</h1><p data-i18n="tagline">Games, coloring and creativity!</p>
-  <div class="welcome-controls"><label><span data-i18n="language">Language</span><select id="welcomeLanguage" onchange="setLanguage(this.value)" aria-label="Language" data-i18n-aria="language"><option value="en">English</option><option value="he">עברית</option><option value="ru">Русский</option></select></label><button id="welcomeSndBtn" class="welcome-sound-toggle" onclick="toggleMusic()" aria-label="Music on or off" aria-pressed="true" data-i18n-aria="musicToggle">🔊</button></div>
-  <p><a id="privacyLink" href="./privacy.html?lang=en" data-i18n="privacyPolicyLink">Privacy policy</a> · <a id="deleteAccountLink" href="./delete-account.html?lang=en" data-i18n="deleteAccountLink">Request account deletion</a></p>
+  <div class="welcome-controls"><label><span data-i18n="language">Language</span><select id="welcomeLanguage" onchange="setLanguage(this.value)" aria-label="Language" data-i18n-aria="language"><option value="en">English</option><option value="he">עברית</option><option value="ru">Русский</option></select></label><button id="welcomeSndBtn" class="welcome-sound-toggle" onclick="toggleMusic()" aria-label="Music on or off" aria-pressed="true" data-i18n-aria="musicToggle">🔊</button><button class="welcome-sound-toggle" type="button" onclick="openAccessibilitySettings()" aria-label="Accessibility settings" data-i18n-aria="accessibilityTitle">♿</button></div>
+  <p><a id="privacyLink" href="./privacy.html?lang=en" data-i18n="privacyPolicyLink">Privacy policy</a> · <a id="termsLink" href="./terms.html?lang=en" data-i18n="termsOfUseLink">Terms of use</a></p>
   <button class="guest-button" style="width:100%;margin:6px 0" onclick="guest()" data-i18n="playGuest">Play as Guest</button>
   <button style="width:100%;margin:6px 0" onclick="authForm('login')" data-i18n="login">Login</button>
   <button class="ghost" style="width:100%;margin:6px 0" onclick="authForm('reg')" data-i18n="register">Register</button>
@@ -394,6 +435,7 @@ video{width:100%;max-width:420px;border-radius:16px;background:#222;display:bloc
 
 <div id="profile" class="screen center">
   <h2 id="pName"></h2>
+  <p id="pEmail" class="profile-email" hidden></p>
   <h3 data-i18n="buddy">Pick your Buddy</h3>
   <div id="avs"></div>
   <p style="margin-top:12px">⭐ <span data-i18n="profileStars">Stars</span>: <b id="pStars">0</b> &nbsp; 👑 <span data-i18n="vipLabel">VIP</span>: <b id="pVip">Free</b></p>
@@ -422,7 +464,7 @@ video{width:100%;max-width:420px;border-radius:16px;background:#222;display:bloc
   <div style="font-size:40px">👪</div><h3 data-i18n="parentDashboard">Parent dashboard</h3>
   <section class="parent-section"><h4 data-i18n="timeLimitTitle">Daily play-time limit</h4><p id="parentUsage"></p><label for="dailyLimit" data-i18n="dailyLimitLabel">Daily limit</label><select id="dailyLimit" onchange="saveDailyLimit(this.value)" style="width:100%;margin-top:8px"><option value="0" data-i18n="unlimited">No limit</option><option value="15" data-i18n="limit15">15 minutes</option><option value="30" data-i18n="limit30">30 minutes</option><option value="45" data-i18n="limit45">45 minutes</option><option value="60" data-i18n="limit60">60 minutes</option><option value="90" data-i18n="limit90">90 minutes</option><option value="120" data-i18n="limit120">120 minutes</option></select></section>
   <section class="parent-section"><h4 data-i18n="purchaseManagement">Purchase management</h4><p data-i18n="purchaseAreaIntro"></p><p id="parentAccessNotice" class="access-notice" role="status" hidden></p><p id="parentPurchases"></p><button class="alt" onclick="openParentPurchaseOptions()" data-i18n="viewPurchaseOptions">View purchase options</button><button id="restorePurchasesButton" class="ghost" hidden onclick="restorePurchases()"></button><button id="managePurchasesButton" class="ghost" hidden onclick="managePurchases()"></button></section>
-  <p><a id="parentPrivacyLink" href="./privacy.html?lang=en" data-i18n="privacyPolicyLink">Privacy policy</a> · <a id="parentDeleteAccountLink" href="./delete-account.html?lang=en" data-i18n="deleteAccountLink">Request account deletion</a></p>
+  <p><a id="parentPrivacyLink" href="./privacy.html?lang=en" data-i18n="privacyPolicyLink">Privacy policy</a> · <a id="parentTermsLink" href="./terms.html?lang=en" data-i18n="termsOfUseLink">Terms of use</a> · <a id="parentDeleteAccountLink" href="./delete-account.html?lang=en" data-i18n="deleteAccountLink">Request account deletion</a></p>
   <button class="ghost" onclick="closeParentDashboard()" data-i18n="close">✖ Close</button>
 </div></div>
 
@@ -436,6 +478,16 @@ video{width:100%;max-width:420px;border-radius:16px;background:#222;display:bloc
   <p id="purchaseOptionsNotice" aria-live="polite"></p>
   <div id="purchaseGameList" class="level-grid"></div>
   <button class="ghost" onclick="closeM('gamePurchaseM')" data-i18n="cancel">Cancel</button>
+</div></div>
+
+<div class="modal" id="accessibilityM" role="dialog" aria-modal="true" aria-labelledby="accessibilityTitle"><div class="box">
+  <div style="font-size:42px" aria-hidden="true">♿</div><h2 id="accessibilityTitle" data-i18n="accessibilityTitle">Accessibility</h2>
+  <div class="a11y-options">
+    <label class="a11y-option"><input id="a11yLargeText" type="checkbox" onchange="saveAccessibilitySetting('largeText',this.checked)"><span data-i18n="largeText">Larger text</span></label>
+    <label class="a11y-option"><input id="a11yContrast" type="checkbox" onchange="saveAccessibilitySetting('contrast',this.checked)"><span data-i18n="highContrast">High contrast</span></label>
+    <label class="a11y-option"><input id="a11yReducedMotion" type="checkbox" onchange="saveAccessibilitySetting('reducedMotion',this.checked)"><span data-i18n="reduceMotion">Reduce motion</span></label>
+  </div>
+  <button class="ghost" onclick="closeM('accessibilityM')" data-i18n="close">Close</button>
 </div></div>
 
 <div class="modal" id="vipM"><div class="box">
@@ -739,6 +791,21 @@ Object.assign(TEXT.en,{puzzlePrompt:'Tap a piece and watch it highlight, then ta
 Object.assign(TEXT.he,{puzzlePrompt:'בחרו חלק וראו שהוא מסומן, ואז בחרו חלק נוסף כדי להחליף ביניהם. השלימו את כל התמונות בפעילות!',puzzlePictureProgress:'תמונה {n} מתוך {total}',puzzleSelection:'החלק סומן. בחרו חלק נוסף כדי להחליף ביניהם.',puzzleNextPicture:'לתמונה הבאה',puzzleNextActivity:'לפעילות הבאה',puzzleActivityList:'חזרה לפעילויות',railwayManualSwitch:'שנו כל פנייה ידנית והחזירו את המתג לישר אחרי שהרכבת עוברת.',traceProgress:'אות {n} מתוך {total}'});
 Object.assign(TEXT.ru,{puzzlePrompt:'Нажмите на деталь — она выделится, затем выберите другую, чтобы поменять их местами. Соберите все картинки в задании!',puzzlePictureProgress:'Картинка {n} из {total}',puzzleSelection:'Деталь выбрана. Выберите другую деталь для обмена.',puzzleNextPicture:'Следующая картинка',puzzleNextActivity:'Следующее задание',puzzleActivityList:'К списку заданий',railwayManualSwitch:'Переключайте каждый поворот вручную и возвращайте стрелку прямо после поезда.',traceProgress:'Буква {n} из {total}'});
 Object.assign(TEXT.ru,{volume:'Громкость',musicToggle:'Включить или выключить музыку',drawingArea:'Область рисования'});
+Object.assign(TEXT.en,{privacyPolicyLink:'Privacy policy',termsOfUseLink:'Terms of use',connectedEmail:'Connected email',accessibilityTitle:'Accessibility',largeText:'Larger text',highContrast:'High contrast',reduceMotion:'Reduce motion',letterStylePrompt:'Which letter style would you like to practise?',letterStyleUpper:'Uppercase letters',letterStyleLower:'Lowercase letters',letterStylePrint:'Block letters',letterStyleCursive:'Cursive letters'});
+Object.assign(TEXT.he,{privacyPolicyLink:'מדיניות פרטיות',termsOfUseLink:'תנאי שימוש',connectedEmail:'כתובת המייל המחוברת',accessibilityTitle:'נגישות',largeText:'טקסט גדול',highContrast:'ניגודיות גבוהה',reduceMotion:'הפחתת אנימציות',letterStylePrompt:'באילו סוגי אותיות תרצו לתרגל?',letterStyleUpper:'אותיות גדולות',letterStyleLower:'אותיות קטנות',letterStylePrint:'אותיות דפוס',letterStyleCursive:'אותיות כתב'});
+Object.assign(TEXT.ru,{privacyPolicyLink:'Политика конфиденциальности',termsOfUseLink:'Условия использования',connectedEmail:'Подключённая почта',accessibilityTitle:'Специальные возможности',largeText:'Крупный текст',highContrast:'Высокая контрастность',reduceMotion:'Уменьшить анимацию',letterStylePrompt:'Какие буквы будем тренировать?',letterStyleUpper:'Прописные буквы',letterStyleLower:'Строчные буквы',letterStylePrint:'Печатные буквы',letterStyleCursive:'Рукописные буквы'});
+Object.assign(TEXT.en,{railwayInstruction:'Use the green junctions to guide each train through the winding track network to its matching flag.',railwayNetworkInstruction:'The tracks bend and cross the board. Tap green junctions to choose a direction, then send the trains.',railwayMoving:'The trains are following the winding routes…',railwayReady:'Choose the junction directions, then send the trains!',railwayLaunch:'🚂 Start the trains',railwayHint:'Look from the top depot to the matching flag. Use each junction to take the winding branch instead of continuing straight.'});
+Object.assign(TEXT.he,{railwayInstruction:'לחצו על חלקי המסילה כדי לחבר את הענפים ולהוביל כל רכבת אל הדגל התואם.',railwayNetworkInstruction:'הפסים מסתעפים, מתעגלים וחוצים את הלוח. לחצו ישירות על חלק המסילה כדי לחבר פנייה או להחזיר אותה לישר, ואז שלחו את הרכבות.',railwayMoving:'הרכבות נעות במסלולים המפותלים…',railwayReady:'חברו את חלקי המסילה ואז שלחו את הרכבות!',railwayLaunch:'🚂 הפעלת הרכבות',railwayHint:'לחצו על קטע המסילה עצמו. כיוון הפסים משתנה בלחיצה ומראה אם המקטע ישר או מסתעף.'});
+Object.assign(TEXT.ru,{railwayInstruction:'Используй зелёные стрелки, чтобы провести каждый поезд по извилистой сети путей к флажку такого же цвета.',railwayNetworkInstruction:'Рельсы изгибаются и пересекаются. Нажимай на зелёные стрелки, чтобы выбрать направление, затем отправляй поезда.',railwayMoving:'Поезда движутся по извилистым путям…',railwayReady:'Выбери направления стрелок и отправляй поезда!',railwayLaunch:'🚂 Запустить поезда',railwayHint:'Проследи от верхнего депо до флажка такого же цвета. На стрелках выбирай извилистую ветку вместо прямого пути.'});
+Object.assign(TEXT.en,{railwayIncomplete:'The track is disconnected. Turn the loose pieces and try again.'});
+Object.assign(TEXT.he,{railwayIncomplete:'המסילה אינה מחוברת. סובבו את הקטע המנותק ונסו שוב.',railwayInstruction:'לחצו על קטעי המסילה כדי לחבר את הענפים ולהוביל את הרכבות אל הדגלים התואמים.'});
+Object.assign(TEXT.ru,{railwayIncomplete:'Путь не соединён. Поверни разъединённые участки и попробуй снова.'});
+Object.assign(TEXT.en,{railwayTrackRotate:'Rotate track piece {n}'});
+Object.assign(TEXT.he,{railwayTrackRotate:'סיבוב חלק מסילה {n}'});
+Object.assign(TEXT.ru,{railwayTrackRotate:'Повернуть участок пути {n}'});
+Object.assign(TEXT.en,{railwayInstructionSingle:'Connect every track piece and guide the train to its matching flag.',railwayNetworkSingle:'Tap each straight or curved track piece to complete the route, then start the train.',railwayMovingSingle:'The train is following the connected route…',railwayReadySingle:'Connect the track pieces, then start the train!',railwayLaunchSingle:'🚂 Start the train',railwayWinSingle:'The train reached its matching station!'});
+Object.assign(TEXT.he,{railwayInstructionSingle:'חברו את המסילה והובילו את הרכבת אל הדגל התואם.',railwayNetworkSingle:'לחצו על כל קטע במסילה כדי להשלים מסלול אחד רציף, ואז הפעילו את הרכבת.',railwayMovingSingle:'הרכבת נעה במסלול המחובר…',railwayReadySingle:'חברו את המסילה ואז הפעילו את הרכבת!',railwayLaunchSingle:'🚂 הפעלת הרכבת',railwayWinSingle:'הרכבת הגיעה לתחנה בצבע המתאים!'});
+Object.assign(TEXT.ru,{railwayInstructionSingle:'Соедини все участки пути и проведи поезд к флажку такого же цвета.',railwayNetworkSingle:'Нажимай на прямые и изогнутые участки, чтобы завершить маршрут, затем запусти поезд.',railwayMovingSingle:'Поезд движется по соединённому пути…',railwayReadySingle:'Соедини участки пути и запусти поезд!',railwayLaunchSingle:'🚂 Запустить поезд',railwayWinSingle:'Поезд прибыл на станцию нужного цвета!'});
 Object.assign(TEXT.en,{cameraPermissionBlocked:'Camera access is blocked. Open app settings and allow Camera, then return and try again.',cameraPermissionBrowserHelp:'Camera access is blocked. Allow it in your browser or site settings, then try again.',cameraPermissionUpdateRequired:'Update the app to open its settings here, or open device Settings > Apps > Magical Fun > Permissions > Camera.',cameraPermissionSettings:'Open app settings',cameraSettingsError:'Could not open app settings. Open them from your device settings.'});
 Object.assign(TEXT.he,{cameraPermissionBlocked:'הגישה למצלמה חסומה. פתחו את הגדרות האפליקציה ואשרו גישה למצלמה, ואז חזרו ונסו שוב.',cameraPermissionBrowserHelp:'הגישה למצלמה חסומה. אשרו אותה בהגדרות הדפדפן או האתר ונסו שוב.',cameraPermissionUpdateRequired:'כדי לפתוח מכאן את הגדרות האפליקציה, עדכנו את האפליקציה. לחלופין: הגדרות המכשיר ← אפליקציות ← Magical Fun ← הרשאות ← מצלמה.',cameraPermissionSettings:'פתיחת הגדרות האפליקציה',cameraSettingsError:'לא ניתן לפתוח את הגדרות האפליקציה. פתחו אותן דרך הגדרות המכשיר.'});
 Object.assign(TEXT.ru,{cameraPermissionBlocked:'Доступ к камере заблокирован. Откройте настройки приложения, разрешите доступ к камере, затем вернитесь и попробуйте снова.',cameraPermissionBrowserHelp:'Доступ к камере заблокирован. Разрешите его в настройках браузера или сайта и попробуйте снова.',cameraPermissionUpdateRequired:'Обновите приложение, чтобы открыть настройки отсюда, или выберите: Настройки устройства > Приложения > Magical Fun > Разрешения > Камера.',cameraPermissionSettings:'Открыть настройки приложения',cameraSettingsError:'Не удалось открыть настройки приложения. Откройте их в настройках устройства.'});
@@ -764,23 +831,23 @@ Object.assign(TEXT.en,{deleteAccountLink:'Request account deletion'});
 Object.assign(TEXT.he,{deleteAccountLink:'בקשה למחיקת חשבון'});
 Object.assign(TEXT.ru,{deleteAccountLink:'Запросить удаление аккаунта'});
 Object.assign(TEXT.en,{chooseGameToUnlock:'Choose a game to unlock',purchaseGameAlreadyUnlocked:'Already unlocked',
-  purchaseAreaIntro:'This section shows access to games and subscription options. A lock means that some content is not yet unlocked.',
-  vipAccessNotice:'VIP is active on this app account: all games and activities are unlocked. You do not need another purchase for access. VIP access does not tell you whether you have a separate Google Play subscription; check Google Play to manage or cancel one.',
-  allAccessNotice:'All games and activities are currently unlocked on this account. You do not need another purchase for access. Check Google Play separately to manage any subscription.',
+  purchaseAreaIntro:'This section shows access to games and subscription options. A subscription can be used with the same app account on up to 5 devices. A lock means that some content is not yet unlocked.',
+  vipAccessNotice:'VIP is active on this app account: all games and activities are unlocked. The subscription can be used on up to 5 devices signed in to this same app account. You do not need another purchase for access. Check Google Play to manage or cancel a paid subscription.',
+  allAccessNotice:'All games and activities are currently unlocked on this account. This access can be used on up to 5 devices signed in to the same app account. Check Google Play separately to manage any subscription.',
   purchaseOptionsTitle:'Game access and purchase options',purchaseOptionsAll:'All games are already unlocked. There are no games to purchase.',
   purchaseOptionsSome:'Choose a locked game to see its purchase options.',
   coloringCategories:'Coloring Categories',previousColoringPicture:'Previous picture',nextColoringPicture:'Next picture'});
 Object.assign(TEXT.he,{chooseGameToUnlock:'בחרו משחק לפתיחה',purchaseGameAlreadyUnlocked:'כבר פתוח',
-  purchaseAreaIntro:'זהו אזור הגישה למשחקים ואפשרויות המינוי. סמל מנעול מציין שיש במשחק תוכן שעדיין לא פתוח.',
-  vipAccessNotice:'הרשאת VIP פעילה בחשבון הזה: כל המשחקים והפעילויות פתוחים. אין צורך ברכישה נוספת כדי לשחק. הרשאת VIP אינה מעידה אם קיים מינוי נפרד ב־Google Play; לניהול או ביטול מינוי יש לבדוק ב־Google Play.',
-  allAccessNotice:'כל המשחקים והפעילויות פתוחים כרגע בחשבון הזה. אין צורך ברכישה נוספת כדי לשחק. לניהול מינוי קיים יש לבדוק בנפרד ב־Google Play.',
+  purchaseAreaIntro:'זהו אזור הגישה למשחקים ואפשרויות המינוי. ניתן להשתמש במינוי באותו חשבון אפליקציה בעד 5 מכשירים. סמל מנעול מציין שיש תוכן שעדיין לא פתוח.',
+  vipAccessNotice:'הרשאת VIP פעילה בחשבון הזה: כל המשחקים והפעילויות פתוחים. ניתן להשתמש במינוי באותו חשבון אפליקציה בעד 5 מכשירים. אין צורך ברכישה נוספת כדי לשחק. לניהול או ביטול מנוי בתשלום יש לבדוק ב־Google Play.',
+  allAccessNotice:'כל המשחקים והפעילויות פתוחים כרגע בחשבון הזה. ניתן להשתמש בגישה ובמינוי בעד 5 מכשירים המחוברים לאותו חשבון אפליקציה. לניהול מינוי קיים יש לבדוק בנפרד ב־Google Play.',
   purchaseOptionsTitle:'גישה למשחקים ואפשרויות רכישה',purchaseOptionsAll:'כל המשחקים כבר פתוחים. אין משחקים לרכישה.',
   purchaseOptionsSome:'בחרו משחק נעול כדי לראות את אפשרויות הרכישה שלו.',
   coloringCategories:'קטגוריות צביעה',previousColoringPicture:'לתמונה הקודמת',nextColoringPicture:'לתמונה הבאה'});
 Object.assign(TEXT.ru,{chooseGameToUnlock:'Выберите игру для открытия',purchaseGameAlreadyUnlocked:'Уже открыта',
-  purchaseAreaIntro:'Здесь показан доступ к играм и варианты подписки. Замок означает, что часть содержимого игры ещё не открыта.',
-  vipAccessNotice:'VIP активен в этом аккаунте приложения: все игры и задания открыты. Для доступа дополнительная покупка не нужна. Статус VIP не показывает, есть ли отдельная подписка Google Play; проверьте её управление или отмену в Google Play.',
-  allAccessNotice:'Все игры и задания сейчас открыты в этом аккаунте. Для доступа дополнительная покупка не нужна. Чтобы управлять подпиской, проверьте Google Play отдельно.',
+  purchaseAreaIntro:'Здесь показан доступ к играм и варианты подписки. Подпиской можно пользоваться с одним аккаунтом приложения максимум на 5 устройствах. Замок означает, что часть содержимого игры ещё не открыта.',
+  vipAccessNotice:'VIP активен в этом аккаунте приложения: все игры и задания открыты. Подпиской можно пользоваться максимум на 5 устройствах, входящих в этот же аккаунт приложения. Дополнительная покупка не нужна. Для управления или отмены платной подписки проверьте Google Play.',
+  allAccessNotice:'Все игры и задания сейчас открыты в этом аккаунте. Доступ и подписка могут использоваться максимум на 5 устройствах, входящих в тот же аккаунт приложения. Управление подпиской доступно отдельно в Google Play.',
   purchaseOptionsTitle:'Доступ к играм и варианты покупки',purchaseOptionsAll:'Все игры уже открыты. Нет игр для покупки.',
   purchaseOptionsSome:'Выберите закрытую игру, чтобы увидеть варианты покупки.',
   coloringCategories:'Категории раскрасок',previousColoringPicture:'Предыдущая картинка',nextColoringPicture:'Следующая картинка'});
@@ -806,7 +873,7 @@ const MINI_GAME_INTRO_COPY={
     escapeRoom:['Solve a riddle.','Earn a clue to the hidden key.','Search the room for the key!','Each solved riddle reveals one clue to the hidden key.','After five riddles, use the clues and click room objects to find the key.'],
     physicsPaths:['Look at the path.','Turn the track pieces.','Connect start to finish!','Rotate the tiles to join the open path ends.','Connect the green start to the finish before turns run out.'],
     gridSokoban:['Plan a move.','Push the box toward the goal.','Box delivered!','Move around the board and push the box.','You can push it, but cannot pull it.'],
-    railwayControl:['Check the train colors.','Set the track switches.','Guide each train to its station!','Choose each switch direction before trains move.','Match every train to the station of the same color.'],
+    railwayControl:['The track starts disconnected.','Tap every track piece and rotate it.','Connect the route, then start the train!','Tap straight and curved track pieces directly until every connection meets with no gap.','Only send the trains after the full route is connected. A disconnected route earns no star.'],
     wordSearch:['Find a word from the list.','Tap its letters one by one.','Word found!','Look at the word list and find each word in the letter grid.','Tap neighboring letters in order to spell a word. Words can run horizontally, vertically, or diagonally, forward or backward.'],
     magneticMaze:['Choose a magnet direction.','Guide the ball past obstacles.','Reach the goal!','Select and activate magnets to move the metal ball.','Avoid walls and holes on the way to the goal.'],
   },
@@ -825,7 +892,7 @@ const MINI_GAME_INTRO_COPY={
     escapeRoom:['פתרו חידה.','קבלו רמז למפתח הנסתר.','חפשו את המפתח בחדר!','כל חידה שתפתרו תעניק רמז נוסף למפתח הנסתר.','אחרי חמש החידות, היעזרו ברמזים ולחצו על חפצים בחדר כדי למצוא את המפתח.'],
     physicsPaths:['התבוננו במסלול.','סובבו את חלקי הדרך.','חברו בין ההתחלה לסיום!','סובבו את האריחים כדי לחבר בין קצות המסלול.','חברו בין ההתחלה הירוקה לסיום לפני שייגמרו הסיבובים.'],
     gridSokoban:['תכננו את הצעד.','דחפו את הקופסה אל היעד.','הקופסה הגיעה!','נועו בלוח ודחפו את הקופסה.','אפשר לדחוף אותה, אך אי אפשר למשוך.'],
-    railwayControl:['בדקו את צבעי הרכבות.','כוונו את המסילות.','הובילו כל רכבת לתחנה שלה!','בחרו את כיוון המסילה לפני שהרכבות נוסעות.','התאימו כל רכבת לתחנה בצבע שלה.'],
+    railwayControl:['המסילה מתחילה מנותקת.','לחצו על כל קטע מסילה וסובבו אותו.','חברו מסלול אחד ואז הפעילו את הרכבת!','לחצו ישירות על כל קטע פס, ישר או מעוקל, עד שהחיבור רציף ללא מרווח.','רק כשהמסלול מחובר, לחצו על הפעלת הרכבת. מסילה מנותקת לא מזכה בכוכב.'],
     wordSearch:['מצאו מילה מהרשימה.','לחצו על אותיותיה בזו אחר זו.','מצאתם מילה!','בדקו את רשימת המילים וחפשו כל מילה בלוח האותיות.','לחצו לפי הסדר על אותיות סמוכות כדי לאיית מילה. המילים יכולות להופיע אופקית, אנכית או באלכסון, קדימה או לאחור.'],
     magneticMaze:['בחרו כיוון למגנט.','הובילו את הכדור סביב המכשולים.','הגיעו ליעד!','בחרו והפעילו מגנטים כדי להזיז את כדור המתכת.','הימנעו מקירות ומבורות בדרך ליעד.'],
   },
@@ -844,7 +911,7 @@ const MINI_GAME_INTRO_COPY={
     escapeRoom:['Реши загадку.','Получи подсказку к спрятанному ключу.','Ищи ключ в комнате!','За каждую решённую загадку ты получаешь подсказку к спрятанному ключу.','После пяти загадок используй подсказки и нажимай на предметы в комнате, чтобы найти ключ.'],
     physicsPaths:['Посмотри на путь.','Поворачивай плитки.','Соедини старт и финиш!','Поворачивай плитки, соединяя открытые концы пути.','Соедини зелёный старт с финишем, пока не закончились ходы.'],
     gridSokoban:['Продумай ход.','Толкай ящик к цели.','Ящик доставлен!','Передвигай героя и толкай ящик по полю.','Ящик можно толкать, но нельзя тянуть.'],
-    railwayControl:['Проверь цвета поездов.','Переключай стрелки.','Отправь каждый поезд на свою станцию!','Выбери направление стрелок до движения поездов.','Каждый поезд должен приехать на станцию своего цвета.'],
+    railwayControl:['Путь начинается разъединённым.','Нажимай на каждый участок и поворачивай его.','Соедини маршрут и запусти поезд!','Нажимай прямо на прямые и изогнутые участки, пока все соединения не встретятся без разрывов.','Запускай поезда только после полного соединения пути. За разорванный путь звезда не даётся.'],
     wordSearch:['Найди слово из списка.','Нажимай на его буквы по очереди.','Слово найдено!','Посмотри на список и найди слова в сетке букв.','Нажимай по порядку на соседние буквы, чтобы составить слово. Слова могут идти по горизонтали, вертикали или диагонали, вперёд или назад.'],
     magneticMaze:['Выбери направление магнита.','Проведи шар мимо препятствий.','Доберись до цели!','Выбирай и включай магниты, чтобы двигать металлический шар.','Избегай стен и ям по пути к цели.'],
   },
@@ -864,7 +931,7 @@ const MINI_GAME_INTRO_VISUALS={
   escapeRoom:[['🧩','❓','💭','✅'],['💡','💡','💡','💡','💡','🔑'],['🕰️','📚','🖼️','🧰','🗄️','🏺','🪴','🟪','🗝️']],
   physicsPaths:[['🟢','╱','╲','🏁'],['🟢','╱','╱','🏁'],['🟢','➰','➰','🏁']],
   gridSokoban:[['🧱','🙂','📦','⭐'],['🧱','➡️','📦','⭐'],['🧱','⬜','🙂','📦','⭐']],
-  railwayControl:[['🚂','↔️','🚉','🎨'],['🚂','↗️','🚉','🎨'],['🚂','✅','🚉','🎨']],
+  railwayControl:[['🚂','└','╱','🚩'],['👆','└','↻','🚩'],['🚂','━','━','🚩','✅']],
   wordSearch:[['📋','CAT','C','A','T','X','M','P'],['C','A','T','X','M','A','P','S'],['C','A','T','✅','M','A','P','S']],
   magneticMaze:[['🧲','⚪','🧱','🏁'],['🧲','➡️','⚪','🏁'],['🧲','✅','⚪','🏁']],
 };
@@ -885,6 +952,8 @@ function setLanguage(language){
   $('#language').value=currentLanguage;$('#welcomeLanguage').value=currentLanguage;$('#profileLanguage').value=currentLanguage;
   const privacyLink=$('#privacyLink');if(privacyLink)privacyLink.href=`./privacy.html?lang=${currentLanguage}`;
   const parentPrivacyLink=$('#parentPrivacyLink');if(parentPrivacyLink)parentPrivacyLink.href=`./privacy.html?lang=${currentLanguage}`;
+  const termsLink=$('#termsLink');if(termsLink)termsLink.href=`./terms.html?lang=${currentLanguage}`;
+  const parentTermsLink=$('#parentTermsLink');if(parentTermsLink)parentTermsLink.href=`./terms.html?lang=${currentLanguage}`;
   const deleteAccountLink=$('#deleteAccountLink');if(deleteAccountLink)deleteAccountLink.href=`./delete-account.html?lang=${currentLanguage}`;
   const parentDeleteAccountLink=$('#parentDeleteAccountLink');if(parentDeleteAccountLink)parentDeleteAccountLink.href=`./delete-account.html?lang=${currentLanguage}`;
   try{localStorage.setItem('megical_language',currentLanguage)}catch(e){console.error('Could not save language preference:',e)}
@@ -921,6 +990,7 @@ function setLanguage(language){
 
 /* ---------- User Isolation & Storage ---------- */
 let currentUserId = 'guest';
+let currentAccountEmail='';
 let S = {name:'Guest',av:'🐶',stars:0,vip:false,art:[],custom:[],music:true,track:'auto',vol:0.6,language:currentLanguage,unlockedGames:[],allGamesUnlocked:false,completedEscapeRooms:[],completedPuzzleStars:[],dailyUsageDate:'',dailyUsageSeconds:0,dailyLimitMinutes:0};
 let supabaseClient=null,authBusy=false,currentAuthUserId=null,authChoiceMade=false;
 let profileSyncReady=false,profileSyncApplying=false,profileSyncBusy=false,profileSyncAgain=false,profileSyncTimer=null,profileSyncRevision=0,profileSyncChannel=null,deviceHeartbeatTimer=null,profileSyncErrorShown=false;
@@ -928,7 +998,7 @@ let usageTimer=null,usageStartedAt=null,pendingParentAction=null;
 let BILLING_ENABLED=false;
 let billingAccess=[],billingVerifiedAt=0,billingRefreshTimer=null,billingBusy=false,billingPrices={};
 function defaultUserData(name){
-  return {name,av:'🐶',stars:0,vip:false,art:[],custom:[],music:true,track:'auto',vol:0.6,language:currentLanguage,unlockedGames:[],allGamesUnlocked:false,completedEscapeRooms:[],completedPuzzleStars:[],streak:0,lastDay:'',dailyUsageDate:'',dailyUsageSeconds:0,dailyLimitMinutes:0};
+  return {name,av:'🐶',stars:0,vip:false,art:[],custom:[],music:true,track:'auto',vol:0.6,language:currentLanguage,unlockedGames:[],allGamesUnlocked:false,completedEscapeRooms:[],completedPuzzleStars:[],streak:0,lastDay:'',dailyUsageDate:'',dailyUsageSeconds:0,dailyLimitMinutes:0,accessibility:{largeText:false,contrast:false,reducedMotion:false}};
 }
 
 function loadUserData(userId,fallbackName=userId){
@@ -949,6 +1019,8 @@ function loadUserData(userId,fallbackName=userId){
   if(!Array.isArray(S.art)) S.art=[];
   if(!Array.isArray(S.custom)) S.custom=[];
   if(!Array.isArray(S.unlockedGames)) S.unlockedGames=[];
+  if(!S.accessibility||typeof S.accessibility!=='object')S.accessibility=defaultUserData(S.name).accessibility;
+  for(const key of ['largeText','contrast','reducedMotion'])if(typeof S.accessibility[key]!=='boolean')S.accessibility[key]=false;
   delete S.completedActivities;
   if(!Array.isArray(S.completedEscapeRooms))S.completedEscapeRooms=[];
   else S.completedEscapeRooms=S.completedEscapeRooms.filter(key=>typeof key==='string'&&/^\d+:\d+$/.test(key));
@@ -958,6 +1030,7 @@ function loadUserData(userId,fallbackName=userId){
   if(![0,15,30,45,60,90,120].includes(S.dailyLimitMinutes))S.dailyLimitMinutes=0;
   currentLanguage=TEXT[S.language]?S.language:currentLanguage;
   setLanguage(currentLanguage);
+  applyAccessibilitySettings();
   updateMusicButtons();
 }
 
@@ -966,7 +1039,7 @@ function sv(){
   profileSyncRevision++;
   if(currentAuthUserId&&profileSyncReady&&!profileSyncApplying)scheduleProfileSync();
 }
-const PROFILE_SYNC_FIELDS=['name','av','stars','art','custom','music','track','vol','language','completedEscapeRooms','completedPuzzleStars','streak','lastDay','dailyUsageDate','dailyUsageSeconds','dailyLimitMinutes'];
+const PROFILE_SYNC_FIELDS=['name','av','stars','art','custom','music','track','vol','language','completedEscapeRooms','completedPuzzleStars','streak','lastDay','dailyUsageDate','dailyUsageSeconds','dailyLimitMinutes','accessibility'];
 function profileSnapshot(){
   const profile={};
   for(const key of PROFILE_SYNC_FIELDS)profile[key]=S[key]??(Array.isArray(defaultUserData(S.name)[key])?[]:null);
@@ -1158,11 +1231,16 @@ let gameFeedbackAction=null;
 function showGameFeedback(message,actionLabel,action,success=false){
   if(selectedMiniGame==='coloring')return;
   if(typeof action!=='function')throw new TypeError('Game feedback requires a follow-up action.');
+  const phrase=tr(success?'done':'tryAgain').replace(/[!！.。]+$/,'').trim();
+  const repeated=new RegExp(`^\\s*${phrase.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}[!！.。\\s]*`,'i');
+  const cleaned=String(message).replace(repeated,'').replace(repeated,'').trim();
   $('#gameFeedbackIcon').textContent=success?'🎉':'💪';
   $('#gameFeedbackTitle').textContent=tr(success?'done':'tryAgain');
-  $('#gameFeedbackMessage').textContent=message;
+  $('#gameFeedbackTitle').hidden=true;
+  $('#gameFeedbackMessage').textContent=cleaned;
+  $('#gameFeedbackMessage').hidden=!cleaned;
   const button=$('#gameFeedbackAction');
-  button.textContent=actionLabel;
+  button.textContent=!cleaned?tr(success?'done':'tryAgain'):actionLabel;
   gameFeedbackAction=action;
   button.onclick=()=>{
     const next=gameFeedbackAction;
@@ -1544,12 +1622,13 @@ async function requestPasswordReset(){
 }
 function guest(){
   clearBillingAccess();
-  authChoiceMade=true;currentAuthUserId=null;loadUserData('Guest');
+  authChoiceMade=true;currentAuthUserId=null;currentAccountEmail='';loadUserData('Guest');
   S.vip=false;S.allGamesUnlocked=false;S.unlockedGames=[];sv();go('games');
 }
 async function enterAccount(user){
-  if(currentAuthUserId===user.id)return;
+  if(currentAuthUserId===user.id){currentAccountEmail=user.email||currentAccountEmail;renderProfile();return}
   const displayName=(user.user_metadata&&user.user_metadata.display_name)||(user.email||'Guest').split('@')[0];
+  currentAccountEmail=user.email||'';
   loadUserData('account:'+user.id,displayName);
   let deviceAllowed;
   try{deviceAllowed=await registerCurrentDevice()}
@@ -1648,7 +1727,7 @@ async function logout(){
   clearTimeout(profileSyncTimer);clearInterval(deviceHeartbeatTimer);
   if(profileSyncChannel&&supabaseClient){supabaseClient.removeChannel(profileSyncChannel);profileSyncChannel=null}
   profileSyncReady=false;profileSyncBusy=false;profileSyncAgain=false;profileSyncErrorShown=false;
-  clearBillingAccess();currentAuthUserId=null;loadUserData('Guest');go('welcome');
+  clearBillingAccess();currentAuthUserId=null;currentAccountEmail='';loadUserData('Guest');go('welcome');
 }
 function loadSupabaseLibrary(){
   if(window.supabase&&typeof window.supabase.createClient==='function')return Promise.resolve();
@@ -1962,7 +2041,7 @@ const ACTIVITY_NAMES={
     math:['Two-Digit Addition','Two-Digit Subtraction','Tens and Ones','Missing Addend','Add Across a Ten','Subtract Across a Ten','Multiplication Mission','Division Detective','Three-Number Addition','Two-Step Challenge','Missing Factor','Multiply and Add'],
     words:['Mystery Letters','Mixed-Up Message','Letter Challenge','Spelling Trail','Word Puzzle','Hidden Word','Letter Detective','Scramble Quest','Secret Spelling','Word Workshop','Letter Lab','Spelling Challenge'],
     letters:[],
-    storyMath:['Marble Surprise','Apple Basket','Pencil Box','Garden Birds','Balloon Party','Shell Collection','Toy Shop','Cookie Boxes','Bakery Orders','Picnic Balloons','Fruit Baskets','Ticket Booth'],
+    storyMath:['Pencil Box','Apple Basket','Marble Surprise','Garden Birds','Balloon Party','Shell Collection','Bakery Orders','Cookie Boxes','Toy Shop','Ticket Booth','Fruit Baskets','Picnic Balloons'],
     patterns:['Color Pattern','Moon & Stars','Pet Pattern','Fruit Pattern','Garden Pattern','Shape Pattern','Vehicle Pattern','Ocean Pattern','Dinosaur Pattern','Music Pattern','Space Pattern','Winter Pattern'],
     riddles:['Riddle Trail','Clue Finder','Mystery Clues','Brain Teaser','Riddle Explorer','Secret Clues','Thinking Quest','Mystery Solver','Clue Challenge','Curious Riddles','Puzzle of Clues','Riddle Master'],
     scienceQuest:['Plant Clues','Shadow Mystery','Weather Watch','Ice Experiment','Moon Mission','Garden Helpers','Water Cycle','Animal Adaptation','Magnet Test','Day and Night','Seed Journey','Sound Detective'],
@@ -1982,7 +2061,7 @@ const ACTIVITY_NAMES={
     math:['חיבור דו־ספרתי','חיסור דו־ספרתי','עשרות ואחדות','המחובר החסר','חיבור מעבר לעשר','חיסור מעבר לעשר','משימת כפל','בלשי חילוק','חיבור של שלושה מספרים','אתגר בשני שלבים','הגורם החסר','כפל וחיבור'],
     words:['אותיות מסתוריות','מסר מעורבב','אתגר האותיות','שביל האיות','חידת מילים','מילה נסתרת','בלשי אותיות','מסע הערבוב','איות סודי','סדנת מילים','מעבדת האותיות','אתגר האיות'],
     letters:[],
-    storyMath:['הפתעת הגולות','סל התפוחים','קלמר העפרונות','ציפורי הגינה','מסיבת בלונים','אוסף הצדפים','חנות הצעצועים','קופסאות העוגיות','הזמנות מהמאפייה','בלונים לפיקניק','סלי הפירות','דוכן הכרטיסים'],
+    storyMath:['קלמר העפרונות','סל התפוחים','הפתעת הגולות','ציפורי הגינה','מסיבת בלונים','אוסף הצדפים','הזמנות מהמאפייה','קופסאות העוגיות','חנות הצעצועים','דוכן הכרטיסים','סלי הפירות','בלונים לפיקניק'],
     patterns:['דוגמת צבעים','ירח וכוכבים','דוגמת חיות מחמד','דוגמת פירות','דוגמת גינה','דוגמת צורות','דוגמת כלי רכב','דוגמת ים','דוגמת דינוזאורים','דוגמת מוזיקה','דוגמת חלל','דוגמת חורף'],
     riddles:['שביל החידות','מחפשי רמזים','רמזים מסתוריים','חידת מחשבה','חוקרי חידות','רמזים סודיים','אתגר חשיבה','פותרים תעלומות','אתגר הרמזים','חידות סקרניות','חידת הרמזים','אלופי החידות'],
     scienceQuest:['רמזי הצמח','תעלומת הצל','מעקב אחר מזג האוויר','ניסוי הקרח','משימת הירח','עוזרים בגינה','מחזור המים','התאמות בטבע','ניסוי המגנט','יום ולילה','מסע הזרע','בלשי הצלילים'],
@@ -2002,7 +2081,7 @@ const ACTIVITY_NAMES={
     math:['Двузначное сложение','Двузначное вычитание','Десятки и единицы','Найди слагаемое','Переход через десяток','Вычитание с переходом','Задание на умножение','Детектив деления','Сложение трёх чисел','Задача в два шага','Найди множитель','Умножение и сложение'],
     words:['Тайные буквы','Перепутанное послание','Испытание букв','Тропа правописания','Задача со словом','Скрытое слово','Детектив букв','Буквенная путаница','Тайное правописание','Мастерская слов','Лаборатория букв','Испытание правописания'],
     letters:[],
-    storyMath:['Сюрприз с шариками','Корзина яблок','Карандаши в пенале','Птицы в саду','Праздник шаров','Коллекция ракушек','Магазин игрушек','Коробки печенья','Заказы из пекарни','Шары для пикника','Корзины фруктов','Касса билетов'],
+    storyMath:['Карандаши в пенале','Корзина яблок','Сюрприз с шариками','Птицы в саду','Праздник шаров','Коллекция ракушек','Заказы из пекарни','Коробки печенья','Магазин игрушек','Касса билетов','Корзины фруктов','Шары для пикника'],
     patterns:['Цветной узор','Луна и звёзды','Узор с питомцами','Фруктовый узор','Садовый узор','Узор из фигур','Транспортный узор','Морской узор','Узор с динозаврами','Музыкальный узор','Космический узор','Зимний узор'],
     riddles:['Тропа загадок','Поиск подсказок','Тайные подсказки','Задача на смекалку','Исследователь загадок','Секретные подсказки','Задание на логику','Решатель тайн','Испытание подсказками','Любопытные загадки','Загадка с подсказками','Мастер загадок'],
     scienceQuest:['Подсказки о растении','Тайна тени','Наблюдаем за погодой','Опыт со льдом','Лунная миссия','Помощники сада','Круговорот воды','Приспособление животных','Опыт с магнитом','День и ночь','Путешествие семени','Детектив звуков'],
@@ -2173,7 +2252,7 @@ function captureMiniGameState(id){
   if(id==='letters'){
     const canvas=$('#traceCanvas');
     const traceImage=canvas?canvas.toDataURL('image/png'):null;
-    return {traceLetterIndex,traceDistance,traceHasInk,traceImage};
+    return {traceLetterIndex,traceDistance,traceHasInk,traceLetterStyle,traceImage};
   }
   if(id==='memory')return {memoryCards,memoryOpen,memoryMatched};
   if(id==='escapeRoom')return {escapeRoomIndex,escapeRoomSolved,escapeRoomStarEarned,escapeRoomAnswer,escapeRoomAnswerIndex,escapeRoomExplanation,escapeRoomPhase,escapeKeyFound,escapeKeyFeedback,genericAnswer,questionHintCount};
@@ -2201,7 +2280,7 @@ function applyMiniGameProgressState(id,state){
   if(id==='puzzle')({puzzleTiles,puzzleImage,puzzleSelected,puzzleImages,puzzleImageIndex}=state);
   else if(id==='differences')({differenceFound,differenceSpots,differenceLeft,differenceRight}=state);
   else if(['logicQuest','math','words','storyMath','patterns','riddles','scienceQuest'].includes(id))({genericAnswer,riddleQuestionIndex,questionHintCount}=state);
-  else if(id==='letters')({traceLetterIndex,traceDistance,traceHasInk}=state);
+  else if(id==='letters')({traceLetterIndex,traceDistance,traceHasInk}=state,traceLetterStyle=state.traceLetterStyle||'primary');
   else if(id==='memory')({memoryCards,memoryOpen,memoryMatched}=state);
   else if(id==='escapeRoom')({escapeRoomIndex,escapeRoomSolved,escapeRoomStarEarned,escapeRoomAnswer,escapeRoomAnswerIndex,escapeRoomExplanation,escapeRoomPhase,escapeKeyFound,escapeKeyFeedback,genericAnswer,questionHintCount}=state);
   else if(['physicsPaths','gridSokoban','codeBreaker','railwayControl'].includes(id))({interactivePuzzle,selectedPathLevel,selectedBoxLevel,selectedRailwayLevel}=state);
@@ -2211,6 +2290,11 @@ function applyMiniGameProgressState(id,state){
 function restoreMiniGameProgress(id,level,stage){
   const key=miniGameProgressKey(id,level),progress=miniGameProgress.get(key);
   if(!progress)return false;
+  if(id==='railwayControl'&&progress.state?.routeStyle!=='network-v8'){
+    miniGameProgress.delete(key);
+    persistMiniGameProgress();
+    return false;
+  }
   if(stage!==undefined&&miniGameProgressStage(id,progress.state)!==stage)return false;
   selectedMiniGame=progress.id;selectedLevel=progress.level;miniGameScene=progress.scene;
   const state=cloneMiniGameProgress(progress.state);
@@ -2228,13 +2312,16 @@ function restoreMiniGameProgress(id,level,stage){
       image.onerror=()=>{canvas.style.pointerEvents='';console.error('Could not restore saved letter tracing.')}
       image.src=state.traceImage;
     }
+  }else if(id==='storyMath'){
+    $('#gameContent').className=progress.className;
+    playLearningGame(id,level);
   }else{
     $('#gameContent').className=progress.className;
     $('#gameContent').innerHTML=progress.html;
     go('gameStage');
   }
   if(id==='memory'&&memoryOpen.length===2&&memoryCards[memoryOpen[0]]!==memoryCards[memoryOpen[1]])scheduleMemoryMismatch();
-  if(progress.feedback)showGameFeedback(progress.feedback.message,progress.feedback.label,progress.feedback.action,progress.feedback.success);
+  if(progress.feedback&&id!=='storyMath')showGameFeedback(progress.feedback.message,progress.feedback.label,progress.feedback.action,progress.feedback.success);
   return true;
 }
 function continueMiniGameProgress(id,level){restoreMiniGameProgress(id,level)}
@@ -2278,7 +2365,7 @@ function renderMiniGameIntro(){
   if(!copy||copy.length!==5||!visuals||visuals.length!==3)throw new Error(`Incomplete mini-game introduction: ${game.id}`);
   miniGameScene='gameIntro';
   $('#gameContent').classList.remove('railway-game');
-  const frames=visuals.map((frame,index)=>`<div class="game-demo-frame${game.id==='escapeRoom'&&index===2?' escape-room-final':''}"><b class="code-demo-video-title">${game.icon} ${tr(game.name)} · ${index+1}/3</b><div class="game-demo-board">${frame.map((token,tokenIndex)=>`<span class="game-demo-token" style="animation-delay:${tokenIndex*.15}s">${token}</span>`).join('')}</div><div class="game-demo-caption">${copy[index]}</div></div>`).join('');
+  const frames=visuals.map((frame,index)=>`<div class="game-demo-frame${game.id==='escapeRoom'&&index===2?' escape-room-final':''}${game.id==='railwayControl'?' railway-demo-frame':''}"><b class="code-demo-video-title">${game.icon} ${tr(game.name)} · ${index+1}/3</b><div class="game-demo-board">${frame.map((token,tokenIndex)=>`<span class="game-demo-token" style="animation-delay:${tokenIndex*.15}s">${token}</span>`).join('')}</div><div class="game-demo-caption">${copy[index]}</div></div>`).join('');
   $('#gameContent').innerHTML=`<section class="game-intro"><h2>${game.icon} ${tr(game.name)}</h2><p>${tr('gameDemoIntro')}</p><div class="game-demo-video" role="img" aria-label="${copy.slice(0,3).join(' ')}">${frames}<span class="game-demo-play" aria-hidden="true">▶</span></div><h3>${tr('gameDemoRulesTitle')}</h3><ul class="game-intro-rules"><li>${copy[3]}</li><li>${copy[4]}</li></ul><button class="alt" onclick="continueMiniGameIntro()">${tr('gameDemoGotIt')}</button><button class="ghost" onclick="go('games')">${tr('back')}</button></section>`;
 }
 function continueMiniGameIntro(){
@@ -2308,12 +2395,12 @@ function renderGameLevels(){
   }).join('')}</div><button class="ghost" onclick="go('games')">${tr('back')}</button>`;
 }
 const WORD_SEARCH_LEVELS=[
+  {size:6,words:3,directions:[0,1,2,3,4,5,6,7]},
+  {size:7,words:3,directions:[0,1,2,3,4,5,6,7]},
   {size:7,words:3,directions:[0,1,2,3,4,5,6,7]},
   {size:8,words:4,directions:[0,1,2,3,4,5,6,7]},
-  {size:9,words:5,directions:[0,1,2,3,4,5,6,7]},
-  {size:10,words:6,directions:[0,1,2,3,4,5,6,7]},
-  {size:11,words:7,directions:[0,1,2,3,4,5,6,7]},
-  {size:12,words:8,directions:[0,1,2,3,4,5,6,7]}
+  {size:8,words:4,directions:[0,1,2,3,4,5,6,7]},
+  {size:9,words:4,directions:[0,1,2,3,4,5,6,7]}
 ];
 let selectedWordSearchLevel=0,wordSearchPuzzle=null;
 function startWordSearchActivity(activity){
@@ -2352,6 +2439,10 @@ function launchMiniGame(id,level){
   }
   if(!game||!Number.isInteger(level)||level<0||level>=activityNames(id,currentLanguage).length)return;
   if(level>=6&&!gameUnlocked(id)){requestGamePurchase(id);return}
+  if(id==='letters'){
+    selectedMiniGame=id;selectedLevel=level;miniGameScene='letterStyle';
+    traceLetterIndex=0;renderLetterStyleSelection(level);go('gameStage');return;
+  }
   if(restoreMiniGameProgress(id,level))return;
   selectedMiniGame=id;selectedLevel=level;miniGameScene='play';
   if(id==='letters')traceLetterIndex=0;
@@ -2671,94 +2762,145 @@ function launchRailwayLevel(level){
   selectedRailwayLevel=level;startInteractivePuzzle('railwayControl');
 }
 function renderRailwayLevels(){
-  const name=activityNames('railwayControl',currentLanguage)[selectedLevel],trainCounts=[2,3,4,5,6];
+  const name=activityNames('railwayControl',currentLanguage)[selectedLevel],trainCounts=[1,2,3,4,5];
   $('#gameContent').innerHTML=`<h2>${tr('railwayControl')} - ${name}</h2><p>${tr('railwayLevelsIntro')}</p><div class="level-grid">${trainCounts.map((trains,index)=>{
     const unlocked=railwayLevelIsUnlocked(index),complete=S.completedPuzzleStars.includes(railwayLevelStarKey(selectedLevel,index));
-    return `<button class="level-choice${unlocked?'':' locked'}" ${unlocked?'':'disabled'} onclick="launchRailwayLevel(${index})">${unlocked?'':'🔒 '}${tr('railwayLevelLabel',{n:`<bdi dir="ltr">${index+1}</bdi>`,trains:`<bdi dir="ltr">${trains}</bdi>`,switches:`<bdi dir="ltr">${trains}</bdi>`})}${complete?' ⭐':''}</button>`;
+    const label=currentLanguage==='he'&&index===0?'שלב 1 · רכבת אחת · מתג אחד':currentLanguage==='en'&&index===0?'Level 1 · 1 train · 1 switch':currentLanguage==='ru'&&index===0?'Уровень 1 · 1 поезд · 1 стрелка':tr('railwayLevelLabel',{n:`<bdi dir="ltr">${index+1}</bdi>`,trains:`<bdi dir="ltr">${trains}</bdi>`,switches:`<bdi dir="ltr">${trains}</bdi>`});
+    return `<button class="level-choice${unlocked?'':' locked'}" ${unlocked?'':'disabled'} onclick="launchRailwayLevel(${index})">${unlocked?'':'🔒 '}${label}${complete?' ⭐':''}</button>`;
   }).join('')}</div><button class="ghost" onclick="backFromGame()" data-i18n="back">${tr('back')}</button>`;
 }
 function setupRailwayPuzzle(){
-  const count=selectedRailwayLevel+2,colors=Array.from({length:count},(_,index)=>
-    RAILWAY_COLORS[(index+(selectedLevel%6)+(selectedLevel>=6?count-1:0))%6]);
-  if(selectedLevel>=6)colors.reverse();
-  const branchPattern=RAILWAY_BRANCH_PATTERNS[(selectedLevel+selectedRailwayLevel)%RAILWAY_BRANCH_PATTERNS.length];
-  const switches=Array.from({length:count},(_,index)=>({
-    x:2+index*2,color:colors[index],branchY:branchPattern[index],branch:false
+  const count=selectedRailwayLevel+1;
+  const colors=Array.from({length:count},(_,index)=>RAILWAY_COLORS[(index+selectedLevel)%6]);
+  const destinationXs=[1,3,5,7,8,6],sourceXs=[1,8,4,6,2,7],variant=selectedLevel;
+  const sources=count===1?[{x:1,y:0,color:colors[0]}]:colors.map((color,index)=>({x:sourceXs[(index+variant)%sourceXs.length],y:0,color}));
+  const targets=count===1?[{x:1,y:9,color:colors[0]}]:colors.map((color,index)=>({x:destinationXs[index],y:9,color}));
+  const expandRailPath=points=>{
+    const cells=[{...points[0]}];
+    for(let index=1;index<points.length;index++){
+      let {x,y}=cells.at(-1),target=points[index];
+      while(x!==target.x||y!==target.y){
+        if(x!==target.x)x+=Math.sign(target.x-x);
+        else y+=Math.sign(target.y-y);
+        cells.push({x,y});
+      }
+    }
+    return cells;
+  };
+  const makePath=index=>{
+    if(count===1){
+      return expandRailPath([
+        {x:1,y:0},{x:1,y:2},{x:3,y:2},{x:3,y:6},{x:1,y:6},{x:1,y:9}
+      ]);
+    }
+    const sx=sources[index].x,tx=targets[(index+variant)%targets.length].x;
+    const midY=2+(index+variant)%4,bendX=variant%3===0?(index%2?7:2):variant%3===1?(index%2?8:1):(index%2?6:3);
+    const path=[{x:sx,y:0},{x:sx,y:1}];
+    const horizontal=[sx, Math.max(1,Math.min(8,sx+(bendX>sx?2:-2)))];
+    path.push({x:horizontal[1],y:1},{x:horizontal[1],y:midY});
+    const cross=variant%2?9-tx:Math.max(1,Math.min(8,tx+((index+variant)%3-1)));
+    path.push({x:Math.max(1,Math.min(8,cross)),y:midY},{x:Math.max(1,Math.min(8,cross)),y:6+(index%2)});
+    path.push({x:tx,y:6+(index%2)},{x:tx,y:8},{x:tx,y:9});
+    return expandRailPath(path.reduce((unique,point)=>!unique.length||unique.at(-1).x!==point.x||unique.at(-1).y!==point.y?[...unique,point]:unique,[]));
+  };
+  const switchCount=Math.min(8,count);
+  const switches=Array.from({length:switchCount},(_,index)=>({
+    x:count===1?[3][index%1]:1+((index*3+variant)%7),y:count===1?2:1+Math.floor(index/2)*2,branch:true
   }));
-  const endX=2+count*2;
-  interactivePuzzle.trainCount=count;
-  interactivePuzzle.stationColors=colors;
-  interactivePuzzle.switches=switches;
-  interactivePuzzle.trackEnd=endX;
-  interactivePuzzle.columns=endX+1;
-  interactivePuzzle.trains=[{color:colors[0],position:{x:0,y:2},status:'moving',misrouted:false}];
-  interactivePuzzle.spawned=1;
+  interactivePuzzle={...interactivePuzzle,routeStyle:'network-v8',trainCount:count,stationColors:colors,
+    columns:10,rows:10,switches,routes:colors.map((color,index)=>({
+      color,source:sources[index],target:targets[(index+variant)%count],
+      lane:targets[index].x,branchY:2+(index%3)*2,path:makePath(index)
+    })),trains:sources.map((source,index)=>({color:colors[index],position:{...source},status:'queued',step:0,direction:'down',target:targets[(index+variant)%count]})),
+    spawned:0,routeTurns:0,trackEnd:6,moving:false,feedback:'',trackTiles:null
+  };
 }
 function toggleRailwaySwitch(index){
   if(!interactivePuzzle||interactivePuzzle.finished)return;
-  const trackSwitch=interactivePuzzle.switches[index];
-  if(!trackSwitch)return;
-  trackSwitch.branch=!trackSwitch.branch;
+  const tile=interactivePuzzle.trackTiles[index];
+  if(!tile)return;
+  tile.rotation=((tile.rotation+1)%4);
+  tile.renderedMask=rotateConnectorMask(tile.mask,tile.rotation);
+  const trackSwitch=interactivePuzzle.switches.find(item=>item.x===tile.x&&item.y===tile.y);
+  if(trackSwitch)trackSwitch.branch=!trackSwitch.branch;
+  interactivePuzzle.routeTurns++;
   interactivePuzzle.hint='';
+  interactivePuzzle.feedback='';
   renderInteractivePuzzle();
 }
 function advanceRailwayTrains(){
   if(!interactivePuzzle||interactivePuzzle.finished)return;
-  const puzzle=interactivePuzzle,updates=[],occupied=new Set(
-    puzzle.trains.filter(train=>train.status==='arrived').map(train=>`${train.position.x},${train.position.y}`)
-  );
-  puzzle.hint='';
-  for(const train of puzzle.trains){
-    if(train.status!=='moving')continue;
-    const {x,y}=train.position;
-    if(y!==2){
-      const stationY=y===1?0:4;
-      updates.push({train,position:{x,y:stationY},status:'arrived'});
-      continue;
-    }
-    const switchIndex=puzzle.switches.findIndex(trackSwitch=>trackSwitch.x===x);
-    if(switchIndex>=0&&puzzle.switches[switchIndex].branch){
-      const trackSwitch=puzzle.switches[switchIndex];
-      updates.push({train,position:{x,y:trackSwitch.branchY===0?1:3},status:'moving'});
-    }else if(x>=puzzle.trackEnd){
-      puzzle.finished=true;puzzle.won=false;puzzle.feedback=tr('railwayDerail');renderInteractivePuzzle();return;
-    }else updates.push({train,position:{x:x+1,y},status:'moving'});
+  const puzzle=interactivePuzzle;
+  if(puzzle.moving)return;
+  const allPiecesConnected=puzzle.trackTiles.every(tile=>tile.rotation===0);
+  const endpointPath=route=>[route.source,...(findConnectedRailwayPath(route.path[1],route.path.at(-2),puzzle)||[]),route.target];
+  const activePaths=allPiecesConnected
+    ?puzzle.routes.map(route=>route.path)
+    :puzzle.routes.map(endpointPath);
+  if(!allPiecesConnected&&activePaths.some((path,index)=>path.length<3||!puzzle.routes[index]))activePaths.splice(0,activePaths.length,...puzzle.routes.map(()=>null));
+  const disconnected=activePaths.some(path=>!path);
+  if(disconnected){
+    puzzle.finished=false;puzzle.won=false;
+    puzzle.feedback=tr('railwayIncomplete');
+    renderInteractivePuzzle();
+    return;
   }
-  const nextPositions=new Set();
-  for(const update of updates){
-    const key=`${update.position.x},${update.position.y}`;
-    if(occupied.has(key)||nextPositions.has(key)){
-      puzzle.finished=true;puzzle.won=false;puzzle.feedback=tr('railwayCollision');renderInteractivePuzzle();return;
-    }
-    nextPositions.add(key);
-  }
-  for(const update of updates){
-    update.train.position=update.position;
-    update.train.status=update.status;
-    if(update.status==='arrived'){
-      const station=puzzle.switches.find(trackSwitch=>trackSwitch.x===update.position.x);
-      if(!station)throw new Error(`Missing railway station at column ${update.position.x}`);
-      if(update.train.color!==station.color){
-        update.train.misrouted=true;
-        puzzle.feedback=tr('railwayWrongStation');
+  puzzle.feedback='';
+  puzzle.routes.forEach((route,index)=>{route.path=activePaths[index]});
+  puzzle.moving=true;
+  puzzle.spawned=Math.min(puzzle.trainCount,1);
+  for(let index=0;index<puzzle.spawned;index++)puzzle.trains[index].status='moving';
+  renderInteractivePuzzle();
+  const timer=setInterval(()=>{
+    if(interactivePuzzle!==puzzle||puzzle.finished){clearInterval(timer);return}
+    let moved=false;
+    for(let index=0;index<puzzle.spawned;index++){
+      const train=puzzle.trains[index];
+      if(train.status!=='moving')continue;
+      moved=true;train.step++;
+      train.position={...railwayPositionFor(train,puzzle)};
+      const route=puzzle.routes[puzzle.trains.indexOf(train)];
+      if(train.step>=route.path.length-1){
+        train.status='arrived';
+        train.position={...train.target};
+        train.direction='down';
       }
     }
-  }
-  if(puzzle.spawned<puzzle.trainCount){
-    const color=puzzle.stationColors[puzzle.spawned];
-    puzzle.trains.push({color,position:{x:0,y:2},status:'moving',misrouted:false});
-    puzzle.spawned++;
-  }
-  const allArrived=puzzle.spawned===puzzle.trainCount&&puzzle.trains.every(train=>train.status==='arrived');
-  if(allArrived){
-    if(puzzle.trains.some(train=>train.misrouted)){
-      puzzle.finished=true;puzzle.won=false;
-      puzzle.feedback=tr('railwayWrongStation');
-    }else{
-      completeInteractivePuzzle('railwayWin');return;
+    if(puzzle.spawned<puzzle.trainCount&&puzzle.trains[puzzle.spawned-1]?.step>=2){
+      puzzle.trains[puzzle.spawned].status='moving';puzzle.spawned++;
+    }
+    if(puzzle.trains.every(train=>train.status==='arrived')){
+      clearInterval(timer);puzzle.moving=false;completeInteractivePuzzle(puzzle.trainCount===1?'railwayWinSingle':'railwayWin');return;
+    }
+    if(!moved){clearInterval(timer);puzzle.moving=false}
+    renderInteractivePuzzle();
+  },420);
+}
+function findConnectedRailwayPath(start,target,puzzle){
+  const tileByPosition=new Map(puzzle.trackTiles.map(tile=>[`${tile.x},${tile.y}`,tile]));
+  const key=point=>`${point.x},${point.y}`;
+  const queue=[[{x:start.x,y:start.y}]],seen=new Set([key(start)]);
+  const directions=[{dx:0,dy:-1,bit:1,opposite:4},{dx:1,dy:0,bit:2,opposite:8},{dx:0,dy:1,bit:4,opposite:1},{dx:-1,dy:0,bit:8,opposite:2}];
+  for(let head=0;head<queue.length;head++){
+    const path=queue[head],point=path.at(-1),tile=tileByPosition.get(key(point));
+    if(point.x===target.x&&point.y===target.y)return path;
+    if(!tile)continue;
+    const mask=tile.renderedMask??rotateConnectorMask(tile.mask,tile.rotation);
+    for(const direction of directions){
+      if(!(mask&direction.bit))continue;
+      const next={x:point.x+direction.dx,y:point.y+direction.dy},nextKey=key(next);
+      if(next.x<0||next.x>=puzzle.columns||next.y<0||next.y>=puzzle.rows||seen.has(nextKey))continue;
+      const nextTile=tileByPosition.get(nextKey);
+      if(!nextTile||!((nextTile.renderedMask??rotateConnectorMask(nextTile.mask,nextTile.rotation))&direction.opposite))continue;
+      seen.add(nextKey);queue.push([...path,next]);
     }
   }
-  renderInteractivePuzzle();
+  return null;
+}
+function railwayPositionFor(train,puzzle){
+  const route=puzzle.routes[puzzle.trains.indexOf(train)];
+  const index=Math.min(train.step,route.path.length-1),point=route.path[index];
+  return {...point};
 }
 function rotateConnectorMask(mask,turns){
   let result=mask;
@@ -2844,10 +2986,14 @@ function setupCodeBreaker(){
 function interactiveGamePrompt(id){
   const keys={physicsPaths:'pathInstruction',gridSokoban:'sokobanInstruction',codeBreaker:'codeInstruction',railwayControl:'railwayInstruction'};
   return id==='physicsPaths'?tr(keys[id],{n:interactivePuzzle.maxTurns})
+    :id==='railwayControl'&&interactivePuzzle.trainCount===1?tr('railwayInstructionSingle')
     :tr(keys[id]);
 }
 function renderInteractivePuzzle(){
   if(!interactivePuzzle)return;
+  const oldRailScroll=$('#gameContent .rail-board-scroll');
+  const railScrollLeft=oldRailScroll?oldRailScroll.scrollLeft:0;
+  const stage=$('#gameStage'),stageScrollTop=stage?stage.scrollTop:0;
   const id=interactivePuzzle.id;
   let board='';
   if(id==='physicsPaths'){
@@ -2869,45 +3015,68 @@ function renderInteractivePuzzle(){
     const previous=interactivePuzzle.guesses.map((guess,index)=>`<div class="code-feedback">${tr('codeAttempt',{n:index+1})}: ${guess.colors.map(color=>INTERACTIVE_CODE_COLORS[color]).join(' ')} - ${tr('codeFeedback',{exact:guess.exact,present:guess.present,exactColors:guess.exactColors.join(', ')||tr('codeNone'),presentColors:guess.presentColors.join(', ')||tr('codeNone'),absentColors:guess.absentColors.join(', ')||tr('codeNone')})}</div>`).join('');
     board=`<p>${tr('codeAttempt',{n:interactivePuzzle.guesses.length+1})}</p>${previous}<div class="code-row">${interactivePuzzle.guess.map((color,index)=>`<button class="code-peg${index===interactivePuzzle.activePeg?' active':''}" onclick="selectCodePeg(${index})" aria-label="${tr('codeAttempt',{n:index+1})}" ${interactivePuzzle.finished?'disabled':''}>${color<0?'○':INTERACTIVE_CODE_COLORS[color]}</button>`).join('')}</div><div class="code-palette">${INTERACTIVE_CODE_COLORS.map((color,index)=>`<button class="code-peg" onclick="setCodeColor(${index})" aria-label="${color}" ${interactivePuzzle.finished?'disabled':''}>${color}</button>`).join('')}</div><button class="alt" onclick="submitCodeGuess()" ${interactivePuzzle.finished?'disabled':''}>${tr('codeSubmit')}</button>`;
   }else if(id==='railwayControl'){
-    const masks=new Map();
-    const addRail=(x,y,bit)=>{const key=`${x},${y}`;masks.set(key,(masks.get(key)||0)|bit)};
-    for(let x=0;x<=interactivePuzzle.trackEnd;x++){
-      if(x>0)addRail(x,2,8);
-      if(x<interactivePuzzle.trackEnd)addRail(x,2,2);
-    }
-    interactivePuzzle.switches.forEach(trackSwitch=>{
-      const direction=trackSwitch.branchY===0?1:4,betweenY=trackSwitch.branchY===0?1:3;
-      addRail(trackSwitch.x,2,direction);
-      addRail(trackSwitch.x,betweenY,trackSwitch.branchY===0?5:5);
-      addRail(trackSwitch.x,trackSwitch.branchY,trackSwitch.branchY===0?4:1);
+    const railDirections=[{bit:1,path:'M 43 50 L 43 0 M 57 50 L 57 0'},{bit:2,path:'M 50 43 L 100 43 M 50 57 L 100 57'},{bit:4,path:'M 43 50 L 43 100 M 57 50 L 57 100'},{bit:8,path:'M 50 43 L 0 43 M 50 57 L 0 57'}];
+    const trackMasks=new Map();
+    const addRail=(x,y,bits)=>trackMasks.set(`${x},${y}`,(trackMasks.get(`${x},${y}`)||0)|bits);
+    interactivePuzzle.routes.forEach(route=>{
+      route.path.forEach((point,index)=>{
+        if(index===0)return;
+        const previous=route.path[index-1],dx=point.x-previous.x,dy=point.y-previous.y;
+        const fromBit=dx>0?2:dx<0?8:dy>0?4:1;
+        const toBit=dx>0?8:dx<0?2:dy>0?1:4;
+        if(index>1)addRail(previous.x,previous.y,fromBit);
+        if(index<route.path.length-1)addRail(point.x,point.y,toBit);
+      });
     });
-    const railDirections=[{bit:1,path:'M 50 50 L 50 4'},{bit:2,path:'M 50 50 L 96 50'},{bit:4,path:'M 50 50 L 50 96'},{bit:8,path:'M 50 50 L 4 50'}];
-    const switchByPosition=new Map(interactivePuzzle.switches.map((trackSwitch,index)=>[`${trackSwitch.x},2`,{trackSwitch,index}]));
-    const stationByPosition=new Map(interactivePuzzle.switches.map(trackSwitch=>[`${trackSwitch.x},${trackSwitch.branchY}`,trackSwitch]));
-    const trainByPosition=new Map(interactivePuzzle.trains.filter(train=>train.status!=='queued').map(train=>[`${train.position.x},${train.position.y}`,train]));
-    const cells=Array.from({length:5},(_,y)=>Array.from({length:interactivePuzzle.columns},(_,x)=>{
-      const key=`${x},${y}`,mask=masks.get(key),trackSwitch=switchByPosition.get(key),station=stationByPosition.get(key),train=trainByPosition.get(key);
-      if(mask===undefined&&!station&&!train)return '<div class="rail-cell empty"></div>';
-      const rails=mask===undefined?'':`<svg viewBox="0 0 100 100" aria-hidden="true"><g fill="none" stroke="#9486a8" stroke-width="9" stroke-linecap="round">${railDirections.filter(direction=>mask&direction.bit).map(direction=>`<path d="${direction.path}"/>`).join('')}</g>${trackSwitch&&trackSwitch.trackSwitch.branch?`<path d="M 50 50 L 50 ${trackSwitch.trackSwitch.branchY===0?4:96}" fill="none" stroke="#ffb703" stroke-width="13" stroke-linecap="round"/>`:''}</svg>`;
-      const stationIcon=station?`<span class="rail-station" style="--train-color:${RAILWAY_COLOR_VALUES[RAILWAY_COLORS.indexOf(station.color)]}" title="${station.color}">🚉<i></i></span>`:'';
-      const trainIcon=train?`<span class="rail-train" style="--train-color:${RAILWAY_COLOR_VALUES[RAILWAY_COLORS.indexOf(train.color)]}" title="${train.color}">🚂<i></i></span>`:'';
-      const toggle=trackSwitch?`<span class="rail-switch-marker${trackSwitch.trackSwitch.branch?' on':''}" aria-hidden="true">${trackSwitch.trackSwitch.branch?(trackSwitch.trackSwitch.branchY===0?'↗':'↘'):'↔'}</span>`:'';
-      return `<div class="rail-cell">${rails}${stationIcon}${trainIcon}${toggle}</div>`;
-    }).join('')).join('');
-    const switchControls=`<div class="rail-switch-controls">${interactivePuzzle.switches.map((trackSwitch,index)=>{
-      const state=trackSwitch.branch?'railwayBranch':'railwayStraight',direction=trackSwitch.branch?(trackSwitch.branchY===0?'↗':'↘'):'↔';
-      const color=RAILWAY_COLOR_VALUES[RAILWAY_COLORS.indexOf(trackSwitch.color)];
-      return `<button class="rail-switch-control${trackSwitch.branch?' on':''}" onclick="toggleRailwaySwitch(${index})" aria-label="${tr('railwaySwitch',{n:index+1,state:tr(state)})}" ${interactivePuzzle.finished?'disabled':''}><i class="rail-color-chip" style="--train-color:${color}" aria-hidden="true"></i><b>${index+1}</b> ${direction}<small>${tr(state)}</small></button>`;
-    }).join('')}</div>`;
-    const queued=interactivePuzzle.stationColors.slice(interactivePuzzle.spawned).map(color=>`<span style="--train-color:${RAILWAY_COLOR_VALUES[RAILWAY_COLORS.indexOf(color)]}"><i class="rail-color-chip" aria-hidden="true"></i>🚂 ${color}</span>`).join('');
-    board=`<p>${tr('railwayManualSwitch')}</p><div class="rail-board-scroll"><div class="rail-board" style="--rail-cols:${interactivePuzzle.columns};--rail-min-width:${Math.min(700,interactivePuzzle.columns*36)}px" aria-label="${tr('railwayControl')}">${cells}</div></div>${switchControls}<div class="rail-queue"><b>${tr('railwayTrainQueue')}</b>${queued||'-'}</div><div class="rail-controls"><button class="alt" onclick="advanceRailwayTrains()" ${interactivePuzzle.finished?'disabled':''}>${tr('railwayAdvance')}</button></div>`;
+    if(!interactivePuzzle.trackTiles||interactivePuzzle.trackTiles.length!==trackMasks.size){
+      interactivePuzzle.trackTiles=[...trackMasks].map(([key,mask],index)=>({
+        x:Number(key.split(',')[0]),y:Number(key.split(',')[1]),mask,
+        rotation:1,renderedMask:rotateConnectorMask(mask,1),index
+      }));
+    }
+    interactivePuzzle.trackTiles.forEach(tile=>{
+      tile.rotation=((Number(tile.rotation)||0)%4+4)%4;
+      tile.renderedMask=rotateConnectorMask(tile.mask,tile.rotation);
+    });
+    const trainByPosition=new Map(interactivePuzzle.trains.filter(train=>train.status!=='queued')
+      .map(train=>[`${Math.round(train.position.x)},${Math.round(train.position.y)}`,train]));
+    const switchByPosition=new Map(interactivePuzzle.switches.map((trackSwitch,index)=>[`${trackSwitch.x},${trackSwitch.y}`,{trackSwitch,index}]));
+    const depotByPosition=new Map(interactivePuzzle.routes.map(route=>[`${route.source.x},${route.source.y}`,route]));
+    const targetByPosition=new Map(interactivePuzzle.routes.map(route=>[`${route.target.x},${route.target.y}`,route]));
+    const cells=Array.from({length:interactivePuzzle.rows*interactivePuzzle.columns},(_,index)=>{
+      const x=index%interactivePuzzle.columns,y=Math.floor(index/interactivePuzzle.columns),key=`${x},${y}`;
+      const tile=interactivePuzzle.trackTiles.find(item=>item.x===x&&item.y===y);
+      const mask=tile?(tile.renderedMask??rotateConnectorMask(tile.mask,tile.rotation)):trackMasks.get(key),depot=depotByPosition.get(key),target=targetByPosition.get(key);
+      const train=trainByPosition.get(key),trackSwitch=switchByPosition.get(key);
+      if(!mask&&!depot&&!target&&!train)return `<div class="rail-cell empty" aria-hidden="true">${(x+y*2)%7===0?'<span class="rail-tree">🌿</span>':''}</div>`;
+      const rails=mask?`<svg viewBox="0 0 100 100" aria-hidden="true"><g fill="none" stroke="#403931" stroke-width="18" stroke-linecap="round">${railDirections.filter(direction=>mask&direction.bit).map(direction=>`<path d="${direction.path}"/>`).join('')}</g><g fill="none" stroke="#e9e9e4" stroke-width="7" stroke-linecap="round">${railDirections.filter(direction=>mask&direction.bit).map(direction=>`<path d="${direction.path}"/>`).join('')}</g></svg>`:'';
+      const trainIcon=train&&train.status==='moving'?`<span class="rail-train direction-${train.direction}" style="--train-color:${RAILWAY_COLOR_VALUES[RAILWAY_COLORS.indexOf(train.color)]}" title="${train.color}"><b class="train-emoji">🚂</b></span>`:'';
+      const queuedTrain=depot&&interactivePuzzle.trains.find(item=>item.color===depot.color&&item.status==='queued');
+      const depotIcon=depot?`<span class="rail-depot" style="--train-color:${RAILWAY_COLOR_VALUES[RAILWAY_COLORS.indexOf(depot.color)]}">${queuedTrain?'🚂':'🚉'}</span>`:'';
+      const targetIcon=target?`<span class="rail-station" style="--train-color:${RAILWAY_COLOR_VALUES[RAILWAY_COLORS.indexOf(target.color)]}" title="${target.color}">🚩</span>`:'';
+      if(tile){
+        const endpoint=depot||target;
+        const label=trackSwitch
+          ?tr('railwaySwitch',{n:trackSwitch.index+1,state:trackSwitch.trackSwitch.branch?'↘':'↓'})
+          :tr('railwayTrackRotate',{n:tile.index+1});
+        return endpoint
+          ?`<div class="rail-cell">${depotIcon}${targetIcon}</div>`
+          :`<button class="rail-cell rail-piece-button" onclick="toggleRailwaySwitch(${tile.index})" aria-label="${label}" ${interactivePuzzle.finished||interactivePuzzle.moving?'disabled':''}>${rails}${trainIcon}</button>`;
+      }
+      return `<div class="rail-cell">${rails}${depotIcon}${targetIcon}${trainIcon}</div>`;
+    }).join('');
+    const single=interactivePuzzle.trainCount===1;
+    board=`<p>${tr(single?'railwayNetworkSingle':'railwayNetworkInstruction')}</p>${interactivePuzzle.feedback?`<p class="rail-feedback-top" role="status" aria-live="assertive">${interactivePuzzle.feedback}</p>`:''}<div class="rail-board-scroll"><div class="rail-board" style="--rail-cols:${interactivePuzzle.columns};--rail-rows:${interactivePuzzle.rows}" aria-label="${tr('railwayControl')}">${cells}</div></div><p class="rail-route-status" aria-live="polite">${interactivePuzzle.moving?tr(single?'railwayMovingSingle':'railwayMoving'):tr(single?'railwayReadySingle':'railwayReady')}</p><div class="rail-controls"><button class="alt rail-go-button" onclick="advanceRailwayTrains()" ${interactivePuzzle.finished||interactivePuzzle.moving?'disabled':''}>${tr(single?'railwayLaunchSingle':'railwayLaunch')}</button></div>`;
   }
   const hint=interactivePuzzle.hint?`<p class="learning-hint" aria-live="polite">${tr(interactivePuzzle.hint)}</p>`:'<p class="learning-hint" aria-live="polite"></p>';
-  const feedback=interactivePuzzle.feedback?`<p class="play-status">${interactivePuzzle.feedback}</p>`:'<p class="play-status"></p>';
+  const feedback=id==='railwayControl'?'':interactivePuzzle.feedback?`<p class="play-status">${interactivePuzzle.feedback}</p>`:'<p class="play-status"></p>';
   const progress=id==='physicsPaths'?tr('pathLevelProgress',{n:selectedPathLevel+1}):id==='gridSokoban'?tr('boxLevelProgress',{n:selectedBoxLevel+1}):id==='railwayControl'?tr('railwayProgress',{n:selectedRailwayLevel+1}):'';
   const continueLabel=id==='physicsPaths'?tr(selectedPathLevel<4?'pathNextLevel':'pathAllComplete'):id==='gridSokoban'?tr(selectedBoxLevel<4?'boxNextLevel':'boxAllComplete'):id==='railwayControl'?tr(selectedRailwayLevel<4?'railwayNextLevel':'railwayAllComplete'):tr('next');
   $('#gameContent').classList.toggle('railway-game',id==='railwayControl');
   $('#gameContent').innerHTML=`<h2>${tr(MINI_GAMES.find(game=>game.id===id).name)}</h2><p>${interactiveGamePrompt(id)}</p><section class="interactive-puzzle${id==='railwayControl'?' railway-puzzle':''}">${board}${hint}<div class="puzzle-controls"><button class="ghost" onclick="showInteractiveHint()">${tr('hintButton')}</button></div>${feedback}</section><button class="ghost" onclick="backFromGame()" data-i18n="back">${tr('back')}</button>`;
+  const newRailScroll=$('#gameContent .rail-board-scroll');
+  if(newRailScroll)newRailScroll.scrollLeft=railScrollLeft;
+  if(stage)stage.scrollTop=stageScrollTop;
   if(interactivePuzzle.won){
     showGameFeedback(`${tr('correct')} ${interactivePuzzle.newStar?tr('starEarned'):''} ${tr(interactivePuzzle.successKey)} ${progress}`,
       continueLabel,continueInteractivePuzzle,true);
@@ -3420,36 +3589,37 @@ const STORY_MATH_ITEMS=[
   ['marble','marbles','גולות','шарика','шариков','шарик'],['apple','apples','תפוחים','яблока','яблок','яблоко'],['pencil','pencils','עפרונות','карандаша','карандашей','карандаш'],
   ['bird','birds','ציפורים','птицы','птиц','птица'],['balloon','balloons','בלונים','шара','шаров','шар'],['shell','shells','צדפים','ракушки','ракушек','ракушка'],
   ['toy car','toy cars','מכוניות צעצוע','игрушечные машинки','игрушечных машинок','игрушечная машинка'],['cookie','cookies','עוגיות','печенья','печений','печенье'],
-  ['muffin','muffins','מאפינס','кекса','кексов','кекс'],['balloon','balloons','בלונים','шара','шаров','шар'],['orange','oranges','תפוזים','апельсина','апельсинов','апельсин'],
+  ['muffin','muffins','מאפים','кекса','кексов','кекс'],['balloon','balloons','בלונים','шара','шаров','шар'],['orange','oranges','פירות','апельсина','апельсинов','апельсин'],
   ['ticket','tickets','כרטיסים','билета','билетов','билет']
 ];
+const STORY_MATH_ITEM_ORDER=[2,1,0,3,4,5,8,7,6,11,10,9];
 const STORY_MATH_SETTINGS=[
-  {en:'at a marble tournament',he:'בתחרות במשחק הגולות',ru:'на турнире по игре в шарики'},
-  {en:'in the apple orchard',he:'במטע התפוחים',ru:'в яблоневом саду'},
   {en:'in the classroom art corner',he:'בפינת היצירה בכיתה',ru:'в школьном уголке для рисования'},
+  {en:'in the apple orchard',he:'במטע התפוחים',ru:'в яблоневом саду'},
+  {en:'at a marble tournament',he:'בתחרות במשחק הגולות',ru:'на турнире по игре в шарики'},
   {en:'on a garden birdwatch',he:'בסיור צפרות בגינה',ru:'во время наблюдения за птицами в саду'},
   {en:'in the birthday party hall',he:'באולם מסיבת יום ההולדת',ru:'в зале празднования дня рождения'},
   {en:'at the beach shell display',he:'בתצוגת הצדפים בחוף',ru:'на выставке ракушек на пляже'},
-  {en:'at the toy-car race track',he:'במסלול המרוצים למכוניות צעצוע',ru:'на трассе для игрушечных машинок'},
-  {en:'in the cookie bakery',he:'במאפיית העוגיות',ru:'в кондитерской, где пекут печенье'},
   {en:'at the school bake sale',he:'ביריד האפייה בבית הספר',ru:'на школьной ярмарке выпечки'},
-  {en:'at a picnic in the park',he:'בפיקניק בפארק',ru:'на пикнике в парке'},
+  {en:'in the cookie bakery',he:'במאפיית העוגיות',ru:'в кондитерской, где пекут печенье'},
+  {en:'at the toy-car race track',he:'במסלול המרוצים למכוניות צעצוע',ru:'на трассе для игрушечных машинок'},
+  {en:'at the theater ticket booth',he:'בקופת הכרטיסים בתיאטרון',ru:'в театральной кассе'},
   {en:'at the orange fruit stand',he:'בדוכן התפוזים בשוק',ru:'у прилавка с апельсинами на рынке'},
-  {en:'at the theater ticket booth',he:'בקופת הכרטיסים בתיאטרון',ru:'в театральной кассе'}
+  {en:'at a picnic in the park',he:'בפיקניק בפארק',ru:'на пикнике в парке'}
 ];
 const STORY_MATH_ALT_SETTINGS=[
-  {en:'during the final round of the marble contest',he:'בשלב הגמר של תחרות הגולות',ru:'во время финального раунда турнира по игре в шарики'},
-  {en:'at the orchard packing shed',he:'בבית האריזה שבמטע',ru:'в упаковочном цехе при саде'},
   {en:'at the classroom supply shelf',he:'ליד מדף הציוד בכיתה',ru:'у полки с принадлежностями в классе'},
+  {en:'at the orchard packing shed',he:'בבית האריזה שבמטע',ru:'в упаковочном цехе при саде'},
+  {en:'during the final round of the marble contest',he:'בשלב הגמר של תחרות הגולות',ru:'во время финального раунда турнира по игре в шарики'},
   {en:'beside the pond on a birdwatch',he:'ליד הבריכה במהלך תצפית בציפורים',ru:'у пруда во время наблюдения за птицами'},
   {en:'at the balloon-decorating table',he:'ליד שולחן קישוט הבלונים',ru:'у стола для украшения зала шарами'},
   {en:'at the shell-sorting table by the shore',he:'ליד שולחן מיון הצדפים שבחוף',ru:'у стола для сортировки ракушек на берегу'},
-  {en:'in the toy-car pit lane',he:'במתחם הטיפולים של מסלול המכוניות',ru:'в боксах трассы для игрушечных машинок'},
-  {en:'at the bakery cooling rack',he:'ליד רשת הקירור במאפייה',ru:'у решётки для остывания выпечки в кондитерской'},
   {en:'in the school kitchen before the bake sale',he:'במטבח בית הספר לפני יריד האפייה',ru:'на школьной кухне перед ярмаркой выпечки'},
-  {en:'at the picnic blanket in the park',he:'ליד שמיכת הפיקניק בפארק',ru:'у пледа для пикника в парке'},
+  {en:'at the bakery cooling rack',he:'ליד רשת הקירור במאפייה',ru:'у решётки для остывания выпечки в кондитерской'},
+  {en:'in the toy-car pit lane',he:'במתחם הטיפולים של מסלול המכוניות',ru:'в боксах трассы для игрушечных машинок'},
+  {en:'outside the theater before the show',he:'מחוץ לתיאטרון לפני ההצגה',ru:'у входа в театр перед представлением'},
   {en:'at the orange stall in the town market',he:'בדוכן התפוזים בשוק העירוני',ru:'у прилавка с апельсинами на городском рынке'},
-  {en:'outside the theater before the show',he:'מחוץ לתיאטרון לפני ההצגה',ru:'у входа в театр перед представлением'}
+  {en:'at the picnic blanket in the park',he:'ליד שמיכת הפיקניק בפארק',ru:'у пледа для пикника в парке'}
 ];
 const PATTERN_THEMES=[
   ['🔴','🔵','🟡','🟢'],['⭐','🌙','☀️','☁️'],['🐱','🐶','🐰','🦊'],['🍎','🍐','🍊','🍇'],
@@ -3477,57 +3647,57 @@ function getMathQuestion(activityIndex,questionIndex){
   const i=questionIndex,p=(i*7+3)%10;
   let answer,question;
   if(activityIndex===0){
-    answer=62+p*4;
-    const first=27+(p*3)%25,second=answer-first;
+    answer=8+p;
+    const first=3+p%5,second=answer-first;
     answer=first+second;question=`${first} + ${second} = ?`;
   }else if(activityIndex===1){
-    answer=25+p*4;
-    const subtrahend=14+(p*2)%20,minuend=answer+subtrahend;
+    answer=3+p%8;
+    const subtrahend=2+p%5,minuend=answer+subtrahend;
     answer=minuend-subtrahend;question=`${minuend} − ${subtrahend} = ?`;
   }else if(activityIndex===2){
-    answer=25+p*7;
+    answer=12+p%9;
     const tens=Math.floor(answer/10),ones=answer%10;
     const labels=currentLanguage==='he'?['עשרות','יחידות']:currentLanguage==='ru'?['десятков','единиц']:['tens','ones'];
     question=`${tens} ${labels[0]} + ${ones} ${labels[1]} = ?`;
   }else if(activityIndex===3){
-    const missing=15+p*4,known=18+(p*3)%27,total=missing+known;
+    const missing=2+p%8,known=2+(p*3)%8,total=missing+known;
     answer=missing;question=`? + ${known} = ${total}`;
   }else if(activityIndex===4){
-    answer=70+p*5;
-    const first=32+(p*3)%28,second=answer-first;
+    answer=11+p;
+    const first=6+p%5,second=answer-first;
     answer=first+second;question=`${first} + ${second} = ?`;
   }else if(activityIndex===5){
-    answer=26+p*3;
-    const subtrahend=17+(p*2)%17,minuend=answer+subtrahend;
+    answer=4+p%7;
+    const subtrahend=3+p%6,minuend=answer+subtrahend;
     answer=minuend-subtrahend;question=`${minuend} − ${subtrahend} = ?`;
   }else if(activityIndex===6){
-    const first=6,second=4+p;
+    const first=2+p%3,second=2+p%3;
     answer=first*second;question=`${first} × ${second} = ?`;
   }else if(activityIndex===7){
-    const divisor=3+p%7,quotient=8+p*2;
+    const divisor=2+p%4,quotient=2+p%4;
     answer=quotient;question=`${divisor*quotient} ÷ ${divisor} = ?`;
   }else if(activityIndex===8){
-    answer=85+p*4;
-    const first=24+p,second=22+(p*3)%10,third=answer-first-second;
+    answer=10+p%9;
+    const first=2+p%4,second=2+(p*3)%4,third=answer-first-second;
     answer=first+second+third;question=`${first} + ${second} + ${third} = ?`;
   }else if(activityIndex===9){
-    answer=46+p*4;
-    const first=24+(p*3)%12,subtract=8+p%11,second=answer+subtract-first;
+    answer=8+p%7;
+    const first=4+(p*3)%4,subtract=2+p%4,second=answer+subtract-first;
     answer=first+second-subtract;question=`${first} + ${second} − ${subtract} = ?`;
   }else if(activityIndex===10){
-    const factor=3+(p*3)%7,missing=4+p*2;
+    const factor=2+p%4,missing=2+p%4;
     answer=missing;question=`? × ${factor} = ${missing*factor}`;
   }else if(activityIndex===11){
-    answer=80+p*5;
-    const first=3+p%5,second=4+(p*3)%6,added=answer-first*second;
+    answer=8+p%8;
+    const first=2+p%2,second=2+(p*3)%3,added=answer-first*second;
     answer=first*second+added;question=`${first} × ${second} + ${added} = ?`;
   }else{
     throw new Error(`Unknown math activity: ${activityIndex}`);
   }
-  const options=makeChoices(answer,Math.max(0,answer-5),answer+5).map(String);
+  const options=makeChoices(answer,Math.max(0,answer-3),answer+3).map(String);
   return {answer:String(answer),question,options};
 }
-function getStoryMathQuestion(activityIndex,questionIndex){
+function getStoryMathQuestionLegacy(activityIndex,questionIndex){
   const item=STORY_MATH_ITEMS[activityIndex];
   const setting=questionIndex%2?STORY_MATH_ALT_SETTINGS[activityIndex]:STORY_MATH_SETTINGS[activityIndex];
   if(!item||!setting)throw new Error(`Unknown story math activity: ${activityIndex}`);
@@ -3666,6 +3836,162 @@ function getStoryMathQuestion(activityIndex,questionIndex){
   ru=ru.replace(/(^|[.!?]\s+|:\s+)([\p{Ll}])/gu,(_,boundary,letter)=>boundary+letter.toLocaleUpperCase('ru'));
   const options=makeChoices(answer,Math.max(0,answer-8),answer+8).map(String);
   return {answer:String(answer),question:{en,he,ru},options};
+}
+const STORY_MATH_STORIES=[
+  [
+    [9,'לדניאל יש בקלמר 6 עפרונות שחורים ו-3 עפרונות צבעוניים. כמה עפרונות יש לדניאל בסך הכל בקלמר?','Daniel has 6 black pencils and 3 colored pencils in his pencil box. How many pencils does Daniel have altogether in the pencil box?','У Даниэля в пенале 6 чёрных карандашей и 3 цветных карандаша. Сколько всего карандашей у Даниэля в пенале?'],
+    [8,'לרוני היו 12 עפרונות בקלמר. היא נתנה 4 עפרונות לחברתה הטובה. כמה עפרונות נשארו לרוני בקלמר?','Roni had 12 pencils in her pencil box. She gave 4 pencils to her best friend. How many pencils does Roni have left in the pencil box?','У Рони было 12 карандашей в пенале. Она дала 4 карандаша своей лучшей подруге. Сколько карандашей осталось у Рони в пенале?'],
+    [10,'למאי יש 5 עפרונות חדשים ו-5 עפרונות משומשים בקלמר. כמה עפרונות יש למאי בסך הכל?','Mai has 5 new pencils and 5 used pencils in her pencil box. How many pencils does Mai have altogether?','У Майи 5 новых и 5 использованных карандашей в пенале. Сколько всего карандашей у Майи?'],
+    [12,'תומר סידר את הקלמר שלו ומצא בו 15 עפרונות. אם הוא איבד 3 מהם בחצר בית הספר, כמה עפרונות נשארו לו?','Tomer organized his pencil box and found 15 pencils in it. If he lost 3 of them in the schoolyard, how many pencils does he have left?','Томер разобрал свой пенал и нашёл в нём 15 карандашей. Если он потерял 3 из них на школьном дворе, сколько карандашей у него осталось?'],
+    [15,'בתוך קלמר גדול יש 8 עפרונות קצרים ו-7 עפרונות ארוכים. כמה עפרונות יש בקלמר בסך הכל?','Inside a large pencil box are 8 short pencils and 7 long pencils. How many pencils are there altogether in the pencil box?','В большом пенале 8 коротких и 7 длинных карандашей. Сколько всего карандашей в пенале?'],
+    [12,'לעומר היו 18 עפרונות בקלמר. הוא חילק 6 עפרונות בשווה בין שני חברים. כמה עפרונות נשארו לו בקלמר לאחר החלוקה?','Omer had 18 pencils in his pencil box. He divided 6 pencils equally between two friends. How many pencils were left in his pencil box after sharing?','У Омера было 18 карандашей в пенале. Он поровну разделил 6 карандашей между двумя друзьями. Сколько карандашей осталось у него в пенале после того, как он их поделил?'],
+    [12,'שירה קנתה 3 חבילות עפרונות, ובכל חבילה יש 4 עפרונות, והכניסה את כולם לקלמר. כמה עפרונות יש בקלמר כעת?','Shira bought 3 packs of pencils, with 4 pencils in each pack, and put them all in her pencil box. How many pencils are in the pencil box now?','Шира купила 3 упаковки карандашей, по 4 карандаша в каждой, и положила их все в пенал. Сколько карандашей теперь в пенале?'],
+    [9,'ליונתן היו 14 עפרונות בקלמר. במהלך השיעור נשברו לו 5 עפרונות. כמה עפרונות שלמים נשארו לו?','Yonatan had 14 pencils in his pencil box. During the lesson, 5 of his pencils broke. How many unbroken pencils does he have left?','У Йонатана было 14 карандашей в пенале. Во время урока 5 карандашей сломались. Сколько целых карандашей у него осталось?'],
+    [3.75,'בארון של איתי היו 15 עפרונות. הוא אסף והכניס לקלמר שלו רבע מהם. כמה עפרונות הכניס איתי לקלמר?','There were 15 pencils in Eitan’s drawer. He collected a quarter of them and put them into his pencil box. How many pencils did Eitan put in his pencil box?','В ящике Эйтана было 15 карандашей. Он взял четверть из них и положил в свой пенал. Сколько карандашей положил Эйтан в пенал?'],
+    [15,'נגה הכניסה לקלמר החדש שלה 7 עפרונות ביום ראשון, וביום שני הוסיפה עוד 8 עפרונות. כמה עפרונות יש בסך הכל בקלמר של נגה?','Noga put 7 pencils into her new pencil box on Sunday and added 8 more pencils on Monday. How many pencils are there altogether in Noga’s pencil box?','В воскресенье Нога положила в новый пенал 7 карандашей, а в понедельник добавила ещё 8. Сколько всего карандашей в пенале Ноги?']
+  ],
+  [
+    [8,'על עץ בחצר היו 14 תפוחים. אבא קטף 6 תפוחים והניח אותם בסל. כמה תפוחים נשארו על העץ?','There were 14 apples on a tree in the yard. Dad picked 6 apples and put them in a basket. How many apples remained on the tree?','На дереве во дворе было 14 яблок. Папа сорвал 6 яблок и положил их в корзину. Сколько яблок осталось на дереве?'],
+    [12,'בסל היו 5 תפוחים אדומים ו-7 תפוחים ירוקים. כמה תפוחים יש בסל בסך הכל?','There were 5 red apples and 7 green apples in a basket. How many apples are there altogether in the basket?','В корзине было 5 красных и 7 зелёных яблок. Сколько всего яблок в корзине?'],
+    [9,'סבתא הביאה סל ובו 18 תפוחים. הילדים אכלו 9 תפוחים מתוכו. כמה תפוחים נשארו בסל?','Grandma brought a basket containing 18 apples. The children ate 9 of the apples. How many apples remained in the basket?','Бабушка принесла корзину с 18 яблоками. Дети съели 9 яблок из неё. Сколько яблок осталось в корзине?'],
+    [15,'בגן השעשועים מצאו הילדים סל עם 4 תפוחים, והוסיפו אליו עוד 11 תפוחים שמצאו על האדמה. כמה תפוחים יש בסל עכשיו?','At the playground, the children found a basket with 4 apples and added 11 more apples they found on the ground. How many apples are in the basket now?','На детской площадке дети нашли корзину с 4 яблоками и добавили ещё 11 яблок, найденных на земле. Сколько яблок теперь в корзине?'],
+    [8,'בתוך סל גדול היו 24 תפוחים. חילקו את התפוחים שווה בשווה בין 3 קבוצות ילדים. כמה תפוחים קיבלה כל קבוצה?','There were 24 apples in a large basket. The apples were shared equally among 3 groups of children. How many apples did each group receive?','В большой корзине было 24 яблока. Яблоки поделили поровну между 3 группами детей. Сколько яблок получила каждая группа?'],
+    [15,'אורי אסף לסל 8 תפוחים בבוקר ועוד 7 תפוחים בצהריים. כמה תפוחים אסף אורי בסך הכל?','Uri collected 8 apples in a basket in the morning and 7 more apples in the afternoon. How many apples did Uri collect altogether?','Ури собрал в корзину 8 яблок утром и ещё 7 яблок днём. Сколько всего яблок собрал Ури?'],
+    [13,'בסל היו 16 תפוחים. חתול קפץ והפיל 3 תפוחים שנמעכו, ואת השאר השאירו בסל. כמה תפוחים שלמים נשארו בסל?','There were 16 apples in a basket. A cat jumped up and knocked down 3 apples, which bruised, and the rest remained in the basket. How many unbruised apples remained in the basket?','В корзине было 16 яблок. Кот прыгнул и уронил 3 яблока, они помялись, а остальные остались в корзине. Сколько целых яблок осталось в корзине?'],
+    [8,'אמא שמה בסל 2 תפוחים לכל אחד מ-4 הילדים במשפחה. כמה תפוחים שמה אמא בסל בסך הכל?','Mom put 2 apples in the basket for each of the 4 children in the family. How many apples did Mom put in the basket altogether?','Мама положила в корзину по 2 яблока для каждого из 4 детей в семье. Сколько всего яблок положила мама в корзину?'],
+    [13,'בסל היו 20 תפוחים. שכנים לקחו 7 תפוחים להכנת עוגה. כמה תפוחים נשארו בסל?','There were 20 apples in a basket. Neighbors took 7 apples to bake a cake. How many apples remained in the basket?','В корзине было 20 яблок. Соседи взяли 7 яблок, чтобы приготовить пирог. Сколько яблок осталось в корзине?'],
+    [7,'יעל ספרה בסל 13 תפוחים. אם תוסיף עוד כמה תפוחים יהיו לה 20 תפוחים בדיוק? כמה תפוחים עליה להוסיף?','Yael counted 13 apples in a basket. If she adds some more apples, she will have exactly 20 apples. How many apples should she add?','Яэль насчитала в корзине 13 яблок. Если она добавит ещё несколько яблок, у неё будет ровно 20. Сколько яблок ей нужно добавить?']
+  ],
+  [
+    [15,'לליאור היו 8 גולות בקופסה, ובאמצע היום הוא קיבל במתנה עוד 7 גולות מחבר. כמה גולות יש לליאור כעת?','Lior had 8 marbles in a box, and in the middle of the day a friend gave him 7 more marbles as a gift. How many marbles does Lior have now?','У Лиора было 8 шариков в коробке, а днём друг подарил ему ещё 7 шариков. Сколько шариков у Лиора теперь?'],
+    [9,'בתוך שקית היו 15 גולות. תומר שיחק בחצר ואיבד 6 גולות. כמה גולות נשארו בשקית?','There were 15 marbles in a bag. Tomer played in the yard and lost 6 marbles. How many marbles remained in the bag?','В мешочке было 15 шариков. Томер играл во дворе и потерял 6 шариков. Сколько шариков осталось в мешочке?'],
+    [20,'נועה סידרה את הגולות שלה בשורות: 4 שורות ובכל שורה 5 גולות. כמה גולות יש לנועה בסך הכל?','Noa arranged her marbles in 4 rows, with 5 marbles in each row. How many marbles does Noa have altogether?','Ноа разложила шарики в 4 ряда, по 5 шариков в каждом. Сколько всего шариков у Ноа?'],
+    [5,'למיכל היו 20 גולות צבעוניות. היא חלקה אותן שווה בשווה בין 4 חברים. כמה גולות קיבל כל חבר?','Michal had 20 colored marbles. She shared them equally among 4 friends. How many marbles did each friend receive?','У Михаль было 20 цветных шариков. Она поровну разделила их между 4 друзьями. Сколько шариков получил каждый друг?'],
+    [11,'ביום ראשון היו לאיתי 9 גולות. ביום שני הוא מצא עוד 5 גולות, וביום שלישי הפסיד 3 גולות במשחק. כמה גולות יש לאיתי בסך הכל בסוף יום שלישי?','Eitan had 9 marbles on Sunday. On Monday he found 5 more marbles, and on Tuesday he lost 3 marbles in a game. How many marbles does Eitan have altogether at the end of Tuesday?','В воскресенье у Эйтана было 9 шариков. В понедельник он нашёл ещё 5, а во вторник проиграл 3 шарика в игре. Сколько всего шариков у Эйтана в конце вторника?'],
+    [14,'יובל רצה לתת גולות ל-3 חברים. הוא נתן לכל אחד מהם 4 גולות ונשארו לו עוד 2 גולות ביד. כמה גולות היו ליובל בהתחלה?','Yuval wanted to give marbles to 3 friends. He gave each of them 4 marbles and had 2 more marbles left in his hand. How many marbles did Yuval have at first?','Юваль хотел подарить шарики 3 друзьям. Он дал каждому по 4 шарика, и у него в руке осталось ещё 2. Сколько шариков было у Юваля сначала?'],
+    [30,'בקופסת ההפתעות היו 22 גולות כחולות ו-8 גולות אדומות. כמה גולות יש בקופסה בסך הכל?','There were 22 blue marbles and 8 red marbles in the surprise box. How many marbles are there altogether in the box?','В коробке-сюрпризе было 22 синих и 8 красных шариков. Сколько всего шариков в коробке?'],
+    [5,'עידו קנה ערכה ובה 30 גולות. הוא פיזר אותן שווה בשווה בתוך 6 צנצנות שונות. כמה גולות שם עידו בכל צנצנת?','Ido bought a set with 30 marbles. He distributed them equally into 6 different jars. How many marbles did Ido put in each jar?','Идо купил набор из 30 шариков. Он поровну разложил их в 6 разных банок. Сколько шариков Идо положил в каждую банку?'],
+    [9,'הילה מצאה בקופסה ישנה 13 גולות. 4 מהן היו סדוקות ונאלצה לזרוק אותן. כמה גולות תקינות נשארו לה?','Hila found 13 marbles in an old box. 4 of them were cracked, and she had to throw them away. How many usable marbles did she have left?','Хила нашла 13 шариков в старой коробке. 4 из них были треснутыми, и ей пришлось их выбросить. Сколько целых шариков у неё осталось?'],
+    [20,'דנה ועומר שיחקו בגולות. לדנה היו 11 גולות ולעומר היו 9 גולות. הם איחדו את כל הגולות שלהם בקופסה אחת משותפת. כמה גולות יש בקופסה המשותפת?','Dana and Omer played marbles. Dana had 11 marbles and Omer had 9 marbles. They put all their marbles together in one shared box. How many marbles are in the shared box?','Дана и Омер играли в шарики. У Даны было 11 шариков, а у Омера — 9. Они сложили все шарики в одну общую коробку. Сколько шариков в общей коробке?']
+  ],
+  [
+    [13,'על עץ הזית בגינה ישבו 8 דרורים. 5 דרורים נוספים הצטרפו אליהם ועפו אל ענפי העץ. כמה דרורים יש על עץ הזית בסך הכל?','Eight sparrows sat on the olive tree in the garden. 5 more sparrows joined them and flew into the branches. How many sparrows are on the olive tree altogether?','На оливковом дереве в саду сидели 8 воробьёв. Ещё 5 воробьёв присоединились к ним и прилетели на ветви. Сколько всего воробьёв на оливковом дереве?'],
+    [8,'בגינה נחו 14 יונים על הדשא. פתאום עבר חתול והפחיד 6 מהיונים, והן עפו לראש הגג. כמה יונים נשארו על הדשא בגינה?','Fourteen pigeons were resting on the lawn in the garden. Suddenly a cat frightened 6 of the pigeons, and they flew to the rooftop. How many pigeons remained on the lawn in the garden?','В саду на траве отдыхали 14 голубей. Вдруг прошёл кот и напугал 6 голубей, и они улетели на крышу. Сколько голубей осталось на траве в саду?'],
+    [12,'דנה ספרה ציפורים בחצר: 4 שורות של שיחים, ובכל שיח עמדו 3 ציפורי שיר קטנות. כמה ציפורי שיר ספרה דנה בסך הכל?','Dana counted birds in the yard: there were 4 rows of bushes, with 3 little songbirds on each bush. How many songbirds did Dana count altogether?','Дана считала птиц во дворе: было 4 ряда кустов, и на каждом кусте сидели 3 маленькие певчие птицы. Сколько всего певчих птиц насчитала Дана?'],
+    [10,'על גדר הגינה התקבצו 20 ציפורים קטנות. חצי מהן פרשו כנפיים ועפו לחפש מים בחצר השכנה. כמה ציפורים נשארו על הגדר?','Twenty little birds gathered on the garden fence. Half of them spread their wings and flew to look for water in the neighboring yard. How many birds remained on the fence?','На садовом заборе собрались 20 маленьких птиц. Половина из них расправила крылья и улетела искать воду в соседнем дворе. Сколько птиц осталось на заборе?'],
+    [13,'בבוקר נחתו בגינה 9 נקרים. בצהריים הגיעו עוד 7 נקרים לחפש חרקים בעצים, אבל 3 מהם עפו משם לפני שהספקנו לספור. כמה נקרים נשארו בגינה?','In the morning, 9 woodpeckers landed in the garden. At noon, 7 more woodpeckers came to look for insects in the trees, but 3 of them flew away before we could count. How many woodpeckers remained in the garden?','Утром в сад прилетели 9 дятлов. Днём пришли ещё 7 дятлов искать насекомых на деревьях, но 3 из них улетели до того, как мы успели сосчитать. Сколько дятлов осталось в саду?'],
+    [18,'סבא בנה בגינה 3 שבכי ציפורים, ובכל בית שכנו 6 ציפורי דרור שמחות. כמה ציפורי דרור חיות בבתים שבנה סבא?','Grandpa built 3 birdhouses in the garden, and 6 happy sparrows lived in each house. How many sparrows lived in the houses Grandpa built?','Дедушка построил в саду 3 скворечника, и в каждом домике жили 6 весёлых воробьёв. Сколько воробьёв живут в домиках, которые построил дедушка?'],
+    [13,'על עץ התפוזים בגינה ישבו 15 ציפורי צופית צבעוניות. במהלך השעה הבאה עפו 4 מהן לגינה אחרת ו-2 אחרות הצטרפו אליהן. כמה ציפורי צופית יש על עץ התפוזים עכשיו?','Fifteen colorful sunbirds sat on the orange tree in the garden. During the next hour, 4 of them flew to another garden and 2 new ones joined. How many sunbirds are on the orange tree now?','На апельсиновом дереве в саду сидели 15 разноцветных нектарниц. В течение следующего часа 4 из них улетели в другой сад, а 2 новые присоединились. Сколько нектарниц теперь на апельсиновом дереве?'],
+    [7,'אמא פיזרה בגינה פירורי לחם לציפורים. הגיעה להקה של 28 ציפורים והיא התפזרה שווה בשווה ל-4 אזורים שונים בדשא. כמה ציפורים אכלו בכל אזור?','Mom scattered breadcrumbs in the garden for the birds. A flock of 28 birds arrived and spread equally across 4 different areas of the lawn. How many birds ate in each area?','Мама рассыпала в саду хлебные крошки для птиц. Прилетела стая из 28 птиц и разделилась поровну между 4 разными участками лужайки. Сколько птиц кормились на каждом участке?'],
+    [20,'תומר ראה בגינה 11 עורבים שחורים ו-9 דרורים קטנים עומדים יחד על הגדר. כמה ציפורים בסך הכל ראה תומר על הגדר?','Tomer saw 11 black crows and 9 little sparrows standing together on the fence in the garden. How many birds did Tomer see on the fence altogether?','Томер увидел в саду на заборе вместе 11 чёрных ворон и 9 маленьких воробьёв. Сколько всего птиц увидел Томер на заборе?'],
+    [24,'באמבטיית הציפורים בגינה שכשכו 32 ציפורים שונות במהלך היום. הרוח הקרה הבריחה רבע מהן לפני השקיעה. כמה ציפורים נשארו ליהנות מהמים עד הערב?','Thirty-two different birds splashed in the garden birdbath during the day. The cold wind frightened away a quarter of them before sunset. How many birds remained to enjoy the water until evening?','В течение дня в садовой купальне для птиц плескались 32 разные птицы. Холодный ветер вспугнул четверть из них до заката. Сколько птиц осталось наслаждаться водой до вечера?']
+  ],
+  [
+    [18,'למסיבה ניפחו 10 בלונים אדומים ו-8 בלונים כחולים. כמה בלונים יש בסך הכל במסיבה?','For the party, 10 red balloons and 8 blue balloons were inflated. How many balloons are there altogether at the party?','К празднику надули 10 красных и 8 синих шаров. Сколько всего шаров на празднике?'],
+    [18,'במסיבת יום הולדת היו 25 בלונים. במהלך המשחק התפוצצו 7 בלונים. כמה בלונים שלמים נשארו?','There were 25 balloons at a birthday party. During the game, 7 balloons popped. How many intact balloons remained?','На дне рождения было 25 воздушных шаров. Во время игры 7 шаров лопнули. Сколько целых шаров осталось?'],
+    [20,'דנה תלתה במסיבה 4 אשכולות בלונים, ובכל אשכול היו 5 בלונים. כמה בלונים תלתה דנה בסך הכל?','Dana hung 4 bunches of balloons at the party, with 5 balloons in each bunch. How many balloons did Dana hang altogether?','На празднике Дана повесила 4 связки шаров, по 5 шаров в каждой. Сколько всего шаров повесила Дана?'],
+    [6,'סבתא הביאה למסיבה 30 בלונים וחילקה אותם שווה בשווה בין 5 ילדים שחגגו יום הולדת יחד. כמה בלונים קיבל כל ילד?','Grandma brought 30 balloons to the party and shared them equally among 5 children celebrating a birthday together. How many balloons did each child receive?','Бабушка принесла на праздник 30 шаров и поровну разделила их между 5 детьми, которые отмечали день рождения вместе. Сколько шаров получил каждый ребёнок?'],
+    [16,'בכניסה למסיבה היו 18 בלונים. רוח חזקה העיפה 6 בלונים שמימה, ואז הילדים הוסיפו עוד 4 בלונים חדשים. כמה בלונים יש בכניסה עכשיו?','There were 18 balloons at the party entrance. A strong wind blew 6 balloons into the sky, and then the children added 4 new balloons. How many balloons are at the entrance now?','У входа на праздник было 18 шаров. Сильный ветер унес 6 шаров в небо, затем дети добавили ещё 4 новых шара. Сколько шаров теперь у входа?'],
+    [24,'לירן קנה 3 חבילות בלונים למסיבה. בכל חבילה יש 8 בלונים. כמה בלונים קנה לירן בסך הכל?','Liran bought 3 packs of balloons for the party. There are 8 balloons in each pack. How many balloons did Liran buy altogether?','Лиран купил для праздника 3 упаковки воздушных шаров. В каждой упаковке 8 шаров. Сколько всего шаров купил Лиран?'],
+    [21,'במסיבה היו 14 בלונים צהובים ו-12 בלונים ירוקים. הילדים שיחקו ופוצצו 5 בלונים בסך הכל. כמה בלונים נשארו שלמים?','There were 14 yellow balloons and 12 green balloons at the party. The children played and popped 5 balloons altogether. How many balloons remained intact?','На празднике было 14 жёлтых и 12 зелёных шаров. Дети играли и лопнули 5 шаров. Сколько шаров осталось целыми?'],
+    [16,'אמא הכינה למסיבה בלונים בצורות: 7 בלונים בצורת לב ו-9 בלונים בצורת כוכב. כמה בלונים בסך הכל הכינה אמא?','Mom prepared shaped balloons for the party: 7 heart-shaped balloons and 9 star-shaped balloons. How many balloons did Mom prepare altogether?','Мама приготовила к празднику фигурные шары: 7 шаров в форме сердца и 9 — в форме звезды. Сколько всего шаров приготовила мама?'],
+    [9,'במסיבה חולקו 36 בלונים באופן שווה ל-4 קבוצות משחק. כמה בלונים קיבלה כל קבוצה?','At the party, 36 balloons were shared equally among 4 game groups. How many balloons did each group receive?','На празднике 36 шаров поровну разделили между 4 игровыми группами. Сколько шаров получила каждая группа?'],
+    [27,'תומר ניפח לבד 12 בלונים, ואחותו ניפחה עוד 15 בלונים. כמה בלונים ניפחו השניים יחד לקראת תחילת המסיבה?','Tomer inflated 12 balloons by himself, and his sister inflated 15 more balloons. How many balloons did the two of them inflate together before the party began?','Томер сам надул 12 шаров, а его сестра надула ещё 15. Сколько шаров они вместе надули к началу праздника?']
+  ],
+  [
+    [15,'בטיול בחוף הים אספה רוני 9 צדפים לבנים ו-6 צדפים חומים. כמה צדפים אספה רוני בסך הכל?','On a trip to the beach, Roni collected 9 white shells and 6 brown shells. How many shells did Roni collect altogether?','На прогулке по пляжу Рони собрала 9 белых и 6 коричневых ракушек. Сколько всего ракушек собрала Рони?'],
+    [19,'ליונתן היה אוסף של 24 צדפים. גל גדול שטף בחזרה לים 5 צדפים שהשאיר קרוב למים. כמה צדפים נשארו באוסף שלו?','Yonatan had a collection of 24 shells. A large wave washed 5 shells back into the sea after he left them near the water. How many shells remained in his collection?','У Йонатана была коллекция из 24 ракушек. Большая волна смыла обратно в море 5 ракушек, которые он оставил у воды. Сколько ракушек осталось в его коллекции?'],
+    [21,'מייקל סידר את צדפי הים שלו בקופסאות: 3 קופסאות, ובכל קופסה 7 צדפים. כמה צדפים יש למייקל באוסף?','Michael arranged his seashells in 3 boxes, with 7 shells in each box. How many shells are in Michael’s collection?','Майкл разложил свои морские ракушки в 3 коробки, по 7 ракушек в каждой. Сколько ракушек в коллекции Майкла?'],
+    [15,'תמר מצאה בחוף 30 צדפים. היא החליטה לתת חצי מהם לחברתה הטובה. כמה צדפים נשארו לתמר?','Tamar found 30 shells at the beach. She decided to give half of them to her best friend. How many shells does Tamar have left?','Тамар нашла на пляже 30 ракушек. Она решила отдать половину лучшей подруге. Сколько ракушек осталось у Тамар?'],
+    [19,'ביום ראשון היו באוסף של עומר 15 צדפים. ביום שלישי הוא מצא עוד 8 צדפים, וביום רביעי נתן 4 צדפים במתנה לאחיו. כמה צדפים יש לו כעת?','Omer had 15 shells in his collection on Sunday. On Tuesday he found 8 more shells, and on Wednesday he gave 4 shells to his brother as a gift. How many shells does he have now?','В воскресенье в коллекции Омера было 15 ракушек. Во вторник он нашёл ещё 8, а в среду подарил брату 4 ракушки. Сколько ракушек у него теперь?'],
+    [24,'שירה מצאה בחוף 4 שורות של צדפים מסודרים, ובכל שורה היו 6 צדפים. כמה צדפים מצאה שירה בסך הכל?','Shira found 4 rows of shells arranged on the beach, with 6 shells in each row. How many shells did Shira find altogether?','Шира нашла на пляже 4 ряда ракушек, по 6 ракушек в каждом. Сколько всего ракушек нашла Шира?'],
+    [13,'באוסף הצדפים של איתי היו 19 צדפים. 6 מהם התפוררו ונזרקו לפח. כמה צדפים שלמים נשארו באוסף?','There were 19 shells in Eitan’s shell collection. 6 of them crumbled and were thrown away. How many intact shells remained in the collection?','В коллекции ракушек Эйтана было 19 ракушек. 6 из них раскрошились, и их выбросили. Сколько целых ракушек осталось в коллекции?'],
+    [7,'נגה חילקה 28 צדפים שלה בשווה בתוך 4 צנצנות זכוכית יפות. כמה צדפים שמה נגה בכל צנצנת?','Noga divided her 28 shells equally among 4 beautiful glass jars. How many shells did Noga put in each jar?','Нога поровну разложила свои 28 ракушек в 4 красивые стеклянные банки. Сколько ракушек она положила в каждую банку?'],
+    [23,'דני מצא 11 צדפים גדולים ו-12 צדפים קטנים בטיול אחד ארוך בחוף הים. כמה צדפים מצא דני בסך הכל בטיול?','Dani found 11 large shells and 12 small shells on one long walk along the beach. How many shells did Dani find altogether on the walk?','На длинной прогулке по пляжу Дани нашёл 11 больших и 12 маленьких ракушек. Сколько всего ракушек нашёл Дани?'],
+    [10,'באוסף של יובל יש 40 צדפים. הוא תרם רבע מהאוסף לתצוגה בכיתה. כמה צדפים תרם יובל לכיתה?','Yuval has 40 shells in his collection. He donated a quarter of the collection to a classroom display. How many shells did Yuval donate to the classroom?','В коллекции Юваля 40 ракушек. Он пожертвовал четверть коллекции для выставки в классе. Сколько ракушек Юваль отдал классу?']
+  ],
+  [
+    [16,'מאפייה הכינה בבוקר 9 לחמניות טריות ובצהריים אפתה עוד 7 לחמניות חמות. כמה לחמניות יש בסך הכל במאפייה?','In the morning, a bakery prepared 9 fresh rolls, and at noon it baked 7 more warm rolls. How many rolls are there altogether in the bakery?','Пекарня утром приготовила 9 свежих булочек, а днём испекла ещё 7 горячих. Сколько всего булочек в пекарне?'],
+    [12,'לחברי הקונדיטוריה הזמינו 20 עוגות שוקולד מיוחדות למסיבה. במהלך היום הלקוחות אספו 8 עוגות מתוכן. כמה עוגות נשארו במאפייה?','The pastry team received an order for 20 special chocolate cakes for a party. During the day, customers collected 8 of the cakes. How many cakes remained at the bakery?','Кондитерская получила заказ на 20 особых шоколадных тортов для праздника. В течение дня покупатели забрали 8 из них. Сколько тортов осталось в пекарне?'],
+    [20,'האופה סידר לחמים בתנור האפייה: 4 תבניות, ובכל תבנית אפו 5 כיכרות לחם ריחניות. כמה כיכרות לחם נאפו בסך הכל?','The baker arranged bread in the bakery oven: 4 trays, with 5 fragrant loaves baked on each tray. How many loaves of bread were baked altogether?','Пекарь поставил хлеб в печь: 4 противня, на каждом по 5 ароматных буханок. Сколько всего буханок хлеба испекли?'],
+    [6,'בהזמנה גדולה הביאו למאפייה 30 רוגלך חמים. המוכר חילק אותם בשווה בתוך 5 קופסאות קרטון ללקוחות. כמה רוגלך שם בכל קופסה?','A large order brought 30 warm rugelach to the bakery. The seller divided them equally into 5 cardboard boxes for customers. How many rugelach did he put in each box?','В большой заказ в пекарню поступило 30 горячих рогаликов. Продавец поровну разложил их в 5 картонных коробок для покупателей. Сколько рогаликов он положил в каждую коробку?'],
+    [16,'לדוכן המאפייה הגיע משלוח ובו 14 בורקסים. אדם אחד קנה 4 בורקסים חמים, ואחר כך נאפו במאפייה עוד 6 בורקסים חדשים. כמה בורקסים יש במאפייה עכשיו?','A delivery of 14 bourekas arrived at the bakery counter. One person bought 4 hot bourekas, and then the bakery baked 6 new bourekas. How many bourekas are at the bakery now?','На прилавок пекарни поступило 14 бурекасов. Один человек купил 4 горячих бурекаса, а затем в пекарне испекли ещё 6 новых. Сколько бурекасов теперь в пекарне?'],
+    [21,'שולחן ההזמנות במאפייה הכיל 3 שורות של מאפים, ובכל שורה סודרו 7 מאפים מתוקים שונים. כמה מאפים היו מסודרים על השולחן?','The bakery order table had 3 rows of pastries, with 7 different sweet pastries arranged in each row. How many pastries were arranged on the table?','На столе заказов в пекарне было 3 ряда выпечки, по 7 разных сладких изделий в каждом. Сколько изделий было разложено на столе?'],
+    [15,'לקוח הזמין מהמאפייה 18 חלות מתוקות לשבת. בדרך לאריזה נפלו ונמעכו 3 חלות. כמה חלות שלמות נשארו לאריזה בהזמנה?','A customer ordered 18 sweet challah loaves from the bakery for Shabbat. On the way to packing, 3 challahs fell and were crushed. How many intact challahs remained for the order to be packed?','Покупатель заказал в пекарне 18 сладких хал к субботе. По дороге к упаковке 3 халы упали и помялись. Сколько целых хал осталось упаковать для заказа?'],
+    [4,'במאפייה הכינו 36 עוגיות שקדים ורצו לחלק אותן לשקיות משלוח כך שבכל שקית יהיו 9 עוגיות. כמה שקיות הכינו?','The bakery prepared 36 almond cookies and wanted to divide them into delivery bags with 9 cookies in each bag. How many bags did they prepare?','В пекарне приготовили 36 миндальных печений и хотели разложить их по пакетам для доставки по 9 печений в каждом. Сколько пакетов приготовили?'],
+    [23,'משפחה הזמינה למסיבה 11 רוגלך גבינה ו-12 מאפים מבצק עלים במילוי שוקולד. כמה מאפים בסך הכל כללה ההזמנה של המשפחה?','A family ordered 11 cheese rugelach and 12 chocolate-filled puff pastries for a party. How many pastries did the family’s order include altogether?','Семья заказала для праздника 11 сырных рогаликов и 12 шоколадных изделий из слоёного теста. Сколько всего изделий в заказе семьи?'],
+    [21,'למאפייה הגיעו 28 הזמנות של עוגות קטנות לאירוע. עד שעות הצהריים השלימו ושלחו 7 הזמנות. כמה הזמנות עוד נותר להכין?','The bakery received 28 orders of small cakes for an event. By noon, 7 orders had been completed and shipped. How many orders still remained to be prepared?','В пекарню поступило 28 заказов маленьких тортов для мероприятия. К полудню выполнили и отправили 7 заказов. Сколько заказов ещё осталось приготовить?']
+  ],
+  [
+    [20,'אמא אפתה קופסת עוגיות שבה היו 12 עוגיות שוקולד ו-8 עוגיות חמאה. כמה עוגיות יש בקופסה בסך הכל?','Mom baked a box of cookies with 12 chocolate cookies and 8 butter cookies. How many cookies are there altogether in the box?','Мама испекла коробку печенья, в которой было 12 шоколадных и 8 сливочных печений. Сколько всего печений в коробке?'],
+    [13,'בקופסת עוגיות היו 20 עוגיות טעימות. הילדים אכלו 7 עוגיות במהלך אחר הצהריים. כמה עוגיות נשארו בקופסה?','There were 20 tasty cookies in a cookie box. The children ate 7 cookies during the afternoon. How many cookies remained in the box?','В коробке было 20 вкусных печений. Днём дети съели 7 печений. Сколько печений осталось в коробке?'],
+    [24,'אפו 3 קופסאות עוגיות, ובכל קופסה סידרו 8 עוגיות בדיוק. כמה עוגיות אפו בסך הכל?','Three boxes of cookies were baked, and exactly 8 cookies were arranged in each box. How many cookies were baked altogether?','Испекли 3 коробки печенья и в каждой разложили ровно по 8 печений. Сколько всего печений испекли?'],
+    [6,'סבתא הביאה קופסה עם 24 עוגיות וחילקה אותן שווה בשווה בין 4 נכדים. כמה עוגיות קיבל כל נכד?','Grandma brought a box of 24 cookies and shared them equally among 4 grandchildren. How many cookies did each grandchild receive?','Бабушка принесла коробку с 24 печеньями и поровну разделила их между 4 внуками. Сколько печений получил каждый внук?'],
+    [12,'בתוך קופסת עוגיות היו 15 עוגיות. הכלב קפץ ולקח 3 עוגיות מהשולחן. כמה עוגיות נשארו בקופסה?','There were 15 cookies in a cookie box. The dog jumped up and took 3 cookies from the table. How many cookies remained in the box?','В коробке было 15 печений. Собака подпрыгнула и взяла со стола 3 печенья. Сколько печений осталось в коробке?'],
+    [30,'דני סידר עוגיות בתבנית: 5 שורות ובכל שורה 6 עוגיות. כמה עוגיות יש בתבנית האפייה?','Dani arranged cookies on a baking tray in 5 rows, with 6 cookies in each row. How many cookies are on the baking tray?','Дани разложил печенье на противне в 5 рядов, по 6 печений в каждом. Сколько печений на противне?'],
+    [11,'בקופסה היו 18 עוגיות. אבא אכל 4 עוגיות ואמא אכלה עוד 3 עוגיות. כמה עוגיות נשארו בקופסה?','There were 18 cookies in a box. Dad ate 4 cookies and Mom ate 3 more cookies. How many cookies remained in the box?','В коробке было 18 печений. Папа съел 4 печенья, а мама — ещё 3. Сколько печений осталось в коробке?'],
+    [4,'מכינים עוגיות למסיבה: יש 32 עוגיות וצריך לחלק אותן לקופסאות כך שבכל קופסה יהיו 8 עוגיות. כמה קופסאות צריך?','Cookies are being prepared for a party: there are 32 cookies, and they must be divided into boxes with 8 cookies in each box. How many boxes are needed?','Готовят печенье для праздника: есть 32 печенья, их нужно разложить в коробки по 8 штук. Сколько коробок понадобится?'],
+    [20,'רוני אפתה 9 עוגיות ביום ראשון ועוד 11 עוגיות ביום שני, והכניסה את כולן לקופסה גדולה אחת. כמה עוגיות יש בקופסה?','Roni baked 9 cookies on Sunday and 11 more cookies on Monday, and put them all in one large box. How many cookies are in the box?','Рони испекла 9 печений в воскресенье и ещё 11 в понедельник, а затем положила их все в одну большую коробку. Сколько печений в коробке?'],
+    [10,'בקופסת עוגיות מפוארת היו 30 עוגיות. אורחים אכלו שני שליש מהעוגיות. כמה עוגיות נשארו בקופסה?','There were 30 cookies in a fancy cookie box. The guests ate two thirds of the cookies. How many cookies remained in the box?','В нарядной коробке было 30 печений. Гости съели две трети печенья. Сколько печений осталось в коробке?']
+  ],
+  [
+    [16,'בחנות הצעצועים יש מדף עם 9 מכוניות צעצוע ומדף נוסף עם 7 בובות. כמה צעצועים יש בסך הכל על שני המדפים?','In the toy shop, there is a shelf with 9 toy cars and another shelf with 7 dolls. How many toys are there altogether on the two shelves?','В магазине игрушек на одной полке 9 игрушечных машинок, а на другой — 7 кукол. Сколько всего игрушек на двух полках?'],
+    [17,'בחנות היו 25 משחקי קופסה. השבוע מכרו הבעלים 8 משחקים ללקוחות. כמה משחקי קופסה נשארו בחנות?','There were 25 board games in the shop. This week, the owners sold 8 games to customers. How many board games remained in the shop?','В магазине было 25 настольных игр. На этой неделе владельцы продали покупателям 8 игр. Сколько настольных игр осталось в магазине?'],
+    [24,'מוכר בחנות הצעצועים סידר 4 מדפים, ובכל מדף הניח 6 רובוטים. כמה רובוטים סידר המוכר בסך הכל?','A toy-shop seller arranged 4 shelves and put 6 robots on each shelf. How many robots did the seller arrange altogether?','Продавец магазина игрушек расставил 4 полки и поставил на каждую по 6 роботов. Сколько всего роботов расставил продавец?'],
+    [6,'בחנות היו 30 כדורים צבעוניים. חילקו אותם בשווה בין 5 סלים שונים בחנות. כמה כדורים הונחו בכל סל?','There were 30 colored balls in the shop. They were divided equally among 5 different baskets in the shop. How many balls were placed in each basket?','В магазине было 30 цветных мячей. Их поровну распределили по 5 корзинам. Сколько мячей положили в каждую корзину?'],
+    [8,'דני נכנס לחנות הצעצועים עם 20 שקלים. הוא קנה משחק ב-12 שקלים. כמה עודף קיבל דני מהמוכר?','Dani entered the toy shop with 20 shekels. He bought a game for 12 shekels. How much change did Dani receive from the seller?','Дани пришёл в магазин игрушек с 20 шекелями. Он купил игру за 12 шекелей. Сколько сдачи получил Дани от продавца?'],
+    [11,'על שולחן התצוגה בחנות היו 14 משחקי הרכבה. הגיעו ילדים ולקחו 5 מהם לבדיקה, ואחר כך החזירו 2 מהם למקום. כמה משחקים יש על שולחן התצוגה כעת?','There were 14 building sets on the shop’s display table. Children came and took 5 of them to examine, and then returned 2 to the table. How many sets are on the display table now?','На витринном столе магазина было 14 конструкторов. Пришли дети и взяли 5, чтобы рассмотреть, а затем вернули 2 на место. Сколько конструкторов теперь на витринном столе?'],
+    [24,'בחנות הצעצועים מכרו ביום ראשון 7 צעצועים, ביום שני 9 צעצועים, וביום שלישי 8 צעצועים. כמה צעצועים בסך הכל נמכרו בשלושת הימים?','The toy shop sold 7 toys on Sunday, 9 toys on Monday, and 8 toys on Tuesday. How many toys were sold altogether during the three days?','В магазине игрушек продали 7 игрушек в воскресенье, 9 — в понедельник и 8 — во вторник. Сколько всего игрушек продали за три дня?'],
+    [4,'בחבילה גדולה שהגיעה לחנות הצעצועים היו 36 קוביות משחק. המוכר חילק אותן לערכות של 9 קוביות בערכה. כמה ערכות הכין?','A large package that arrived at the toy shop contained 36 game cubes. The seller divided them into sets of 9 cubes each. How many sets did he prepare?','В большой посылке, поступившей в магазин игрушек, было 36 игровых кубиков. Продавец разделил их на наборы по 9 кубиков. Сколько наборов он приготовил?'],
+    [26,'בחנות יש 18 בובות פרווה קטנות ו-12 בובות פרווה גדולות. ילד אחד קנה 4 בובות בסך הכל. כמה בובות נשארו בחנות?','The shop has 18 small stuffed dolls and 12 large stuffed dolls. One child bought 4 dolls altogether. How many dolls remained in the shop?','В магазине было 18 маленьких плюшевых кукол и 12 больших. Один ребёнок купил всего 4 куклы. Сколько кукол осталось в магазине?'],
+    [35,'מנהל החנות קיבל משלוח ובו 5 קופסאות של משחקי חשיבה, ובכל קופסה היו 7 משחקים. כמה משחקים חדשים קיבל המנהל בסך הכל?','The shop manager received a delivery of 5 boxes of puzzle games, with 7 games in each box. How many new games did the manager receive altogether?','Управляющий магазина получил поставку из 5 коробок головоломок, по 7 игр в каждой. Сколько всего новых игр получил управляющий?']
+  ],
+  [
+    [15,'בדוכן הכרטיסים נמכרו בבוקר 8 כרטיסים ובצהריים עוד 7 כרטיסים. כמה כרטיסים נמכרו בדוכן בסך הכל?','At the ticket booth, 8 tickets were sold in the morning and 7 more tickets at noon. How many tickets were sold at the booth altogether?','В билетной кассе утром продали 8 билетов, а днём — ещё 7. Сколько всего билетов продали в кассе?'],
+    [6,'לדוכן הגיעו 20 אנשים שרצו לקנות כרטיסים לסרט. הדוכן מכר 14 כרטיסים ונגמרו המקומות. כמה אנשים לא הצליחו לקנות כרטיס?','Twenty people came to the booth to buy movie tickets. The booth sold 14 tickets, and then the seats ran out. How many people were unable to buy a ticket?','К кассе пришли 20 человек, желавших купить билеты в кино. Касса продала 14 билетов, и места закончились. Сколько человек не смогли купить билет?'],
+    [20,'מוכר הכרטיסים סידר את הכרטיסים בגליונות: 4 גליונות, ובכל גליון היו 5 כרטיסים מנוקבים. כמה כרטיסים היו בסך הכל בגליונות?','The ticket seller arranged the tickets in 4 sheets, with 5 perforated tickets on each sheet. How many tickets were there altogether on the sheets?','Продавец разложил билеты на 4 листа, по 5 перфорированных билетов на каждом. Сколько всего билетов было на листах?'],
+    [15,'בדוכן היו 30 כרטיסים למופע. חצי מהכרטיסים נמכרו כבר בדקות הראשונות של פתיחת הדוכן. כמה כרטיסים נשארו למכירה?','There were 30 show tickets at the booth. Half of the tickets were sold in the first few minutes after the booth opened. How many tickets remained for sale?','В кассе было 30 билетов на представление. Половину билетов продали в первые минуты после открытия кассы. Сколько билетов осталось в продаже?'],
+    [15,'דני קנה בדוכן 3 כרטיסים למשחק כדורגל, ושילם על כל כרטיס 5 שקלים. כמה שקלים שילם דני בסך הכל בדוכן?','Dani bought 3 tickets to a football game at the booth and paid 5 shekels for each ticket. How many shekels did Dani pay altogether at the booth?','Дани купил в кассе 3 билета на футбольный матч и заплатил по 5 шекелей за каждый. Сколько всего шекелей он заплатил в кассе?'],
+    [14,'בדוכן הכרטיסים נשארו 18 כרטיסים. הגיע אדם אחד וקנה 4 כרטיסים למשפחתו. כמה כרטיסים נשארו בדוכן אחרי הקנייה?','Eighteen tickets remained at the ticket booth. One person came and bought 4 tickets for his family. How many tickets remained at the booth after the purchase?','В билетной кассе оставалось 18 билетов. Один человек пришёл и купил 4 билета для семьи. Сколько билетов осталось в кассе после покупки?'],
+    [24,'ביום השקת המופע נמכרו בדוכן 6 כרטיסים בכל שעה במשך 4 שעות רצופות. כמה כרטיסים נמכרו בסך הכל באותן שעות?','On the show’s opening day, the booth sold 6 tickets every hour for 4 consecutive hours. How many tickets were sold altogether during those hours?','В день премьеры представления в кассе продавали по 6 билетов каждый час в течение 4 часов подряд. Сколько всего билетов продали за это время?'],
+    [36,'מנהל הדוכן ספר 24 כרטיסים מוזלים ו-12 כרטיסים רגילים שנותרו בקופה. כמה כרטיסים נותרו בקופה בסך הכל?','The booth manager counted 24 discounted tickets and 12 regular tickets remaining at the ticket office. How many tickets remained at the ticket office altogether?','Управляющий кассы насчитал 24 льготных и 12 обычных оставшихся билетов. Сколько всего билетов осталось в кассе?'],
+    [21,'בדוכן היו 35 כרטיסים. קבוצת תיירים קנתה 11 כרטיסים, ואחריה קנה אדם נוסף עוד 3 כרטיסים. כמה כרטיסים נשארו בדוכן?','There were 35 tickets at the booth. A group of tourists bought 11 tickets, and after them another person bought 3 more tickets. How many tickets remained at the booth?','В кассе было 35 билетов. Группа туристов купила 11 билетов, а после них ещё один человек купил ещё 3. Сколько билетов осталось в кассе?'],
+    [10,'שורה של אנשים עמדה בתור לדוכן. 5 אנשים קנו כל אחד 2 כרטיסים למופע התיאטרון. כמה כרטיסים נמכרו בסך הכל לאנשים אלו?','A line of people stood at the booth. Each of 5 people bought 2 tickets to the theater show. How many tickets were sold altogether to these people?','У кассы стояла очередь. Каждый из 5 человек купил по 2 билета на театральное представление. Сколько всего билетов продали этим людям?']
+  ],
+  [
+    [15,'בסל פירות מונחים 8 אגסים צהובים ו-7 תפוחים אדומים. כמה פירות יש בסל בסך הכל?','A fruit basket contains 8 yellow pears and 7 red apples. How many pieces of fruit are there altogether in the basket?','В корзине с фруктами лежат 8 жёлтых груш и 7 красных яблок. Сколько всего фруктов в корзине?'],
+    [14,'על השולחן היה סל ובו 20 תותים טריים. הילדים אכלו 6 תותים מתוכו. כמה תותים נשארו בסל הפירות?','There was a basket with 20 fresh strawberries on the table. The children ate 6 of the strawberries. How many strawberries remained in the fruit basket?','На столе стояла корзина с 20 свежими клубничинами. Дети съели 6 ягод. Сколько клубничин осталось в фруктовой корзине?'],
+    [20,'שוקי סידר סלי פירות בחנותו: 4 סלים, ובכל סל הניח 5 אפרסקים מתוקים. כמה אפרסקים סודרו בסך הכל?','Shuki arranged fruit baskets in his shop: 4 baskets, with 5 sweet peaches in each basket. How many peaches were arranged altogether?','Шуки расставил фруктовые корзины в магазине: 4 корзины, по 5 сладких персиков в каждой. Сколько всего персиков он разложил?'],
+    [6,'בסל גדול היו 30 קלמנטינות. חילקו את הפירות שווה בשווה לתוך 5 סלים קטנים יותר. כמה קלמנטינות שמו בכל סל קטן?','There were 30 clementines in a large basket. The fruit was divided equally into 5 smaller baskets. How many clementines were put in each small basket?','В большой корзине было 30 мандаринов. Фрукты поровну разложили в 5 корзин поменьше. Сколько мандаринов положили в каждую маленькую корзину?'],
+    [15,'בתוך סל פירות היו 14 בננות. קוף קטן לקח 4 בננות, ואז הוסיפו לסל עוד 5 בננות טריות. כמה בננות יש בסל עכשיו?','There were 14 bananas in a fruit basket. A little monkey took 4 bananas, and then 5 fresh bananas were added to the basket. How many bananas are in the basket now?','В фруктовой корзине было 14 бананов. Маленькая обезьянка взяла 4 банана, затем в корзину добавили ещё 5 свежих бананов. Сколько бананов теперь в корзине?'],
+    [21,'מוכר הפירות סידר עגלה עם 3 שורות של סלי פירות, ובכל שורה היו 7 סלים קטנים. כמה סלי פירות היו מסודרים על העגלה?','The fruit seller arranged a cart with 3 rows of fruit baskets, with 7 small baskets in each row. How many fruit baskets were arranged on the cart?','Продавец фруктов расставил тележку в 3 ряда фруктовых корзин, по 7 маленьких корзин в каждом. Сколько корзин фруктов было на тележке?'],
+    [15,'לסבתא היה סל עם 18 שזיפים טעימים. בדרך הביתה 3 שזיפים נפלו מן הסל ונמעכו. כמה שזיפים שלמים נשארו בסל?','Grandma had a basket with 18 tasty plums. On the way home, 3 plums fell out of the basket and were crushed. How many intact plums remained in the basket?','У бабушки была корзина с 18 вкусными сливами. По дороге домой 3 сливы выпали из корзины и помялись. Сколько целых слив осталось в корзине?'],
+    [4,'חילקו 36 ענבים מתוך אשכול גדול שווה בשווה לתוך 9 סלים קטנים לפיקניק. כמה ענבים הונחו בכל סל?','Thirty-six grapes from a large bunch were divided equally into 9 small picnic baskets. How many grapes were placed in each basket?','36 виноградин из большой грозди поровну разделили по 9 маленьким корзинам для пикника. Сколько виноградин положили в каждую корзину?'],
+    [23,'משפחה אספה לסל 11 ענבים ירוקים ו-12 ענבים אדומים מהגפן שבחצר. כמה ענבים בסך הכל אספה המשפחה לסל?','A family gathered 11 green grapes and 12 red grapes from the vine in the yard into a basket. How many grapes did the family gather into the basket altogether?','Семья собрала в корзину 11 зелёных и 12 красных виноградин с лозы во дворе. Сколько всего виноградин семья собрала в корзину?'],
+    [21,'בסל פירות היו 28 אבוקדו בשלים. המוכר מכר עד הצהריים רבע מכמות האבוקדו שהייתה בסל. כמה אבוקדו עדיין נשארו בסל?','There were 28 ripe avocados in a fruit basket. By noon, the seller had sold a quarter of the avocados that had been in the basket. How many avocados still remained in the basket?','В фруктовой корзине было 28 спелых авокадо. К полудню продавец продал четверть авокадо, бывших в корзине. Сколько авокадо осталось в корзине?']
+  ],
+  [
+    [16,'לפיקניק המשפחתי נופחו 9 בלונים ירוקים ו-7 בלונים צהובים. כמה בלונים בסך הכל הובאו לפיקניק?','For the family picnic, 9 green balloons and 7 yellow balloons were inflated. How many balloons were brought to the picnic altogether?','Для семейного пикника надули 9 зелёных и 7 жёлтых шаров. Сколько всего шаров принесли на пикник?'],
+    [17,'בתוך ארגז הפיקניק היו 22 בלונים צבעוניים. ברוח חזקה התעופפו ונעלמו 5 בלונים לשמים. כמה בלונים נשארו לפיקניק?','There were 22 colorful balloons in the picnic box. A strong wind carried 5 balloons away into the sky. How many balloons remained for the picnic?','В ящике для пикника было 22 цветных шара. Сильный ветер унёс 5 шаров в небо. Сколько шаров осталось для пикника?'],
+    [24,'אבא הביא לפיקניק 4 חבילות בלונים, ובכל חבילה היו 6 בלונים. כמה בלונים הביא אבא בסך הכל?','Dad brought 4 packs of balloons to the picnic, with 6 balloons in each pack. How many balloons did Dad bring altogether?','Папа принёс на пикник 4 упаковки шаров, по 6 шаров в каждой. Сколько всего шаров принёс папа?'],
+    [6,'הילדים בפיקניק קיבלו 30 בלונים וחילקו אותם שווה בשווה בין 5 קבוצות משחק. כמה בלונים קיבלה כל קבוצה?','The children at the picnic received 30 balloons and divided them equally among 5 play groups. How many balloons did each group receive?','Дети на пикнике получили 30 шаров и поровну разделили их между 5 игровыми группами. Сколько шаров получила каждая группа?'],
+    [16,'בפיקניק החלו עם 14 בלונים. במהלך המשחקים התפוצצו 4 בלונים, אבל הילדים הביאו עוד 6 בלונים נוספים מהרכב. כמה בלונים יש בפיקניק עכשיו?','The picnic started with 14 balloons. During the games, 4 balloons popped, but the children brought 6 more balloons from the car. How many balloons are at the picnic now?','Пикник начался с 14 шаров. Во время игр 4 шара лопнули, но дети принесли из машины ещё 6 шаров. Сколько шаров теперь на пикнике?'],
+    [16,'רותם ניפחה 8 בלונים גדולים ועוד 8 בלונים קטנים כדי לקשט את אזור הפיקניק מתחת לעץ. כמה בלונים ניפחה רותם בסך הכל?','Rotem inflated 8 large balloons and 8 small balloons to decorate the picnic area under the tree. How many balloons did Rotem inflate altogether?','Ротем надул 8 больших и 8 маленьких шаров, чтобы украсить место для пикника под деревом. Сколько всего шаров надул Ротем?'],
+    [10,'בפיקניק היו 15 בלונים אדומים ו-15 בלונים כחולים. הילדים חילקו שליש מהבלונים כפרסים בתחרויות. כמה בלונים חולקו כפרסים?','There were 15 red balloons and 15 blue balloons at the picnic. The children gave a third of the balloons as prizes in the contests. How many balloons were given as prizes?','На пикнике было 15 красных и 15 синих шаров. Дети раздали треть всех шаров в качестве призов в конкурсах. Сколько шаров раздали как призы?'],
+    [9,'המארגנים קנו 36 בלונים לפיקניק וחילקו אותם שווה בשווה ל-4 עציצים מסביב למשטח הישיבה. כמה בלונים קשרו לכל עציץ?','The organizers bought 36 balloons for the picnic and divided them equally among 4 flowerpots around the seating area. How many balloons did they tie to each flowerpot?','Организаторы купили 36 шаров для пикника и поровну распределили их между 4 цветочными горшками вокруг места отдыха. Сколько шаров привязали к каждому горшку?'],
+    [20,'לפני תחילת הפיקניק היו 11 בלונים מוכנים, ובמהלך ההתארגנות נפחו הילדים עוד 9 בלונים חדשים. כמה בלונים היו מוכנים יחד?','Before the picnic began, 11 balloons were ready, and while preparing the children inflated 9 new balloons. How many balloons were ready altogether?','До начала пикника было готово 11 шаров, а во время подготовки дети надули ещё 9 новых. Сколько всего шаров было готово?'],
+    [21,'מתוך 28 בלונים שהובאו לפיקניק, 7 בלונים יצא מהם האוויר במהלך היום. כמה בלונים מלאים ונפוחים נשארו לסוף הפיקניק?','Of the 28 balloons brought to the picnic, 7 balloons lost their air during the day. How many full, inflated balloons remained at the end of the picnic?','Из 28 шаров, принесённых на пикник, за день из 7 вышел воздух. Сколько полных надутых шаров осталось к концу пикника?']
+  ]
+];
+function getStoryMathQuestion(activityIndex,questionIndex){
+  const story=STORY_MATH_STORIES[activityIndex]?.[questionIndex%10];
+  if(!story)throw new Error(`Unknown story math activity: ${activityIndex}`);
+  const [answer,he,en,ru]=story;
+  const options=makeChoices(answer,Math.max(0,answer-4),answer+4).map(String);
+  return {answer:String(answer),question:{he,en,ru},options};
+}
+function capitalizeRussian(value){
+  return value?value[0].toLocaleUpperCase('ru')+value.slice(1):value;
 }
 function getWordQuestion(activityIndex,questionIndex){
   const row=WORD_QUESTION_DATA[activityIndex][questionIndex];
@@ -3976,8 +4302,10 @@ const LEGACY_SCIENCE_QUESTIONS=[
 ];
 const TRACE_LETTERS={en:Array.from('ABCDEFGHIJKLMNOPQRSTUVWXYZ'),he:Array.from('אבגדהוזחטיכלמנסעפצקרשת'),ru:Array.from('АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ')};
 const TRACE_ACTIVITY_COUNT=12;
-function traceLetterGroups(language){
-  const letters=TRACE_LETTERS[language]||TRACE_LETTERS.en,base=Math.floor(letters.length/TRACE_ACTIVITY_COUNT),remainder=letters.length%TRACE_ACTIVITY_COUNT;
+function traceLetterGroups(language,style='primary'){
+  let letters=TRACE_LETTERS[language]||TRACE_LETTERS.en;
+  if(style==='secondary'&&language!=='he')letters=letters.map(letter=>letter.toLocaleLowerCase(language));
+  const base=Math.floor(letters.length/TRACE_ACTIVITY_COUNT),remainder=letters.length%TRACE_ACTIVITY_COUNT;
   let offset=0;
   return Array.from({length:TRACE_ACTIVITY_COUNT},(_,index)=>{
     const count=base+(index<remainder?1:0),group=letters.slice(offset,offset+count);
@@ -4261,7 +4589,8 @@ function playLearningGame(id,level){
   genericAnswer=correct;questionHintCount=0;
   const game=MINI_GAMES.find(item=>item.id===id);
   const questionLabel=learningGameHasTenQuestions(id)?getLearningQuestionLabel(id,riddleQuestionIndex):tr('question',{n:level+1});
-  $('#gameContent').innerHTML=`<h2 data-i18n="${game.name}">${game.icon} ${tr(game.name)}</h2><p>${questionLabel}</p><p data-i18n="${promptKey}">${prompt}</p><div id="learningQuestion" class="quiz-swatch" ${id==='math'?'dir="ltr"':''} style="width:auto;height:auto;min-height:60px;border:0;box-shadow:none;font-size:${['storyMath','scienceQuest','logicQuest','riddles'].includes(id)?'18':'32'}px">${question}</div><div class="answer-grid">${options.map(option=>`<button data-answer="${encodeURIComponent(option)}" onclick="answerLearningGame(this)">${option}</button>`).join('')}</div><div class="learning-tools"><button class="ghost" onclick="revealLearningHint()" data-i18n="hintButton">${tr('hintButton')}</button></div><p id="learningHint" class="learning-hint" aria-live="polite"></p><p id="learningFeedback" class="play-status" aria-live="polite"></p>`;
+  const questionDirection=id==='math'?(currentLanguage==='he'&&level===2?'rtl':'ltr'):currentLanguage==='he'?'rtl':'ltr';
+  $('#gameContent').innerHTML=`<h2 data-i18n="${game.name}">${game.icon} ${tr(game.name)}</h2><p>${questionLabel}</p><p data-i18n="${promptKey}">${prompt}</p><div id="learningQuestion" class="quiz-swatch" dir="${questionDirection}" style="width:auto;height:auto;min-height:60px;border:0;box-shadow:none;font-size:${['storyMath','scienceQuest','logicQuest','riddles'].includes(id)?'18':'32'}px">${question}</div><div class="answer-grid">${options.map(option=>`<button data-answer="${encodeURIComponent(option)}" onclick="answerLearningGame(this)">${option}</button>`).join('')}</div><div class="learning-tools"><button class="ghost" onclick="revealLearningHint()" data-i18n="hintButton">${tr('hintButton')}</button></div><p id="learningHint" class="learning-hint" aria-live="polite"></p><p id="learningFeedback" class="play-status" aria-live="polite"></p>`;
 }
 function revealLearningHint(){
   const question=$('#learningQuestion'),feedback=$('#learningHint');
@@ -4413,19 +4742,29 @@ function scheduleMemoryMismatch(){
     if(first)first.textContent='❔';
     if(second)second.textContent='❔';
     memoryOpen=[];
-    if(first&&second)showGameFeedback(tr('tryAgain'),tr('tryAgain'),()=>{});
   },750);
 }
-let traceLetterIndex=0,traceDistance=0;
+let traceLetterIndex=0,traceDistance=0,traceLetterStyle='primary';
+function renderLetterStyleSelection(level){
+  miniGameScene='letterStyle';
+  const isHebrew=currentLanguage==='he';
+  const primary=isHebrew?tr('letterStylePrint'):tr('letterStyleUpper');
+  const secondary=isHebrew?tr('letterStyleCursive'):tr('letterStyleLower');
+  $('#gameContent').innerHTML=`<h2>✍️ ${tr('letters')}</h2><p>${tr('letterStylePrompt')}</p><div class="level-grid"><button class="level-choice" onclick="chooseTraceStyle('primary')">${primary}<br><strong>${(TRACE_LETTERS[currentLanguage]||TRACE_LETTERS.en).slice(0,3).join(' ')}</strong></button><button class="level-choice" onclick="chooseTraceStyle('secondary')">${secondary}<br><strong>${isHebrew?'א ב ג':(TRACE_LETTERS[currentLanguage]||TRACE_LETTERS.en).slice(0,3).map(letter=>letter.toLocaleLowerCase(currentLanguage)).join(' ')}</strong></button></div><button class="ghost" onclick="renderGameLevels()">${tr('back')}</button>`;
+}
+function chooseTraceStyle(style){
+  if(!['primary','secondary'].includes(style))return;
+  traceLetterStyle=style;traceLetterIndex=0;miniGameScene='play';renderLetterTrace(selectedLevel);
+}
 function renderLetterTrace(level){
-  const letters=traceLetterGroups(currentLanguage)[level],letter=letters[traceLetterIndex];
+  const letters=traceLetterGroups(currentLanguage,traceLetterStyle)[level],letter=letters[traceLetterIndex];
   if(!letter)throw new Error(`Missing letter ${traceLetterIndex+1} in activity ${level+1}`);
   traceHasInk=false;traceDistance=0;go('gameStage');
   $('#gameContent').innerHTML=`<h2 data-i18n="letters">✍️ ${tr('letters')}</h2><p>${tr('traceProgress',{n:traceLetterIndex+1,total:letters.length})}</p><p data-i18n="tracePrompt">${tr('tracePrompt')}</p><p id="traceStatus" aria-live="polite"></p><div class="trace-wrap"><canvas id="traceCanvas" class="trace-canvas" width="320" height="320" aria-label="${tr('traceLetter')}: ${letter}"></canvas><canvas id="traceGuide" class="trace-guide" width="320" height="320" aria-hidden="true"></canvas></div><button class="ghost" onclick="clearTrace()" data-i18n="clear">${tr('clear')}</button> <button class="alt" onclick="finishTrace()" data-i18n="check">${tr('check')}</button>`;
   const canvas=$('#traceCanvas'),context=canvas.getContext('2d',{willReadFrequently:true});let drawing=false;
   const guide=$('#traceGuide').getContext('2d',{willReadFrequently:true});
   if(!context||!guide)throw new Error('Could not prepare the letter tracing canvas.');
-  guide.font='220px system-ui,Arial,sans-serif';guide.textAlign='center';guide.textBaseline='middle';
+  guide.font=`220px ${currentLanguage==='he'&&traceLetterStyle==='secondary'?'Narkisim,David,serif':'system-ui,Arial,sans-serif'}`;guide.textAlign='center';guide.textBaseline='middle';
   guide.fillStyle='#ddd';guide.fillText(letter,160,160);
   function point(event){
     const rect=canvas.getBoundingClientRect();
@@ -4489,14 +4828,14 @@ function traceMatchesLetter(){
 }
 function finishTrace(){
   const status=$('#traceStatus');
-  const letters=traceLetterGroups(currentLanguage)[selectedLevel];
+  const letters=traceLetterGroups(currentLanguage,traceLetterStyle)[selectedLevel];
   status.style.minHeight='';
   if(!traceHasInk||!traceMatchesLetter()){showGameFeedback(tr('tryAgain'),tr('tryAgain'),clearTrace);return}
   const hasNextLetter=traceLetterIndex+1<letters.length;
   showGameFeedback(tr('traceDone'),tr('next'),hasNextLetter?nextTraceLetter:()=>advanceGameActivity('letters'),true);
 }
 function nextTraceLetter(){
-  const letters=traceLetterGroups(currentLanguage)[selectedLevel];
+  const letters=traceLetterGroups(currentLanguage,traceLetterStyle)[selectedLevel];
   if(traceLetterIndex+1>=letters.length)return;
   traceLetterIndex++;
   renderLetterTrace(selectedLevel);
@@ -4522,7 +4861,7 @@ const BILLING_TEXT={
     purchased:'Purchase verified.',changed:'Price or subscription status changed. Please check and try again.',
     monthly:'{price} per month',single:'Subscribe to this game: {price} per month',
     all:'Subscribe to all games: {price} per month',
-    terms:'Renews monthly until canceled. Manage or cancel in Google Play. A switch from one game may charge a prorated difference immediately. If you have multiple game subscriptions, manage them first; access already paid for remains until expiry.',
+    terms:'Renews monthly until canceled. The subscription can be used with this app account on up to 5 devices. Manage or cancel in Google Play. A switch from one game may charge a prorated difference immediately. If you have multiple game subscriptions, manage them first; access already paid for remains until expiry.',
     mismatch:'Your app account has subscriptions not found in this Google Play account. Switch to the Google Play account used for the purchase and restore.',
     multiple:'Cancel renewal of the other game subscriptions in Google Play before upgrading. Paid access remains until each subscription expires.'},
   he:{restore:'שחזור רכישות',manage:'ניהול מינויים',status:'המינויים מאומתים מול Google Play.',
@@ -4533,7 +4872,7 @@ const BILLING_TEXT={
     purchased:'הרכישה אומתה.',changed:'המחיר או מצב המינוי השתנו. בדקו ונסו שוב.',
     monthly:'{price} לחודש',single:'מינוי למשחק הזה: {price} לחודש',
     all:'מינוי לכל המשחקים: {price} לחודש',
-    terms:'המינוי מתחדש מדי חודש עד לביטול דרך Google Play. מעבר ממינוי למשחק אחד עשוי לחייב מיד את ההפרש היחסי. אם יש כמה מינויים למשחקים, יש לנהל אותם תחילה; הגישה ששולמה נשארת עד תום התקופה.',
+    terms:'המינוי מתחדש מדי חודש עד לביטול דרך Google Play. ניתן להשתמש במינוי באותו חשבון אפליקציה בעד 5 מכשירים. מעבר ממינוי למשחק אחד עשוי לחייב מיד את ההפרש היחסי. אם יש כמה מינויים למשחקים, יש לנהל אותם תחילה; הגישה ששולמה נשארת עד תום התקופה.',
     mismatch:'בחשבון האפליקציה יש מינויים שלא נמצאו בחשבון Google Play הנוכחי. עברו לחשבון שביצע את הרכישה ושחזרו.',
     multiple:'לפני השדרוג יש לבטל את החידוש של שאר המינויים למשחקים ב־Google Play. הגישה ששולמה תישאר עד סוף כל תקופה.'},
   ru:{restore:'Восстановить покупки',manage:'Управлять подписками',status:'Подписки проверяются через Google Play.',
@@ -4544,7 +4883,7 @@ const BILLING_TEXT={
     purchased:'Покупка подтверждена.',changed:'Цена или состояние подписки изменились. Проверьте и повторите.',
     monthly:'{price} в месяц',single:'Подписка на эту игру: {price} в месяц',
     all:'Подписка на все игры: {price} в месяц',
-    terms:'Подписка продлевается ежемесячно до отмены в Google Play. При переходе с одной игры разница может быть списана сразу. Если у вас несколько подписок, сначала управляйте ими; оплаченный доступ сохраняется до конца периода.',
+    terms:'Подписка продлевается ежемесячно до отмены в Google Play. Подпиской можно пользоваться с этим аккаунтом приложения максимум на 5 устройствах. При переходе с одной игры разница может быть списана сразу. Если у вас несколько подписок, сначала управляйте ими; оплаченный доступ сохраняется до конца периода.',
     mismatch:'В аккаунте приложения есть подписки, которых нет в текущем аккаунте Google Play. Переключитесь на исходный аккаунт и восстановите покупки.',
     multiple:'Перед переходом отключите продление остальных подписок на игры в Google Play. Оплаченный доступ сохранится до конца периода.'}
 };
@@ -5653,6 +5992,8 @@ $('#fileCam').addEventListener('change',onPhotoFile);
 /* ---------- profile ---------- */
 function renderProfile(){
   $('#pName').textContent=S.av+' '+S.name;$('#pStars').textContent=S.stars;$('#pVip').textContent=S.vip?tr('active')+' 👑':tr('freeLabel');
+  $('#pEmail').textContent=currentAccountEmail?`${tr('connectedEmail')}: ${currentAccountEmail}`:'';
+  $('#pEmail').hidden=!currentAccountEmail;
   
   $('#avs').innerHTML = AVATARS_LIST.map(a => {
     const isUnlocked = S.stars >= a.req;
@@ -5665,6 +6006,7 @@ function renderProfile(){
   }).join('');
 
   renderSound();
+  renderAccessibilitySettings();
   const gallery=$('#gal');gallery.replaceChildren();
   if(!S.art.length)gallery.innerHTML=`<p>${tr('noSavedArt')}</p>`;
   else S.art.forEach((url,i)=>{
@@ -5680,6 +6022,28 @@ function setAvatar(avIcon){
   S.av = avIcon;
   sv();
   renderProfile();
+}
+function applyAccessibilitySettings(){
+  const settings=S.accessibility||{};
+  document.documentElement.classList.toggle('a11y-large-text',settings.largeText===true);
+  document.documentElement.classList.toggle('a11y-contrast',settings.contrast===true);
+  document.documentElement.classList.toggle('a11y-reduced-motion',settings.reducedMotion===true);
+}
+function renderAccessibilitySettings(){
+  const settings=S.accessibility||{};
+  $('#a11yLargeText').checked=settings.largeText===true;
+  $('#a11yContrast').checked=settings.contrast===true;
+  $('#a11yReducedMotion').checked=settings.reducedMotion===true;
+}
+function openAccessibilitySettings(){
+  renderAccessibilitySettings();
+  $('#accessibilityM').classList.add('on');
+  $('#a11yLargeText').focus();
+}
+function saveAccessibilitySetting(key,value){
+  if(!['largeText','contrast','reducedMotion'].includes(key))throw new Error('Unknown accessibility setting.');
+  S.accessibility={...(S.accessibility||{}),[key]:value===true};
+  sv();applyAccessibilitySettings();
 }
 
 renderPalette();refreshTools();
@@ -5805,13 +6169,13 @@ function dailyBonus(){
   const now=new Date(),today=dayKey(now);if(S.lastDay===today)return;
   const y=new Date(now);y.setDate(y.getDate()-1);
   S.streak=S.lastDay===dayKey(y)?(S.streak||0)+1:1;S.lastDay=today;
-  const gain=Math.min(S.streak,5);queueProfileStarReward(gain,`daily:${today}`);renderProfile();
+  const gain=1;queueProfileStarReward(gain,`daily:${today}`);renderProfile();
   $('#dailyT').textContent=tr('dailyTitle');$('#dailyD').textContent=tr('dailyDay',{n:S.streak});
   $('#dailyG').textContent='🔥 +'+gain+' ⭐';$('#dailyB').textContent=tr('dailyBtn');
   $('#dailyM').classList.add('on');celebrate();
 }
 const _go=go;
-go=function(id){const r=_go.apply(this,arguments);if(id==='games'&&dailyFor!==currentUserId){dailyFor=currentUserId;setTimeout(dailyBonus,500)}return r};
+go=function(id){const r=_go.apply(this,arguments);if(id==='games')setTimeout(dailyBonus,500);return r};
 setLanguage(currentLanguage);
 
 setLanguage(currentLanguage);

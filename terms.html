@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#7c4dff">
+<title>Magical Fun - תנאי שימוש</title>
+<style>
+*{box-sizing:border-box}body{margin:0;padding:24px;font-family:system-ui,Arial,sans-serif;background:#fff7e6;color:#3b2a66;line-height:1.65}main{max-width:820px;margin:0 auto;padding:74px 24px 24px;background:#fff;border-radius:20px;box-shadow:0 3px 12px #0002}h1,h2{line-height:1.25}a{color:#5733bd}select{font:inherit;padding:8px;border:2px solid #d9ccff;border-radius:10px}.back-button{position:fixed;top:max(12px,env(safe-area-inset-top));right:max(12px,env(safe-area-inset-right));padding:10px 16px;border:0;border-radius:12px;background:#ece6ff;color:#3b2a66;font:inherit;font-weight:700;cursor:pointer}[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<main>
+  <button id="backButton" class="back-button" type="button" onclick="goBack()">חזרה</button>
+  <h1>Magical Fun - <span id="termsTitle">תנאי שימוש</span></h1>
+  <label for="termsLanguage"><span id="languageLabel">שפה</span>: <select id="termsLanguage" onchange="setTermsLanguage(this.value)"><option value="he">עברית</option><option value="en">English</option><option value="ru">Русский</option></select></label>
+
+  <section class="terms-copy" data-language="he">
+    <p><strong>עודכן לאחרונה: 18 בנובמבר 2026</strong></p>
+    <h2>השימוש באפליקציה</h2>
+    <p>Magical Fun היא אפליקציית משחק ויצירה לילדים. שימוש באפשרויות החשבון, ברכישות ובבקשות תמיכה מיועד להורה או אפוטרופוס. הילד/ה יכולים להשתמש באפליקציה כאורחים ללא חשבון.</p>
+    <h2>התנהגות ובטיחות</h2>
+    <p>אין לנסות להשבית, לשנות או לעקוף את פעילות האפליקציה, את מנגנוני הגישה, את רכישות Google Play או את אמצעי הבטיחות. אסור להזין בכינוי, בציור או בכל תוכן אחר מידע רגיש או תוכן הפוגע באחרים.</p>
+    <h2>השגחת הורים וזמן מסך</h2>
+    <p>הורים ואפוטרופוסים אחראים לבחירת זמן משחק מתאים, לפיקוח על רכישות ולשימוש מתאים במצלמה ובגלריית התמונות. האפליקציה כוללת הגבלת זמן יומית, אך אינה מחליפה שיקול דעת והשגחה.</p>
+    <h2>מינויים ותוכן</h2>
+    <p>מינויים ורכישות באמצעות Google Play כפופים לכללים של Google Play, לתיאור המוצר ולתנאי הביטול והחידוש המוצגים לפני הרכישה. ניתן להשתמש במינוי שנרכש עם אותו חשבון אפליקציה בעד חמישה מכשירים. יש להתחבר לאותו חשבון בכל המכשירים; ניסיון לחבר מכשיר שישי אינו יפתח גישה נוספת. חלק מהפעילויות פתוחות בחינם, וחלקן עשויות לדרוש מנוי. הפעילויות נועדו ללמידה ולבידור ואינן תחליף להוראה מקצועית.</p>
+    <h2>תוכן, שמירות ושירות</h2>
+    <p>ציורים והתקדמות עשויים להישמר במכשיר ובחשבון בהתאם לגרסת האפליקציה. מומלץ לשמור עותק נפרד של יצירות חשובות. השירות עשוי להשתנות, להתעדכן או להיות לא זמין זמנית עקב תחזוקה או מגבלות טכניות.</p>
+    <h2>פרטיות ואחריות</h2>
+    <p>אופן איסוף הנתונים והשימוש בהם מתואר ב<a href="./privacy.html?lang=he">מדיניות הפרטיות</a>. האפליקציה מסופקת כפי שהיא, בכפוף לזכויות שאינן ניתנות לשלילה לפי הדין. לשאלות פנו אל <a href="mailto:yosefhila86@gmail.com">yosefhila86@gmail.com</a>.</p>
+  </section>
+
+  <section class="terms-copy" data-language="en" hidden>
+    <p><strong>Last updated: November 18, 2026</strong></p>
+    <h2>Using the app</h2>
+    <p>Magical Fun is a games and creativity app for children. A parent or guardian must manage account features, purchases, and support requests. Children may play as guests without an account.</p>
+    <h2>Conduct and safety</h2>
+    <p>Do not attempt to disable, modify, or bypass the app, access controls, Google Play purchases, or safety measures. Do not put sensitive personal information or harmful content in nicknames, drawings, or other app content.</p>
+    <h2>Parental responsibility and screen time</h2>
+    <p>Parents and guardians are responsible for setting suitable play time, supervising purchases, and overseeing camera and gallery use. The daily limit is a convenience and does not replace adult judgment or supervision.</p>
+    <h2>Subscriptions and content</h2>
+    <p>Google Play subscriptions and purchases are governed by Google Play rules, the product description, and the renewal and cancellation terms shown before purchase. A purchased subscription may be used with the same app account on up to five devices. The same account must be signed in on every device; a sixth active device will not receive additional access. Some activities are free and others may require a subscription. Activities are for learning and entertainment, not a substitute for professional teaching.</p>
+    <h2>Saves and availability</h2>
+    <p>Drawings and progress may be saved on the device and to the account depending on the app version. Keep a separate copy of important creations. The service may change, receive updates, or be temporarily unavailable because of maintenance or technical limitations.</p>
+    <h2>Privacy and responsibility</h2>
+    <p>Data practices are described in the <a href="./privacy.html?lang=en">Privacy Policy</a>. The app is provided as available, subject to rights that cannot be excluded by law. For questions, contact <a href="mailto:yosefhila86@gmail.com">yosefhila86@gmail.com</a>.</p>
+  </section>
+
+  <section class="terms-copy" data-language="ru" hidden>
+    <p><strong>Последнее обновление: 18 ноября 2026 г.</strong></p>
+    <h2>Использование приложения</h2>
+    <p>Magical Fun — приложение с играми и творческими заданиями для детей. Аккаунтом, покупками и обращениями в поддержку должен управлять родитель или опекун. Можно играть без аккаунта в гостевом режиме.</p>
+    <h2>Безопасность</h2>
+    <p>Запрещается отключать, изменять или обходить работу приложения, контроль доступа, покупки Google Play и меры безопасности. Не указывайте чувствительные сведения и не создавайте вредный контент в именах, рисунках или других материалах.</p>
+    <h2>Родительский контроль</h2>
+    <p>Родители и опекуны отвечают за продолжительность игры, контроль покупок, камеры и галереи. Дневной лимит не заменяет присмотр взрослого.</p>
+    <h2>Подписки и материалы</h2>
+    <p>Подписки и покупки Google Play регулируются правилами Google Play, описанием продукта и условиями продления и отмены, показанными до покупки. Приобретённой подпиской можно пользоваться с одним аккаунтом приложения максимум на пяти устройствах. На каждом устройстве должен быть выполнен вход в тот же аккаунт; шестое активное устройство не получит дополнительный доступ. Некоторые задания бесплатны, а другие могут требовать подписку. Материалы предназначены для обучения и развлечения и не заменяют профессиональное обучение.</p>
+    <h2>Сохранение и доступность</h2>
+    <p>Рисунки и прогресс могут сохраняться на устройстве и в аккаунте в зависимости от версии приложения. Храните отдельную копию важных работ. Сервис может обновляться, меняться или временно не работать из-за обслуживания или технических ограничений.</p>
+    <h2>Конфиденциальность и ответственность</h2>
+    <p>Обработка данных описана в <a href="./privacy.html?lang=ru">политике конфиденциальности</a>. Приложение предоставляется в доступном виде с учётом неотменяемых прав по закону. Вопросы отправляйте на <a href="mailto:yosefhila86@gmail.com">yosefhila86@gmail.com</a>.</p>
+  </section>
+</main>
+<script>
+function setTermsLanguage(language){
+  const valid=['he','en','ru'].includes(language)?language:'he';
+  document.querySelectorAll('.terms-copy').forEach(section=>{section.hidden=section.dataset.language!==valid});
+  document.documentElement.lang=valid;document.documentElement.dir=valid==='he'?'rtl':'ltr';
+  document.querySelector('#termsLanguage').value=valid;
+  document.querySelector('#termsTitle').textContent={he:'תנאי שימוש',en:'Terms of Use',ru:'Условия использования'}[valid];
+  document.querySelector('#languageLabel').textContent={he:'שפה',en:'Language',ru:'Язык'}[valid];
+  document.querySelector('#backButton').textContent={he:'חזרה',en:'Back',ru:'Назад'}[valid];
+}
+function goBack(){if(history.length>1)history.back();else location.href='./index.html'}
+setTermsLanguage(new URLSearchParams(location.search).get('lang'));
+</script>
+</body>
+</html>
