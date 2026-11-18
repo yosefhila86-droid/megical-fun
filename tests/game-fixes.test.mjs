@@ -712,7 +712,7 @@ test('pastel background is applied across screens and cached for offline use', a
   assert.match(html, /#welcome\{[^}]*background:radial-gradient\([^}]*#ffffff22/i);
   assert.match(html, /#cv\{[^}]*background:#fff/);
   assert.match(html, /\.interactive-puzzle\{[^}]*background:#fff/);
-  assert.match(serviceWorker, /magical-fun-shell-v33-coloring-side-arrows/);
+  assert.match(serviceWorker, /magical-fun-shell-v35-coloring-galaxy-fit/);
   assert.match(serviceWorker, /new URL\('images\/magical-fun-background\.png',APP_ROOT\)\.href/);
   await access(new URL('../images/magical-fun-background.png', import.meta.url));
 });
@@ -781,7 +781,7 @@ test('coloring palette stays docked above navigation and scrolls horizontally', 
   assert.match(html, /@media\(max-width:600px\)\{[\s\S]*?\.paint-workspace\{grid-template-columns:minmax\(0,1fr\);grid-template-rows:repeat\(6,max-content\)/);
   assert.match(html, /\.paint-canvas-stage\{[^}]*grid-column:1;grid-row:4;grid-template-columns:44px minmax\(0,1fr\) 44px/);
   assert.match(html, /\.paint-canvas-wrap\{[^}]*grid-column:2;grid-row:1[^}]*width:min\(100%,400px\)[^}]*aspect-ratio:1/);
-  assert.match(html, /@media\(max-width:600px\)\{[\s\S]*?\.paint-canvas-stage\{grid-column:1;grid-row:4;grid-template-columns:minmax\(0,1fr\) 65% minmax\(0,1fr\)/);
+  assert.match(html, /@media\(max-width:600px\)\{[\s\S]*?\.paint-canvas-stage\{grid-column:1;grid-row:4;grid-template-columns:minmax\(0,1fr\) 53% minmax\(0,1fr\)/);
   assert.doesNotMatch(html, /\.paint-canvas-wrap\{[^}]*52dvh/);
   assert.match(html, /\.paint-workspace\{display:grid[^}]*grid-template-columns:minmax\(0,1fr\) minmax\(76px,128px\)/);
   assert.match(html, /\.paint-actions button\{margin:0;padding:6px 4px;font-size:12px/);
