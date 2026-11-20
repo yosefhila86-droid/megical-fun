@@ -233,6 +233,7 @@ test('Sokoban hides move and push counts from the selector and active board', ()
   const gameContent = { innerHTML: '', classList: { toggle() {} } };
   const context = vm.createContext({
     S: { completedPuzzleStars: [] },
+    AGE_ADAPTED_STAGE_COUNT: 5,
     selectedLevel: 0,
     currentLanguage: 'en',
     interactivePuzzle: {
@@ -245,8 +246,11 @@ test('Sokoban hides move and push counts from the selector and active board', ()
     sokobanLevelIsUnlocked: () => true,
     sokobanLevelStarKey: (_, level) => `box-${level}`,
     childDifficultyLevel: () => 1,
+    isAgeAdaptedStageGame: () => false,
+    miniGameStageContinueLabel: () => 'Continue',
     gameActivityAdvanceLabel: () => 'Continue',
     interactiveGamePrompt: () => 'Push the box to the goal.',
+    renderAgeAdaptedStageBanner: () => '',
     tr: (key, values = {}) => key === 'boxLevelLabel' ? `Level ${values.n} · ${values.board}` : key,
     $: selector => selector === '#gameContent' ? gameContent : selector === '#gameStage' ? { scrollTop: 0 } : null,
   });
@@ -488,7 +492,7 @@ test('word builder letter hints match the age difficulty', () => {
   }
 });
 
-test('multi-stage games launch directly at the age-matched stage', () => {
+test('age-adapted multi-stage games start at stage one for every age band', () => {
   const difficultySource = slice('const CHILD_AGE_BANDS=', 'function withTimeout(');
   const launchSource = slice('function launchMiniGame(id,level){', 'function backFromGame(){');
   const startWordSearchSource = slice('function startWordSearchActivity(', 'function wordSearchStarKey(');
@@ -501,34 +505,150 @@ test('multi-stage games launch directly at the age-matched stage', () => {
     restoreMiniGameProgress: (_id, _level, stage) => { context.restoredStage = stage; return false; },
     startInteractivePuzzle: id => { context.startedInteractiveId = id; },
     startMagneticMaze: (...args) => { context.startedMagneticMaze = args; },
-    launchWordSearchLevel: stage => { context.startedWordSearchStage = stage; },
+    launchWordSearchLevel: (...args) => { context.startedWordSearchStage = args; },
     go() {}, playLearningGame() {},
   });
   vm.runInContext(`${difficultySource}
-    let selectedMiniGame=null,selectedLevel=0,miniGameScene='menu',selectedPathLevel=0,selectedBoxLevel=0,selectedRailwayLevel=0,selectedWordSearchLevel=0;
+    let selectedMiniGame=null,selectedLevel=0,miniGameScene='menu',selectedPathLevel=0,selectedBoxLevel=0,selectedRailwayLevel=0,selectedMagneticStage=0,selectedWordSearchLevel=0;
     let learningAnsweredQuestions=new Set();
     function gameUnlocked(){return false}
     ${startWordSearchSource}
     ${launchSource}`, context);
 
-  const stageMap = {
-    '6-7': [0, 0, 0, 0, 0],
-    '8-9': [2, 2, 2, 2, 1],
-    '10-11': [4, 4, 4, 4, 5],
-  };
-  for (const [ageBand, stages] of Object.entries(stageMap)) {
+  for (const ageBand of ['6-7', '8-9', '10-11']) {
     context.S.childAgeBand = ageBand;
-    ids.forEach((id, index) => {
+    ids.forEach(id => {
       context.launchMiniGame(id, 0);
-      if (id === 'magneticMaze') assert.deepEqual(Array.from(context.startedMagneticMaze), [0, stages[index]]);
-      else if (id === 'wordSearch') assert.equal(context.startedWordSearchStage, stages[index]);
+      if (id === 'magneticMaze') assert.deepEqual(Array.from(context.startedMagneticMaze), [0, 0, false]);
+      else if (id === 'wordSearch') assert.deepEqual(Array.from(context.startedWordSearchStage), [0, false]);
       else {
-        assert.equal(context.restoredStage, stages[index]);
+        assert.equal(context.restoredStage, undefined);
         assert.equal(context.startedInteractiveId, id);
       }
     });
   }
   assert.doesNotMatch(launchSource, /renderPathLevels|renderSokobanLevels|renderRailwayLevels|renderMagneticMazeStages|renderWordSearchLevels/);
+});
+
+test('age-adapted activities advance through five stages before the next activity', () => {
+  const stageSource = slice('const AGE_ADAPTED_STAGE_GAMES=', 'function withTimeout(');
+  const actions = [];
+  const context = vm.createContext({
+    tr: (key, values = {}) => key === 'activityStageProgress'
+      ? `Stage ${values.n} of ${values.total} complete.`
+      : key === 'nextActivityStage' ? 'Next stage' : key,
+    gameActivityAdvanceLabel: id => `Next ${id}`,
+    advanceGameActivity: id => actions.push(`activity:${id}`),
+    startInteractivePuzzle: id => actions.push(`puzzle:${id}`),
+    startMagneticMaze: (...args) => actions.push(`magnetic:${args.join(':')}`),
+    launchWordSearchLevel: (...args) => actions.push(`wordSearch:${args.join(':')}`),
+  });
+  vm.runInContext(`${stageSource}
+    let selectedPathLevel=0,selectedBoxLevel=0,selectedRailwayLevel=0,selectedMagneticStage=0,selectedWordSearchLevel=0,selectedLevel=2;`, context);
+  const ids = ['physicsPaths', 'gridSokoban', 'railwayControl', 'magneticMaze', 'wordSearch'];
+  for (const id of ids) {
+    actions.length = 0;
+    context.setMiniGameStageIndex(id, 0);
+    for (let stage = 0; stage < 5; stage++) {
+      assert.equal(context.miniGameStageProgress(id), `Stage ${stage + 1} of 5 complete.`);
+      context.advanceAgeAdaptedStage(id);
+      if (stage < 4) {
+        assert.equal(context.miniGameStageIndex(id), stage + 1);
+        assert.notEqual(actions.at(-1), `activity:${id}`);
+      } else {
+        assert.equal(actions.at(-1), `activity:${id}`);
+      }
+    }
+  }
+});
+
+test('Paths gives ages 6-7 ten extra turns while keeping five stages at one difficulty', () => {
+  const constants = slice('const PATH_LEVEL_CELL_COUNTS=', 'function codeBreakerSettings()');
+  const setup = slice('function setupPathPuzzle(){', 'function buildProgressivePath(');
+  const builder = slice('function buildProgressivePath(', 'function pathLevelStarKey(');
+  const context = vm.createContext({
+    S: { childAgeBand: '6-7' }, selectedLevel: 0, selectedPathLevel: 0, interactivePuzzle: {},
+    childDifficultyLevel: ageBand => ({ '6-7': 1, '8-9': 2, '10-11': 3 })[ageBand],
+  });
+  vm.runInContext(`${constants}\n${setup}\n${builder}`, context);
+  for (const [ageBand, difficulty, size] of [['6-7', 1, 4], ['8-9', 2, 6], ['10-11', 3, 8]]) {
+    context.S.childAgeBand = ageBand;
+    const routes = new Set(), routeLengths = new Set();
+    for (let stage = 0; stage < 5; stage++) {
+      context.selectedPathLevel = stage;
+      context.interactivePuzzle = {};
+      context.setupPathPuzzle();
+      const puzzle = context.interactivePuzzle;
+      const baselineTurns = puzzle.rotations.reduce((sum, turns) => sum + (4 - turns) % 4, 0)
+        + Math.max(2, Math.ceil(puzzle.route.length * 0.12));
+      assert.equal(puzzle.difficultyLevel, difficulty);
+      assert.equal(puzzle.size, size);
+      assert.equal(puzzle.maxTurns, baselineTurns + (difficulty === 1 ? 10 : 0));
+      routes.add(JSON.stringify([Array.from(puzzle.route), Array.from(puzzle.rotations)]));
+      routeLengths.add(puzzle.route.length);
+    }
+    assert.equal(routeLengths.size, 1);
+      assert.equal(routes.size, 5);
+  }
+});
+
+test('Sokoban, Railway, and Magnetic Maze use age difficulty for all five stages', () => {
+  const sokobanSource = slice('function setupSokobanPuzzle(){', 'function setupCodeBreaker(){');
+  const railwaySource = slice('const RAILWAY_COLOR_VALUES=', 'function toggleRailwaySwitch(');
+  const mazeSource = slice('function startMagneticMaze(', 'function magneticMazeMagnet(');
+  const context = vm.createContext({
+    S: { childAgeBand: '6-7', completedPuzzleStars: [] },
+    AGE_ADAPTED_STAGE_COUNT: 5,
+    selectedLevel: 0, selectedBoxLevel: 0, selectedRailwayLevel: 0, selectedMagneticStage: 0,
+    selectedMiniGame: '', miniGameScene: '', interactivePuzzle: {}, magneticMaze: null,
+    childDifficultyLevel: ageBand => ({ '6-7': 1, '8-9': 2, '10-11': 3 })[ageBand],
+    restoreMiniGameProgress: () => false, renderMagneticMaze() {}, go() {},
+  });
+  vm.runInContext(`${sokobanSource}\n${railwaySource}\n${mazeSource}`, context);
+  for (const [ageBand, difficulty, boxSize, mazeSize, trainCount] of [
+    ['6-7', 1, 6, 5, 1], ['8-9', 2, 8, 7, 3], ['10-11', 3, 10, 9, 5],
+  ]) {
+    context.S.childAgeBand = ageBand;
+    const simpleRailRoutes = new Set(), mazeHoleCounts = new Set();
+    for (let stage = 0; stage < 5; stage++) {
+      context.selectedBoxLevel = stage;
+      context.interactivePuzzle = {};
+      context.setupSokobanPuzzle();
+      assert.equal(context.interactivePuzzle.difficultyLevel, difficulty);
+      assert.equal(context.interactivePuzzle.size, boxSize);
+
+      context.selectedRailwayLevel = stage;
+      context.interactivePuzzle = {};
+      context.setupRailwayPuzzle();
+      assert.equal(context.interactivePuzzle.difficultyLevel, difficulty);
+      assert.equal(context.interactivePuzzle.trainCount, trainCount);
+      if (trainCount === 1) simpleRailRoutes.add(JSON.stringify(context.interactivePuzzle.routes[0].path));
+
+      context.startMagneticMaze(0, stage, false);
+      assert.equal(context.magneticMaze.difficultyLevel, difficulty);
+      assert.equal(context.magneticMaze.size, mazeSize);
+      mazeHoleCounts.add(context.magneticMaze.holes.size);
+    }
+    if (trainCount === 1) assert.equal(simpleRailRoutes.size, 5);
+    assert.equal(mazeHoleCounts.size, 1);
+  }
+});
+
+test('saved stage progress resumes only at a valid stage matching the child age', () => {
+  const stageSource = slice('const AGE_ADAPTED_STAGE_GAMES=', 'function withTimeout(');
+  const progressSource = slice('function miniGameProgressStage(', 'function captureMiniGameState(');
+  const context = vm.createContext({
+    S: { childAgeBand: '6-7' },
+    childDifficultyLevel: ageBand => ({ '6-7': 1, '8-9': 2, '10-11': 3 })[ageBand],
+  });
+  vm.runInContext(`${stageSource}\n${progressSource}`, context);
+  const savedPath = { selectedPathLevel: 4, interactivePuzzle: { difficultyLevel: 1 } };
+  assert.equal(context.miniGameProgressMatchesAge('physicsPaths', savedPath), true);
+  context.S.childAgeBand = '8-9';
+  assert.equal(context.miniGameProgressMatchesAge('physicsPaths', savedPath), false);
+  assert.equal(context.miniGameProgressMatchesAge('physicsPaths', {
+    selectedPathLevel: 5, interactivePuzzle: { difficultyLevel: 2 },
+  }), false);
 });
 
 test('magnetic maze play screen omits the stage and difficulty label', () => {
@@ -539,6 +659,7 @@ test('magnetic maze play screen omits the stage and difficulty label', () => {
     selectedLevel: 0,
     activityNames: () => ['Activity'],
     magneticMazeMovePreview: () => '→',
+    renderAgeAdaptedStageBanner: () => '',
     $: () => content,
     tr: key => key,
   });
@@ -549,26 +670,25 @@ test('magnetic maze play screen omits the stage and difficulty label', () => {
   assert.doesNotMatch(content.innerHTML, /magneticStageLabel|magneticDifficulty|<h3>/);
 });
 
-test('magnetic maze stage choices show no stage or difficulty text at any stage', () => {
+test('magnetic maze stage choices keep labels hidden and expose five accessible stages', () => {
   const content = { innerHTML: '' };
   const context = vm.createContext({
     currentLanguage: 'en',
     selectedLevel: 0,
+    AGE_ADAPTED_STAGE_COUNT: 5,
     S: { completedPuzzleStars: [] },
     activityNames: () => ['Activity'],
     magneticMazeStageIsUnlocked: stage => stage === 0,
     magneticMazeStarKey: (_, stage) => `stage-${stage}`,
     $: () => content,
-    tr: (key, values = {}) => key === 'magneticStageLabel'
-      ? `Stage ${values.n} · ${values.difficulty}`
-      : key.startsWith('magneticDifficulty') ? 'Easy' : key,
+    tr: (key, values = {}) => key === 'activityStageLabel' ? `Stage ${values.n} of ${values.total}` : key,
   });
   vm.runInContext(slice('function renderMagneticMazeStages(){', 'function startMagneticMaze('), context);
   context.renderMagneticMazeStages();
   const buttons = Array.from(content.innerHTML.matchAll(/<button class="level-choice[^"]*"[^>]*>([\s\S]*?)<\/button>/g), match => match[1]);
-  assert.equal(buttons.length, 6);
+  assert.equal(buttons.length, 5);
   for (const buttonText of buttons) assert.doesNotMatch(buttonText, /Stage \d|Easy|Medium|Hard|Expert/);
-  assert.match(content.innerHTML, /aria-label="Stage 1 · Easy"/);
+  assert.match(content.innerHTML, /aria-label="Stage 1 of 5"/);
 });
 
 test('welcome screen exposes an accessible music toggle that tracks mute state', () => {
@@ -860,6 +980,88 @@ test('interactive puzzle results use a blocking popup with a game-specific actio
   assert.match(html, /id="gameFeedbackM" role="dialog" aria-modal="true"/);
 });
 
+test('age-adapted puzzle completion reports the current stage out of five', () => {
+  const gameContent = { innerHTML: '', classList: { toggle() {} } };
+  const feedback = [];
+  const context = vm.createContext({
+    interactivePuzzle: {
+      id: 'railwayControl', rows: 1, columns: 1, routes: [], trains: [], switches: [], trackTiles: [],
+      trainCount: 1, feedback: '', hint: '', finished: true, moving: false,
+      won: true, newStar: true, successKey: 'railwayWin',
+    },
+    MINI_GAMES: [{ id: 'railwayControl', name: 'railwayControl' }],
+    S: { childAgeBand: '6-7' },
+    isAgeAdaptedStageGame: id => id === 'railwayControl',
+    miniGameStageProgress: () => 'Stage 3 of 5 complete.',
+    miniGameStageContinueLabel: () => 'Next stage',
+    renderAgeAdaptedStageBanner: () => '',
+    interactiveGamePrompt: () => 'instruction',
+    gameActivityAdvanceLabel: () => 'Next activity',
+    continueInteractivePuzzle() {},
+    showGameFeedback: message => feedback.push(message),
+    tr: key => key === 'railwayProgress' ? 'השלמתם את שלב 1 מתוך 5.' : key,
+    $: selector => selector === '#gameContent' ? gameContent : selector === '#gameStage' ? { scrollTop: 0 } : null,
+  });
+  vm.runInContext(slice('function renderInteractivePuzzle(){', 'function showInteractiveHint(){'), context);
+  context.renderInteractivePuzzle();
+  assert.equal(feedback.length, 1);
+  assert.match(feedback[0], /railwayWin/);
+  assert.match(feedback[0], /Stage 3 of 5 complete/);
+});
+
+test('stage banner enables completed and saved stages while locking future stages', () => {
+  const stageSource = slice('const AGE_ADAPTED_STAGE_GAMES=', 'function withTimeout(');
+  const miniGameProgress = new Map([['physicsPaths:0:stage-1', { savedAt: 1 }]]);
+  const started = [];
+  const context = vm.createContext({
+    selectedPathLevel: 2, selectedBoxLevel: 0, selectedRailwayLevel: 0,
+    selectedMagneticStage: 0, selectedWordSearchLevel: 0, selectedLevel: 0,
+    S: { completedPuzzleStars: ['physicsPaths:0:path-0'] },
+    miniGameProgress,
+    miniGameProgressKey: (id, activity, stage) => `${id}:${activity}:stage-${stage}`,
+    saveMiniGameProgress() {
+      miniGameProgress.set(`physicsPaths:0:stage-${context.selectedPathLevel}`, { savedAt: 2 });
+    },
+    restoreMiniGameProgress(id, level, stage) {
+      if (stage !== 1) return false;
+      context.selectedPathLevel = stage;
+      return true;
+    },
+    startInteractivePuzzle: id => started.push([id, context.selectedPathLevel]),
+    tr: (key, values = {}) => ({
+      activityStagesProgress: `Completed ${values.completed} of ${values.total}`,
+      activityStageLabel: `Stage ${values.n} of ${values.total}`,
+      activityStageDone: 'completed',
+      activityStageCurrent: 'current',
+      activityStageSaved: 'saved',
+      activityStageLocked: 'locked',
+    })[key],
+  });
+  vm.runInContext(stageSource, context);
+
+  const initialBanner = context.renderAgeAdaptedStageBanner('physicsPaths');
+  const initialButtons = Array.from(initialBanner.matchAll(/<button\b[^>]*>/g), match => match[0]);
+  assert.equal(initialButtons.length, 5);
+  assert.match(initialButtons[0], /completed/);
+  assert.match(initialButtons[0], /openAgeAdaptedStage\('physicsPaths',0\)/);
+  assert.match(initialButtons[1], /saved/);
+  assert.match(initialButtons[1], /openAgeAdaptedStage\('physicsPaths',1\)/);
+  assert.match(initialButtons[2], /aria-current="step"/);
+  assert.match(initialButtons[2], /disabled/);
+  assert.match(initialButtons[3], /locked/);
+  assert.match(initialButtons[3], /disabled/);
+
+  context.openAgeAdaptedStage('physicsPaths', 0);
+  assert.equal(context.selectedPathLevel, 0);
+  assert.equal(miniGameProgress.has('physicsPaths:0:stage-2'), true);
+  assert.deepEqual(started, [['physicsPaths', 0]]);
+  context.openAgeAdaptedStage('physicsPaths', 1);
+  assert.equal(context.selectedPathLevel, 1);
+  assert.deepEqual(started, [['physicsPaths', 0]]);
+  context.openAgeAdaptedStage('physicsPaths', 4);
+  assert.equal(context.selectedPathLevel, 1);
+});
+
 test('railway movement keeps the displayed track while following the connected path', () => {
   const originalPath = [
     { x: 0, y: 0 }, { x: 1, y: 0 }, { x: 2, y: 0 }, { x: 3, y: 0 },
@@ -989,36 +1191,36 @@ test('word search size, word count, and directions match each age band', () => {
     seed = (seed * 16807) % 2147483647;
     return (seed - 1) / 2147483646;
   };
-  const context = vm.createContext({ currentLanguage: 'en', Math: math, S: { childAgeBand: '6-7' } });
+  const context = vm.createContext({ currentLanguage: 'en', Math: math, S: { childAgeBand: '6-7' }, AGE_ADAPTED_STAGE_COUNT: 5 });
   vm.runInContext(`function childDifficultyLevel(ageBand){return {'6-7':1,'8-9':2,'10-11':3}[ageBand]}\n${html.slice(engineStart, engineEnd)}\nglobalThis.testLevels=WORD_SEARCH_LEVELS;`, context);
   const ageCases = [
-    { ageBand: '6-7', level: 0, size: 6, words: 3, directions: ['horizontal'] },
-    { ageBand: '8-9', level: 1, size: 7, words: 3, directions: ['horizontal', 'vertical'] },
-    { ageBand: '10-11', level: 5, size: 9, words: 4, directions: ['diagonal', 'horizontal', 'vertical'] },
+    { ageBand: '6-7', size: 6, words: 3, directions: ['horizontal'] },
+    { ageBand: '8-9', size: 7, words: 3, directions: ['horizontal', 'vertical'] },
+    { ageBand: '10-11', size: 9, words: 4, directions: ['diagonal', 'horizontal', 'vertical'] },
   ];
   for (const language of ['en', 'he', 'ru']) {
     assert.ok(textForLanguage(language).wordSearchPromptSimple);
     assert.ok(textForLanguage(language).wordSearchPromptMedium);
     assert.ok(textForLanguage(language).wordSearchPromptComplex);
     context.currentLanguage = language;
-    for (const { ageBand, level, size, words, directions: allowedDirections } of ageCases) {
+    for (const { ageBand, size, words, directions: allowedDirections } of ageCases) {
       context.S.childAgeBand = ageBand;
-      for (let activity = 0; activity < 12; activity++) {
-        const puzzle = context.createWordSearchPuzzle(activity, level);
+      for (let activity = 0; activity < 12; activity++) for (const stage of context.testLevels) {
+        const puzzle = context.createWordSearchPuzzle(activity, stage);
         assert.equal(puzzle.difficultyLevel, { '6-7': 1, '8-9': 2, '10-11': 3 }[ageBand]);
-        assert.equal(puzzle.size, size, `${language} ${ageBand} activity ${activity + 1} board size`);
-        assert.equal(puzzle.words.length, words, `${language} ${ageBand} activity ${activity + 1} word count`);
+        assert.equal(puzzle.size, size, `${language} ${ageBand} activity ${activity + 1} stage ${stage + 1} board size`);
+        assert.equal(puzzle.words.length, words, `${language} ${ageBand} activity ${activity + 1} stage ${stage + 1} word count`);
         for (const { cells } of puzzle.words) {
           const first = cells[0], second = cells[1];
           const dx = second % puzzle.size - first % puzzle.size;
           const dy = Math.floor(second / puzzle.size) - Math.floor(first / puzzle.size);
           const direction = dy === 0 ? 'horizontal' : dx === 0 ? 'vertical' : 'diagonal';
-          assert.ok(allowedDirections.includes(direction), `${language} ${ageBand} activity ${activity + 1} used ${direction}`);
+          assert.ok(allowedDirections.includes(direction), `${language} ${ageBand} activity ${activity + 1} stage ${stage + 1} used ${direction}`);
         }
       }
     }
   }
-  assert.deepEqual(Array.from(context.testLevels, config => config.directions.length), Array(6).fill(8));
+  assert.equal(context.testLevels.length, 5);
 });
 
 test('word search fruit category is named fruits and vegetables in every language', () => {
@@ -1038,7 +1240,9 @@ test('word search omits level labels from both the selector and active game', ()
     currentLanguage: 'en',
     selectedLevel: 0,
     S: { completedPuzzleStars: [] },
-    WORD_SEARCH_LEVELS: Array.from({ length: 6 }, (_, index) => ({ size: index + 6, words: 3 })),
+    AGE_ADAPTED_STAGE_COUNT: 5,
+    WORD_SEARCH_LEVELS: Array.from({ length: 5 }, (_, index) => index),
+    wordSearchConfigForAge: () => ({ size: 6, words: 3 }),
     wordSearchLevelIsUnlocked: level => level === 0,
     wordSearchStarKey: (_, level) => `level-${level}`,
     wordSearchPuzzle: {
@@ -1052,6 +1256,7 @@ test('word search omits level labels from both the selector and active game', ()
     },
     activityNames: () => ['Activity'],
     gameActivityAdvanceLabel: () => 'Continue',
+    renderAgeAdaptedStageBanner: () => '',
     showGameFeedback() {},
     tr: (key, values = {}) => key === 'wordSearchGrid'
       ? `${values.size} × ${values.cols} grid · ${values.words} words`
@@ -1060,7 +1265,7 @@ test('word search omits level labels from both the selector and active game', ()
   });
   vm.runInContext(slice('function renderWordSearchLevels(){', 'function launchWordSearchLevel('), context);
   context.renderWordSearchLevels();
-  assert.equal(Array.from(gameContent.innerHTML.matchAll(/<button\b/g)).length, 7);
+  assert.equal(Array.from(gameContent.innerHTML.matchAll(/<button\b/g)).length, 6);
   assert.doesNotMatch(gameContent.innerHTML, /wordSearchLevel|>Level \d|>שלב \d|>Уровень \d/);
 
   vm.runInContext(slice('function renderWordSearchGame(){', 'function selectWordSearchCell('), context);
@@ -1070,9 +1275,12 @@ test('word search omits level labels from both the selector and active game', ()
 
 test('multi-stage games expose resume controls and restore saved activity state', () => {
   const gameSource = slice('const MINI_GAMES=[', 'const ACTIVITY_NAMES=');
+  const stageStart = html.indexOf('const AGE_ADAPTED_STAGE_GAMES=');
+  const stageEnd = html.indexOf('function withTimeout(', stageStart);
   const progressStart = html.indexOf('const miniGameProgress=new Map();');
   const progressEnd = html.indexOf('function gameUnlocked(id){', progressStart);
-  assert.ok(progressStart >= 0 && progressEnd > progressStart);
+  assert.ok(stageStart >= 0 && stageEnd > stageStart && progressStart >= 0 && progressEnd > progressStart);
+  const stageSource = html.slice(stageStart, stageEnd);
   const captureSource = html.slice(progressStart, progressEnd);
   for (const match of gameSource.matchAll(/id:'([^']+)'/g)) {
     if (match[1] !== 'coloring') assert.ok(captureSource.includes(`'${match[1]}'`), `${match[1]} checkpoint support`);
@@ -1102,6 +1310,7 @@ test('multi-stage games expose resume controls and restore saved activity state'
       })[selector] || null,
       localStorage: { getItem: key => storage.get(key) || null, setItem: (key, value) => storage.set(key, value) },
       btoa, atob, MINI_GAMES: [{ id: 'math' }, { id: 'gridSokoban' }],
+      S: { childAgeBand: '6-7' },
       activityNames: () => Array(12).fill('activity'),
       closeM() {},
       showGameFeedback: (message, label, action) => { context.restoredAction = action },
@@ -1110,7 +1319,8 @@ test('multi-stage games expose resume controls and restore saved activity state'
     let selectedMiniGame='math',selectedLevel=3,miniGameScene='play';
     let genericAnswer='12',riddleQuestionIndex=4,questionHintCount=1,gameFeedbackAction=null;
     let selectedPathLevel=0,selectedBoxLevel=2,selectedRailwayLevel=0,selectedWordSearchLevel=0,selectedMagneticStage=0;
-    let interactivePuzzle={turns:7,walls:new Set(['2,3'])},puzzleTiles=[],puzzleImage='',puzzleSelected=-1,puzzleImages=[],puzzleImageIndex=0;
+    function childDifficultyLevel(ageBand){return {'6-7':1,'8-9':2,'10-11':3}[ageBand]}
+    let interactivePuzzle={turns:7,walls:new Set(['2,3']),difficultyLevel:1},puzzleTiles=[],puzzleImage='',puzzleSelected=-1,puzzleImages=[],puzzleImageIndex=0;
     let differenceFound=new Set(),differenceSpots=[],differenceLeft=[],differenceRight=[];
     let traceLetterIndex=0,traceDistance=0,traceHasInk=false,memoryCards=[],memoryOpen=[],memoryMatched=new Set();
     let escapeRoomIndex=0,escapeRoomSolved=false,escapeRoomStarEarned=false,escapeRoomAnswer='',escapeRoomAnswerIndex=-1,escapeRoomExplanation='',escapeRoomPhase='stations',escapeRoomCodeParts=[],escapeCodeInput=[],escapeCodeActiveIndex=0,escapeCodeFeedback='';
@@ -1123,6 +1333,7 @@ test('multi-stage games expose resume controls and restore saved activity state'
     function startInteractivePuzzle(){} function clearWordSearchSelection(){} function renderWordSearchLevels(){}
     function startMagneticMaze(){} function renderMagneticMazeStages(){}
     function go(id){globalThis.lastScreen=id}
+    ${stageSource}
     ${captureSource}
     globalThis.saveProgress=saveMiniGameProgress;
     globalThis.restoreProgress=restoreMiniGameProgress;
@@ -1136,6 +1347,11 @@ test('multi-stage games expose resume controls and restore saved activity state'
   feedback.active = true;
   context.saveProgress();
   feedback.active = false;
+  vm.runInContext(`selectedMiniGame='gridSokoban';selectedLevel=3;selectedBoxLevel=2;
+    interactivePuzzle={turns:9,walls:new Set(['2,3']),difficultyLevel:1};`, context);
+  context.saveProgress();
+  vm.runInContext(`selectedBoxLevel=1;interactivePuzzle={turns:4,walls:new Set(['1,1']),difficultyLevel:1};`, context);
+  context.saveProgress();
   vm.runInContext(`riddleQuestionIndex=8;genericAnswer='changed';questionHintCount=0;`, context);
   context.content.innerHTML = 'Different game';
   const reloadedContext = setupContext();
@@ -1149,13 +1365,19 @@ test('multi-stage games expose resume controls and restore saved activity state'
   assert.equal(vm.runInContext('questionHintCount', reloadedContext), 1);
   assert.equal(reloadedContext.content.innerHTML, 'Question 4');
   assert.equal(reloadedContext.lastScreen, 'gameStage');
+  assert.equal(reloadedContext.restoreProgress('gridSokoban', 3, 1), true);
+  assert.equal(vm.runInContext('selectedBoxLevel', reloadedContext), 1);
+  assert.equal(vm.runInContext('interactivePuzzle.turns', reloadedContext), 4);
+  assert.equal(reloadedContext.restoreProgress('gridSokoban', 3, 2), true);
+  assert.equal(vm.runInContext('selectedBoxLevel', reloadedContext), 2);
+  assert.equal(vm.runInContext('interactivePuzzle.turns', reloadedContext), 9);
   assert.equal(typeof reloadedContext.restoredAction, 'function');
   reloadedContext.restoredAction();
   assert.equal(vm.runInContext('riddleQuestionIndex', reloadedContext), 5, 'feedback action survives reload');
   const encoded = reloadedContext.encodeProgress(vm.runInContext('new Uint8ClampedArray([0,128,255])', reloadedContext));
   assert.deepEqual(Array.from(reloadedContext.decodeProgress(encoded)), [0, 128, 255]);
 
-  vm.runInContext(`selectedMiniGame='gridSokoban';selectedLevel=2;miniGameScene='play';interactivePuzzle={turns:9,walls:new Set(['3,4'])};`, reloadedContext);
+  vm.runInContext(`selectedMiniGame='gridSokoban';selectedLevel=2;miniGameScene='play';interactivePuzzle={turns:9,walls:new Set(['3,4']),difficultyLevel:1};`, reloadedContext);
   reloadedContext.content.innerHTML = 'Sokoban board';
   reloadedContext.saveProgress();
   const stageReloadedContext = setupContext();
@@ -1168,11 +1390,14 @@ test('multi-stage games expose resume controls and restore saved activity state'
 
 test('saved game progress is rejected when it belongs to a different age difficulty', () => {
   const context = vm.createContext({ S: { childAgeBand: '6-7' } });
-  const progressStart = html.indexOf('function miniGameProgressMatchesAge(');
+  const stageStart = html.indexOf('const AGE_ADAPTED_STAGE_GAMES=');
+  const stageEnd = html.indexOf('function withTimeout(', stageStart);
+  const progressStart = html.indexOf('function miniGameProgressStage(');
   const progressEnd = html.indexOf('function captureMiniGameState(', progressStart);
-  assert.ok(progressStart >= 0 && progressEnd > progressStart);
+  assert.ok(stageStart >= 0 && stageEnd > stageStart && progressStart >= 0 && progressEnd > progressStart);
   vm.runInContext(`function childDifficultyLevel(ageBand){return {'6-7':1,'8-9':2,'10-11':3}[ageBand]}
     function memoryPairCountForAge(){return [0,3,4,6][childDifficultyLevel(S.childAgeBand)]}
+    ${html.slice(stageStart, stageEnd)}
     ${html.slice(progressStart, progressEnd)}
     globalThis.matchesAge=miniGameProgressMatchesAge;`, context);
   const states = {
@@ -1181,7 +1406,9 @@ test('saved game progress is rejected when it belongs to a different age difficu
     logicQuest: { difficultyLevel: 1 },
     words: { difficultyLevel: 1 },
     patterns: { difficultyLevel: 1 },
-    wordSearch: { wordSearchPuzzle: { difficultyLevel: 1 } },
+    wordSearch: { selectedWordSearchLevel: 0, wordSearchPuzzle: { difficultyLevel: 1 } },
+    physicsPaths: { selectedPathLevel: 0, interactivePuzzle: { difficultyLevel: 1 } },
+    magneticMaze: { selectedMagneticStage: 0, magneticMaze: { difficultyLevel: 1 } },
     codeBreaker: { interactivePuzzle: { difficultyLevel: 1 } },
     escapeRoom: { difficultyLevel: 1 },
   };
@@ -1283,7 +1510,7 @@ test('pastel background is applied across screens and cached for offline use', a
   assert.match(html, /#welcome\{[^}]*background:radial-gradient\([^}]*#ffffff22/i);
   assert.match(html, /#cv\{[^}]*background:#fff/);
   assert.match(html, /\.interactive-puzzle\{[^}]*background:#fff/);
-  assert.match(serviceWorker, /magical-fun-shell-v46-terms-age-adaptation/);
+  assert.match(serviceWorker, /magical-fun-shell-v49-stage-navigation-remember-me/);
   for (const file of ['math.js', 'story-math.js', 'riddles-6-7.js', 'riddles-8-9.js', 'riddles-10-11.js', 'escape-room-6-7.js', 'escape-room-8-9.js', 'escape-room-10-11.js', 'science.js']) {
     assert.ok(html.includes(`<script src="./question-banks/${file}"></script>`));
     assert.ok(serviceWorker.includes(`new URL('question-banks/${file}',APP_ROOT).href`));
@@ -1590,7 +1817,8 @@ test('picture puzzle success stays on screen and offers next and replay actions'
 
 test('Sokoban, path and code-breaker success feedback is shown in a popup', () => {
   const render = slice('function renderInteractivePuzzle()', 'function showInteractiveHint()');
-  assert.match(render, /if\(interactivePuzzle\.won\)\s*\{\s*showGameFeedback/);
+  assert.match(render, /if\(interactivePuzzle\.won\)\s*\{\s*const stageProgress=/);
+  assert.match(render, /showGameFeedback\(`\$\{tr\('correct'\)\}/);
   assert.match(render, /showGameFeedback\(interactivePuzzle\.feedback,tr\('puzzleRetry'\)/);
   assert.match(html, /#gameFeedbackM\{z-index:30\}/);
 });

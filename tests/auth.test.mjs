@@ -10,8 +10,14 @@ function source(start, end) {
   return html.slice(first, last);
 }
 
-function authContext({ language = 'he', signUp, resetPasswordForEmail, updateUser } = {}) {
+function authContext({ language = 'he', signUp, signInWithPassword, resetPasswordForEmail, updateUser } = {}) {
   const elements = new Map();
+  const localStore = new Map(), sessionStore = new Map();
+  const webStorage = store => ({
+    getItem: key => store.has(key) ? store.get(key) : null,
+    setItem: (key, value) => store.set(key, String(value)),
+    removeItem: key => store.delete(key),
+  });
   const get = (selector) => {
     if (!elements.has(selector)) elements.set(selector, {
       value: selector === '#aEmail' ? 'parent@example.com' : selector === '#aPassword' ? 'password123' : 'Child',
@@ -25,8 +31,9 @@ function authContext({ language = 'he', signUp, resetPasswordForEmail, updateUse
   };
   const context = vm.createContext({
     $, currentLanguage: language,
-    supabaseClient: signUp || resetPasswordForEmail || updateUser ? {
-      auth: { signUp, resetPasswordForEmail, updateUser },
+    localStorage: webStorage(localStore), sessionStorage: webStorage(sessionStore),
+    supabaseClient: signUp || signInWithPassword || resetPasswordForEmail || updateUser ? {
+      auth: { signUp, signInWithPassword, resetPasswordForEmail, updateUser },
     } : null,
     authBusy: false, amode: 'reg', location: { origin: 'https://example.test', protocol: 'https:', hostname: 'example.test' },
     console: { error() {} },
@@ -36,7 +43,7 @@ function authContext({ language = 'he', signUp, resetPasswordForEmail, updateUse
   vm.runInContext(source('function tr(', 'function launchFreeDrawFromStudio('), context);
   vm.runInContext(source("let amode='login'", 'async function logout()'), context);
   vm.runInContext("amode='reg'", context);
-  return { context, elements };
+  return { context, elements, localStore, sessionStore };
 }
 
 test('duplicate registration response explains that the email is already registered', async () => {
@@ -54,9 +61,35 @@ test('legal consent is shown and required only during registration', () => {
   context.authForm('reg');
   assert.equal(elements.get('#registrationConsent').hidden, false);
   assert.equal(elements.get('#aConsent').required, true);
+  assert.equal(elements.get('#rememberMeRow').hidden, false);
   context.authForm('login');
   assert.equal(elements.get('#registrationConsent').hidden, true);
   assert.equal(elements.get('#aConsent').required, false);
+  assert.equal(elements.get('#rememberMeRow').hidden, false);
+});
+
+test('remember-me uses persistent or tab-only auth storage without storing passwords', () => {
+  const { context, elements, localStore, sessionStore } = authContext({ language: 'en' });
+  const storage = vm.runInContext('rememberMeAuthStorage', context);
+  context.authForm('reg');
+  assert.match(html, /data-i18n="rememberMe"/);
+  elements.get('#aRemember').checked = true;
+  context.setRememberAuthSession(true);
+  storage.setItem('supabase-auth-token', 'remembered-session');
+  assert.equal(localStore.get('supabase-auth-token'), 'remembered-session');
+  assert.equal(sessionStore.has('supabase-auth-token'), false);
+
+  context.authForm('login');
+  elements.get('#aRemember').checked = false;
+  context.setRememberAuthSession(false);
+  storage.setItem('supabase-auth-token', 'tab-session');
+  assert.equal(localStore.has('supabase-auth-token'), false);
+  assert.equal(sessionStore.get('supabase-auth-token'), 'tab-session');
+  assert.equal(storage.getItem('supabase-auth-token'), 'tab-session');
+  assert.equal(localStore.has('parent@example.com'), false);
+  assert.equal(localStore.has('password123'), false);
+  storage.removeItem('supabase-auth-token');
+  assert.equal(storage.getItem('supabase-auth-token'), null);
 });
 
 test('registration is blocked until legal consent is checked', async () => {
@@ -75,20 +108,35 @@ test('registration is blocked until legal consent is checked', async () => {
 
 test('registration does not request or submit a child nickname', async () => {
   let request;
-  const { context, elements } = authContext({
+  const { context, elements, localStore } = authContext({
     signUp: async (...args) => {
       request = args;
       return { data: { user: { identities: [{ id: 'identity-1' }] }, session: null }, error: null };
     },
   });
   context.$('#aConsent').checked = true;
+  context.$('#aRemember').checked = true;
   await context.authGo();
   assert.equal(elements.has('#aName'), false);
   assert.equal(request[0].email, 'parent@example.com');
   assert.equal(request[0].password, 'password123');
   assert.equal(request[0].options.emailRedirectTo, 'https://example.test');
   assert.deepEqual(Object.keys(request[0].options), ['emailRedirectTo']);
+  assert.equal(localStore.get('megical_fun_remember_auth_session'), 'true');
   assert.match(elements.get('#aErr').textContent, /בדקו את האימייל ואשרו/);
+});
+
+test('login stores the selected remember-me preference before authentication', async () => {
+  const { context, elements, localStore, sessionStore } = authContext({
+    signInWithPassword: async () => ({ data: { user: null }, error: { code: 'invalid_credentials', message: 'invalid login credentials' } }),
+  });
+  context.authForm('login');
+  elements.get('#aEmail').value = 'parent@example.com';
+  elements.get('#aPassword').value = 'password123';
+  elements.get('#aRemember').checked = false;
+  await context.authGo();
+  assert.equal(localStore.get('megical_fun_remember_auth_session'), 'false');
+  assert.equal(sessionStore.has('supabase-auth-token'), false);
 });
 
 test('auth errors refresh in the currently selected language', () => {
@@ -139,6 +187,7 @@ test('password recovery switches to a new-password form and updates the account'
   assert.equal(elements.get('#authEmailGroup').hidden, true);
   assert.equal(elements.get('#passwordRecoveryTitle').hidden, false);
   assert.equal(elements.get('#forgotPasswordButton').hidden, true);
+  assert.equal(elements.get('#rememberMeRow').hidden, true);
   elements.get('#aPassword').value = 'newPassword123';
   context.enterAccount = async (user) => { context.accountEntered = user.id; };
   await context.authGo();
@@ -160,5 +209,5 @@ test('password recovery callback is recognized in query or hash before normal ac
 test('authentication action buttons share the same full-width sizing', () => {
   assert.match(html, /#auth>button\{width:100%;margin:6px 0\}/);
   assert.match(html, /#auth \.err:empty\{display:none;min-height:0;margin:0\}/);
-  assert.match(html, /\.auth-consent\[hidden\]\{display:none\}/);
+  assert.match(html, /\.auth-consent\[hidden\],\.auth-remember\[hidden\]\{display:none\}/);
 });
