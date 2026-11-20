@@ -28,6 +28,8 @@ input[type=color]{height:46px;padding:2px;border-radius:12px}
 #welcome>button,#welcome #auth{width:100%;max-width:420px;align-self:center}
 #auth>button{width:100%;margin:6px 0}
 #auth .err:empty{display:none;min-height:0;margin:0}
+.auth-consent{display:flex;align-items:flex-start;gap:8px;margin:8px 0;font-size:14px;line-height:1.45;text-align:start}
+.auth-consent input{flex:0 0 auto;width:18px;height:18px;margin:3px 0 0}
 .welcome-controls{width:min(100%,420px);align-self:center;display:flex;align-items:center;justify-content:center;gap:12px}
 .welcome-controls label{display:flex;align-items:center;gap:8px}
 .welcome-controls select{width:auto;margin:0}
@@ -361,6 +363,11 @@ video{width:100%;max-width:420px;border-radius:16px;background:#222;display:bloc
 .a11y-option{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:12px;background:#f8f5ff;font-weight:700}
 .a11y-option input{width:24px;height:24px;margin:0;accent-color:#7c4dff}
 .profile-email{overflow-wrap:anywhere;color:#5c477e}
+.child-age-options{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:12px auto;max-width:420px}
+.child-age-options button{padding:10px 6px;background:#ece6ff;color:#3b2a66}
+.child-age-options button.on{background:#7c4dff;color:#fff;outline:3px solid #ffb703}
+.child-profile-list{display:grid;gap:10px;margin:14px auto;max-width:420px}
+.child-profile-choice{width:100%;text-align:start;background:#fff;color:#3b2a66;box-shadow:0 3px 8px #0002}
 html.a11y-large-text{font-size:118%}
 html.a11y-contrast body{background:#fff;color:#201238}
 html.a11y-contrast button:not(.sw){border:2px solid #201238;box-shadow:none}
@@ -380,13 +387,21 @@ html.a11y-reduced-motion *,html.a11y-reduced-motion *:before,html.a11y-reduced-m
   <button style="width:100%;margin:6px 0" onclick="authForm('login')" data-i18n="login">Login</button>
   <button class="ghost" style="width:100%;margin:6px 0" onclick="authForm('reg')" data-i18n="register">Register</button>
   <div id="auth" style="display:none;text-align:left">
-    <input id="aName" autocomplete="nickname" placeholder="Child's nickname" data-i18n-placeholder="childName" maxlength="16">
     <div id="authEmailGroup"><input id="aEmail" type="email" autocomplete="email" placeholder="Parent/guardian email" data-i18n-placeholder="accountEmail">
       <div class="err" id="aEmailErr" aria-live="polite"></div>
     </div>
     <h3 id="passwordRecoveryTitle" data-i18n="passwordRecoveryTitle" hidden></h3>
     <input id="aPassword" type="password" autocomplete="current-password" placeholder="Password (at least 8 characters)" data-i18n-placeholder="accountPassword">
     <div class="err" id="aPasswordErr" aria-live="polite"></div>
+    <label id="registrationConsent" class="auth-consent" hidden>
+      <input id="aConsent" type="checkbox" aria-describedby="aConsentErr">
+      <span><span data-i18n="registrationConsentPrefix">I have read and agree to the</span>
+        <a id="signupTermsLink" href="./terms.html?lang=en" target="_blank" rel="noopener" data-i18n="termsOfUseLink">Terms of use</a>
+        <span data-i18n="registrationConsentJoin">and</span>
+        <a id="signupPrivacyLink" href="./privacy.html?lang=en" target="_blank" rel="noopener" data-i18n="privacyPolicyLink">Privacy policy</a>.
+      </span>
+    </label>
+    <div class="err" id="aConsentErr" aria-live="polite"></div>
     <div class="err" id="aErr" aria-live="polite"></div>
     <p id="aStatus" class="access-notice" role="status" hidden></p>
     <button id="forgotPasswordButton" class="ghost" type="button" onclick="requestPasswordReset()" data-i18n="forgotPassword">Forgot password?</button>
@@ -395,6 +410,30 @@ html.a11y-reduced-motion *,html.a11y-reduced-motion *:before,html.a11y-reduced-m
 </div>
 
 <header id="top" style="display:none"><span id="hName"></span><span id="hStars"></span><select id="language" onchange="setLanguage(this.value)" aria-label="Language" data-i18n-aria="language"><option value="en">EN</option><option value="he">עברית</option><option value="ru">РУ</option></select><button id="sndBtn" onclick="toggleMusic()" aria-label="Music on or off" data-i18n-aria="musicToggle" style="padding:4px 12px;font-size:20px;background:rgba(255,255,255,.22);border-radius:14px">🔊</button></header>
+
+<div id="childPicker" class="screen center">
+  <h2 data-i18n="childProfilesTitle">Who is playing?</h2>
+  <p data-i18n="childProfilesPrompt">Choose a child profile.</p>
+  <div id="childProfilesList" class="child-profile-list"></div>
+  <p id="childProfileLimitMessage" class="play-status" hidden data-i18n="childProfilesLimit">You can add up to five children.</p>
+  <button id="addChildProfileButton" class="alt" style="width:100%;max-width:420px" onclick="beginAddChildProfile()" data-i18n="addChildProfile">➕ Add a child</button>
+  <p><button class="ghost" onclick="logout()" data-i18n="logout">Log out</button></p>
+</div>
+
+<div id="childProfile" class="screen center">
+  <button id="childProfileBack" class="ghost" onclick="cancelChildProfile()" data-i18n="back">← Back</button>
+  <h2 id="childProfileTitle"></h2>
+  <label for="childNickname" data-i18n="childNicknameLabel">Child's nickname</label>
+  <input id="childNickname" autocomplete="nickname" maxlength="16" data-i18n-placeholder="childNicknamePlaceholder" placeholder="Nickname">
+  <p data-i18n="childAgePrompt">Choose an age range to continue.</p>
+  <div class="child-age-options" role="group" aria-label="Child age range" data-i18n-aria="childAgePrompt">
+    <button id="childAge6to7" type="button" class="child-age-choice" aria-pressed="false" onclick="selectChildAgeBand('6-7')" data-i18n="childAge6to7">Ages 6–7</button>
+    <button id="childAge8to9" type="button" class="child-age-choice" aria-pressed="false" onclick="selectChildAgeBand('8-9')" data-i18n="childAge8to9">Ages 8–9</button>
+    <button id="childAge10to11" type="button" class="child-age-choice" aria-pressed="false" onclick="selectChildAgeBand('10-11')" data-i18n="childAge10to11">Ages 10–11</button>
+  </div>
+  <div id="childProfileErr" class="err" role="alert"></div>
+  <button id="saveChildProfileButton" class="alt" style="width:100%;max-width:420px" onclick="saveChildProfile()" data-i18n="continue">Continue</button>
+</div>
 
 <div id="games" class="screen">
   <div class="game-menu">
@@ -458,6 +497,8 @@ html.a11y-reduced-motion *,html.a11y-reduced-motion *:before,html.a11y-reduced-m
 <div id="profile" class="screen center">
   <h2 id="pName"></h2>
   <p id="pEmail" class="profile-email" hidden></p>
+  <p><button id="switchChildButton" class="ghost" onclick="showChildPicker()" data-i18n="manageChildProfiles" hidden>Manage child profiles</button></p>
+  <p><button id="editChildProfileButton" class="ghost" onclick="editCurrentChildProfile()" data-i18n="editChildProfile" hidden>Edit child profile</button></p>
   <h3 data-i18n="buddy">Pick your Buddy</h3>
   <div id="avs"></div>
   <p style="margin-top:12px">⭐ <span data-i18n="profileStars">Stars</span>: <b id="pStars">0</b> &nbsp; 👑 <span data-i18n="vipLabel">VIP</span>: <b id="pVip">Free</b></p>
@@ -557,6 +598,9 @@ const TEXT={
 Object.assign(TEXT.en,{homeTitle:'Pick a world',cameraTitle:'📸 Magic Camera',cameraPrompt:'Turn any photo into a coloring page!',buddy:'Pick your Buddy',sounds:'🎵 Sounds',gallery:'My Gallery',parentPrompt:'Enter your birth year to continue.',playGuest:'Play as Guest',login:'Login',register:'Register',fill:'🪣 Tap-to-Fill',brush:'🖌️ Brush',undo:'↩️ Undo',save:'💾 Save',close:'✖ Close',cameraGallery:'🖼️ Gallery',cameraLive:'📷 Live Camera',cameraCapture:'✨ Capture',eraser:'🧽 Eraser',color:'Color',brushSize:'Brush size',correctColor:'Red',colorOrange:'Orange',colorYellow:'Yellow',colorGreen:'Green',colorBlue:'Blue',colorPurple:'Purple'});
 Object.assign(TEXT.he,{homeTitle:'בחרו עולם',cameraTitle:'📸 מצלמת הקסם',cameraPrompt:'הפכו כל תמונה לדף צביעה!',buddy:'בחרו חבר או חברה',sounds:'🎵 צלילים',gallery:'הגלריה שלי',parentPrompt:'הזינו שנת לידה של הורה כדי להמשיך.',playGuest:'משחקים כאורחים',login:'כניסה',register:'הרשמה',fill:'🪣 מילוי בלחיצה',brush:'🖌️ מברשת',undo:'↩️ ביטול',save:'💾 שמירה',close:'✖ סגירה',cameraGallery:'🖼️ גלריה',cameraLive:'📷 מצלמה בשידור חי',cameraCapture:'✨ צילום',eraser:'🧽 מחק',color:'צבע',brushSize:'גודל המברשת',correctColor:'אדום',colorOrange:'כתום',colorYellow:'צהוב',colorGreen:'ירוק',colorBlue:'כחול',colorPurple:'סגול'});
 Object.assign(TEXT.ru,{homeTitle:'Выбери мир',cameraTitle:'📸 Волшебная камера',cameraPrompt:'Преврати фото в страницу для раскрашивания!',buddy:'Выбери друга',sounds:'🎵 Звуки',gallery:'Моя галерея',parentPrompt:'Введи год рождения родителя.',playGuest:'Играть как гость',login:'Войти',register:'Регистрация',fill:'🪣 Заливка',brush:'🖌️ Кисть',undo:'↩️ Отменить',save:'💾 Сохранить',close:'✖ Закрыть',cameraGallery:'🖼️ Галерея',cameraLive:'📷 Камера',cameraCapture:'✨ Снимок',eraser:'🧽 Ластик',color:'Цвет',brushSize:'Размер кисти',correctColor:'Красный',colorOrange:'Оранжевый',colorYellow:'Жёлтый',colorGreen:'Зелёный',colorBlue:'Синий',colorPurple:'Фиолетовый'});
+Object.assign(TEXT.en,{childProfilesTitle:'Who is playing?',childProfilesPrompt:'Choose a child profile.',addChildProfile:'➕ Add a child',childProfilesLimit:'You can add up to five children.',childProfileNewTitle:'Add a child profile',childProfileEditTitle:'Edit child profile',childNicknameLabel:"Child's nickname",childNicknamePlaceholder:'Enter a nickname',childAgePrompt:'Choose an age range.',childAge6to7:'Ages 6–7',childAge8to9:'Ages 8–9',childAge10to11:'Ages 10–11',childNicknameRequired:'Enter a nickname of up to 16 characters.',childAgeRequired:'Choose an age range to continue.',childProfilesLoadFailed:'Could not load child profiles. Please sign in again.',childProfileSaveFailed:'Could not save this child profile. Please try again.',childProfileMaxReached:'An account can have up to five child profiles.',manageChildProfiles:'Switch or add a child',editChildProfile:'Edit child profile'});
+Object.assign(TEXT.he,{childProfilesTitle:'מי משחק עכשיו?',childProfilesPrompt:'בחרו פרופיל של ילד או ילדה.',addChildProfile:'➕ הוספת ילד/ה',childProfilesLimit:'אפשר להוסיף עד חמישה ילדים.',childProfileNewTitle:'הוספת פרופיל ילד/ה',childProfileEditTitle:'עריכת פרופיל ילד/ה',childNicknameLabel:'מה הכינוי של הילד/ה?',childNicknamePlaceholder:'הקלידו כינוי',childAgePrompt:'בחרו טווח גיל.',childAge6to7:'גיל 6–7',childAge8to9:'גיל 8–9',childAge10to11:'גיל 10–11',childNicknameRequired:'יש להזין כינוי באורך של עד 16 תווים.',childAgeRequired:'בחרו טווח גיל כדי להמשיך.',childProfilesLoadFailed:'לא ניתן לטעון את פרופילי הילדים. התחברו שוב.',childProfileSaveFailed:'לא ניתן לשמור את פרופיל הילד/ה. נסו שוב.',childProfileMaxReached:'אפשר ליצור עד חמישה פרופילי ילדים לחשבון.',manageChildProfiles:'החלפת ילד/ה או הוספת ילד/ה',editChildProfile:'עריכת פרופיל ילד/ה'});
+Object.assign(TEXT.ru,{childProfilesTitle:'Кто будет играть?',childProfilesPrompt:'Выберите профиль ребёнка.',addChildProfile:'➕ Добавить ребёнка',childProfilesLimit:'Можно добавить до пяти детей.',childProfileNewTitle:'Добавить профиль ребёнка',childProfileEditTitle:'Изменить профиль ребёнка',childNicknameLabel:'Как зовут ребёнка?',childNicknamePlaceholder:'Введите имя',childAgePrompt:'Выберите возраст.',childAge6to7:'6–7 лет',childAge8to9:'8–9 лет',childAge10to11:'10–11 лет',childNicknameRequired:'Введите имя длиной не более 16 символов.',childAgeRequired:'Выберите возраст, чтобы продолжить.',childProfilesLoadFailed:'Не удалось загрузить профили детей. Войдите снова.',childProfileSaveFailed:'Не удалось сохранить профиль ребёнка. Попробуйте ещё раз.',childProfileMaxReached:'Для одного аккаунта можно создать до пяти профилей детей.',manageChildProfiles:'Сменить или добавить ребёнка',editChildProfile:'Изменить профиль ребёнка'});
 Object.assign(TEXT.en,{shapeHeart:'Heart',shapeDiamond:'Diamond',homeHive:'Beehive',homeBurrow:'Burrow'});
 Object.assign(TEXT.he,{shapeHeart:'לב',shapeDiamond:'מעוין',homeHive:'כוורת',homeBurrow:'מחילה'});
 Object.assign(TEXT.ru,{shapeHeart:'Сердце',shapeDiamond:'Ромб',homeHive:'Улей',homeBurrow:'Нора'});
@@ -840,6 +884,9 @@ Object.assign(TEXT.ru,{childName:'Имя ребёнка',parentYear:'Год ро
 Object.assign(TEXT.en,{accountEmail:'Parent or guardian email',accountPassword:'Password (at least 8 characters)',authWorking:'Connecting securely…',authNotConfigured:'The account service is unavailable here, so we could not check this email. Try the published app or try again later. You can still play as a guest.',authFailed:'Could not sign in. Please try again.',invalidEmail:'Enter a valid email address.',invalidPassword:'Enter a password with at least 8 characters.',invalidCredentials:'The email or password is incorrect. Check both fields.',emailInUse:'This email is already registered. Sign in with the existing account.',emailConfirmation:'Check your email to confirm the new account, then log in.',forgotPassword:'Forgot password?',passwordResetSent:'If an account exists for this address, a password reset link has been sent. Check your inbox.',passwordResetFailed:'Could not send the password reset email. Check the address and try again.',passwordRecoveryTitle:'Choose a new password',saveNewPassword:'Save new password',passwordUpdated:'Your password has been updated. Signing you in…',passwordUpdateFailed:'Could not update your password. Open the latest reset link and try again.',passwordResetInvalid:'This password reset link is invalid or expired. Request a new one and try again.',entitlementsLoadFailed:'Could not load this account’s VIP access. Please try again.'});
 Object.assign(TEXT.he,{accountEmail:'כתובת האימייל של ההורה',accountPassword:'סיסמה (לפחות 8 תווים)',authWorking:'מתחברים באופן מאובטח…',authNotConfigured:'שירות החשבונות אינו זמין כאן, ולכן לא ניתן לבדוק אם המייל רשום. נסו באפליקציה שפורסמה או שוב מאוחר יותר. אפשר להמשיך כאורחים.',authFailed:'לא ניתן להתחבר. נסו שוב.',invalidEmail:'כתובת האימייל אינה תקינה. בדקו אותה.',invalidPassword:'הסיסמה צריכה להכיל לפחות 8 תווים.',invalidCredentials:'האימייל או הסיסמה אינם נכונים. בדקו את שני השדות.',emailInUse:'המייל הזה כבר נרשם. התחברו באמצעות החשבון הקיים.',emailConfirmation:'בדקו את האימייל ואשרו את החשבון החדש, ואז התחברו.',forgotPassword:'שכחתי סיסמה',passwordResetSent:'אם קיים חשבון עם כתובת זו, נשלח אליו קישור לאיפוס הסיסמה. בדקו את תיבת הדואר.',passwordResetFailed:'לא ניתן לשלוח הודעת איפוס סיסמה. בדקו את כתובת האימייל ונסו שוב.',passwordRecoveryTitle:'בחירת סיסמה חדשה',saveNewPassword:'שמירת סיסמה חדשה',passwordUpdated:'הסיסמה עודכנה. מתחברים לחשבון…',passwordUpdateFailed:'לא ניתן לעדכן את הסיסמה. פתחו את קישור האיפוס האחרון ונסו שוב.',passwordResetInvalid:'קישור איפוס הסיסמה אינו תקין או שפג תוקפו. בקשו קישור חדש ונסו שוב.',entitlementsLoadFailed:'לא ניתן לטעון את הרשאות ה־VIP של החשבון. נסו שוב.'});
 Object.assign(TEXT.ru,{accountEmail:'Электронная почта родителя или опекуна',accountPassword:'Пароль (не менее 8 символов)',authWorking:'Безопасное подключение…',authNotConfigured:'Сервис аккаунтов здесь недоступен, поэтому проверить этот адрес не удалось. Попробуйте опубликованную версию или повторите попытку позже. Можно играть как гость.',authFailed:'Не удалось войти. Попробуйте ещё раз.',invalidEmail:'Введите правильный адрес электронной почты.',invalidPassword:'Пароль должен содержать не менее 8 символов.',invalidCredentials:'Неверная почта или пароль. Проверьте оба поля.',emailInUse:'Этот адрес уже зарегистрирован. Войдите в существующий аккаунт.',emailConfirmation:'Подтвердите новый аккаунт по ссылке в письме, затем войдите.',forgotPassword:'Забыли пароль?',passwordResetSent:'Если для этого адреса есть аккаунт, ссылка для сброса пароля отправлена. Проверьте почту.',passwordResetFailed:'Не удалось отправить письмо для сброса пароля. Проверьте адрес и попробуйте снова.',passwordRecoveryTitle:'Создайте новый пароль',saveNewPassword:'Сохранить новый пароль',passwordUpdated:'Пароль обновлён. Выполняется вход…',passwordUpdateFailed:'Не удалось обновить пароль. Откройте последнюю ссылку сброса и попробуйте снова.',passwordResetInvalid:'Ссылка для сброса пароля недействительна или устарела. Запросите новую ссылку и попробуйте снова.',entitlementsLoadFailed:'Не удалось загрузить VIP-доступ аккаунта. Попробуйте ещё раз.'});
+Object.assign(TEXT.en,{registrationConsentPrefix:'I have read and agree to the',registrationConsentJoin:'and',registrationConsentRequired:'Please accept the Terms of Use and Privacy Policy to register.'});
+Object.assign(TEXT.he,{registrationConsentPrefix:'קראתי ואני מאשר/ת את',registrationConsentJoin:'ואת',registrationConsentRequired:'כדי להירשם, יש לאשר את תנאי השימוש ואת מדיניות הפרטיות.'});
+Object.assign(TEXT.ru,{registrationConsentPrefix:'Я прочитал(а) и принимаю',registrationConsentJoin:'и',registrationConsentRequired:'Чтобы зарегистрироваться, примите Условия использования и Политику конфиденциальности.'});
 Object.assign(TEXT.en,{deviceLimitReached:'This account is already active on 5 devices. Sign out from another device and try again.',progressSyncFailed:'Progress could not be synchronized. Check your connection; your progress is saved on this device.',profileSyncUnavailable:'Account sync is not ready yet. Please try again later.'});
 Object.assign(TEXT.he,{deviceLimitReached:'החשבון פעיל כבר ב־5 מכשירים. התנתקו ממכשיר אחר ונסו שוב.',progressSyncFailed:'לא ניתן לסנכרן את ההתקדמות. בדקו את החיבור; ההתקדמות נשמרה במכשיר הזה.',profileSyncUnavailable:'סנכרון החשבון עדיין אינו זמין. נסו שוב מאוחר יותר.'});
 Object.assign(TEXT.ru,{deviceLimitReached:'Этот аккаунт уже используется на 5 устройствах. Выйдите из аккаунта на другом устройстве и попробуйте снова.',progressSyncFailed:'Не удалось синхронизировать прогресс. Проверьте подключение; данные сохранены на этом устройстве.',profileSyncUnavailable:'Синхронизация аккаунта пока недоступна. Попробуйте позже.'});
@@ -979,6 +1026,8 @@ function setLanguage(language){
   const parentPrivacyLink=$('#parentPrivacyLink');if(parentPrivacyLink)parentPrivacyLink.href=`./privacy.html?lang=${currentLanguage}`;
   const termsLink=$('#termsLink');if(termsLink)termsLink.href=`./terms.html?lang=${currentLanguage}`;
   const parentTermsLink=$('#parentTermsLink');if(parentTermsLink)parentTermsLink.href=`./terms.html?lang=${currentLanguage}`;
+  const signupTermsLink=$('#signupTermsLink');if(signupTermsLink)signupTermsLink.href=`./terms.html?lang=${currentLanguage}`;
+  const signupPrivacyLink=$('#signupPrivacyLink');if(signupPrivacyLink)signupPrivacyLink.href=`./privacy.html?lang=${currentLanguage}`;
   const deleteAccountLink=$('#deleteAccountLink');if(deleteAccountLink)deleteAccountLink.href=`./delete-account.html?lang=${currentLanguage}`;
   const parentDeleteAccountLink=$('#parentDeleteAccountLink');if(parentDeleteAccountLink)parentDeleteAccountLink.href=`./delete-account.html?lang=${currentLanguage}`;
   try{localStorage.setItem('megical_language',currentLanguage)}catch(e){console.error('Could not save language preference:',e)}
@@ -1016,15 +1065,18 @@ function setLanguage(language){
 /* ---------- User Isolation & Storage ---------- */
 let currentUserId = 'guest';
 let currentAccountEmail='';
-let S = {name:'Guest',av:'🐶',stars:0,vip:false,art:[],custom:[],music:true,track:'auto',vol:0.6,language:currentLanguage,unlockedGames:[],allGamesUnlocked:false,completedEscapeRooms:[],completedPuzzleStars:[],dailyUsageDate:'',dailyUsageSeconds:0,dailyLimitMinutes:0};
-let supabaseClient=null,authBusy=false,currentAuthUserId=null,authChoiceMade=false,authGeneration=0;
-let profileSyncReady=false,profileSyncApplying=false,profileSyncBusy=false,profileSyncAgain=false,profileSyncTimer=null,profileSyncRevision=0,profileSyncChannel=null,deviceHeartbeatTimer=null,profileSyncErrorShown=false;
+let S = {name:'Guest',av:'🐶',stars:0,vip:false,art:[],custom:[],music:true,track:'auto',vol:0.6,language:currentLanguage,childAgeBand:null,unlockedGames:[],allGamesUnlocked:false,completedEscapeRooms:[],completedPuzzleStars:[],dailyUsageDate:'',dailyUsageSeconds:0,dailyLimitMinutes:0};
+let supabaseClient=null,authBusy=false,currentAuthUserId=null,currentChildId=null,accountChildren=[],childProfileCreating=false,childProfileBusy=false,selectedChildAgeBand='',initialChildNickname='',authChoiceMade=false,authGeneration=0;
+let accountEntitlements={vip:false,allGamesUnlocked:false,unlockedGames:[]},accountBillingRestored=false;
+let profileSyncReady=false,profileSyncApplying=false,profileSyncBusy=false,profileSyncAgain=false,profileSyncTimer=null,profileSyncRevision=0,profileSyncRunId=0,profileSyncChannel=null,deviceHeartbeatTimer=null,profileSyncErrorShown=false;
 let usageTimer=null,usageStartedAt=null,pendingParentAction=null;
 let BILLING_ENABLED=false;
 let billingAccess=[],billingVerifiedAt=0,billingRefreshTimer=null,billingBusy=false,billingPrices={};
 function defaultUserData(name){
-  return {name,av:'🐶',stars:0,vip:false,art:[],custom:[],music:true,track:'auto',vol:0.6,language:currentLanguage,unlockedGames:[],allGamesUnlocked:false,completedEscapeRooms:[],completedPuzzleStars:[],streak:0,lastDay:'',dailyUsageDate:'',dailyUsageSeconds:0,dailyLimitMinutes:0,accessibility:{largeText:false,contrast:false,reducedMotion:false}};
+  return {name,av:'🐶',stars:0,vip:false,art:[],custom:[],music:true,track:'auto',vol:0.6,language:currentLanguage,childAgeBand:null,unlockedGames:[],allGamesUnlocked:false,completedEscapeRooms:[],completedPuzzleStars:[],streak:0,lastDay:'',dailyUsageDate:'',dailyUsageSeconds:0,dailyLimitMinutes:0,accessibility:{largeText:false,contrast:false,reducedMotion:false}};
 }
+const CHILD_AGE_BANDS=['6-7','8-9','10-11'];
+function isValidChildAgeBand(ageBand){return CHILD_AGE_BANDS.includes(ageBand)}
 function withTimeout(promise,ms,message){
   let timer;
   return Promise.race([
@@ -1051,6 +1103,7 @@ function loadUserData(userId,fallbackName=userId){
   if(!Array.isArray(S.art)) S.art=[];
   if(!Array.isArray(S.custom)) S.custom=[];
   if(!Array.isArray(S.unlockedGames)) S.unlockedGames=[];
+  if(!isValidChildAgeBand(S.childAgeBand))S.childAgeBand=null;
   if(!S.accessibility||typeof S.accessibility!=='object')S.accessibility=defaultUserData(S.name).accessibility;
   for(const key of ['largeText','contrast','reducedMotion'])if(typeof S.accessibility[key]!=='boolean')S.accessibility[key]=false;
   delete S.completedActivities;
@@ -1071,7 +1124,7 @@ function sv(){
   profileSyncRevision++;
   if(currentAuthUserId&&profileSyncReady&&!profileSyncApplying)scheduleProfileSync();
 }
-const PROFILE_SYNC_FIELDS=['name','av','stars','art','custom','music','track','vol','language','completedEscapeRooms','completedPuzzleStars','streak','lastDay','dailyUsageDate','dailyUsageSeconds','dailyLimitMinutes','accessibility'];
+const PROFILE_SYNC_FIELDS=['name','av','stars','art','custom','music','track','vol','language','childAgeBand','completedEscapeRooms','completedPuzzleStars','streak','lastDay','dailyUsageDate','dailyUsageSeconds','dailyLimitMinutes','accessibility'];
 function profileSnapshot(){
   const profile={};
   for(const key of PROFILE_SYNC_FIELDS)profile[key]=S[key]??(Array.isArray(defaultUserData(S.name)[key])?[]:null);
@@ -1092,20 +1145,24 @@ function appDeviceId(){
 function appDeviceLabel(){
   return window.Capacitor&&window.Capacitor.getPlatform()==='android'?'Android app':'Web browser';
 }
-function loadPendingProfileRewards(userId=currentAuthUserId){
+function loadPendingProfileRewards(userId=currentAuthUserId,childId=currentChildId){
   if(!userId)return [];
   try{
-    const value=JSON.parse(localStorage.getItem(`megical_profile_rewards_${userId}`)||'[]');
+    const key=childId?`megical_profile_rewards_${userId}_${childId}`:`megical_profile_rewards_${userId}`;
+    const value=JSON.parse(localStorage.getItem(key)||'[]');
     return Array.isArray(value)?value.filter(item=>item&&typeof item.id==='string'&&Number.isInteger(item.stars)&&item.stars>0):[];
   }catch(error){console.error('Could not load pending profile rewards:',error);return []}
 }
-function savePendingProfileRewards(rewards,userId=currentAuthUserId){
+function savePendingProfileRewards(rewards,userId=currentAuthUserId,childId=currentChildId){
   if(!userId)return;
-  try{localStorage.setItem(`megical_profile_rewards_${userId}`,JSON.stringify(rewards))}
+  try{
+    const key=childId?`megical_profile_rewards_${userId}_${childId}`:`megical_profile_rewards_${userId}`;
+    localStorage.setItem(key,JSON.stringify(rewards));
+  }
   catch(error){console.error('Could not save pending profile rewards:',error)}
 }
 function scheduleProfileSync(delay=450){
-  if(!profileSyncReady||!currentAuthUserId)return;
+  if(!profileSyncReady||!currentAuthUserId||!currentChildId)return;
   if(profileSyncBusy){profileSyncAgain=true;return}
   clearTimeout(profileSyncTimer);
   profileSyncTimer=setTimeout(()=>{profileSyncTimer=null;void syncProfileNow()},delay);
@@ -1150,25 +1207,27 @@ function applyCloudProfile(profile,pendingStars=0,localOverrides={}){
   }finally{profileSyncApplying=false}
   $('#hStars').textContent='⭐ '+S.stars+(S.vip?' 👑':'');
   if($('#profile').classList.contains('on'))renderProfile();
+  if(typeof curScreen!=='undefined'&&curScreen==='childProfile'&&isValidChildAgeBand(S.childAgeBand))go('games');
 }
 async function syncProfileNow(){
-  if(!currentAuthUserId||!supabaseClient||!profileSyncReady)return;
+  if(!currentAuthUserId||!currentChildId||!supabaseClient||!profileSyncReady)return;
   if(profileSyncBusy){profileSyncAgain=true;return}
   profileSyncBusy=true;profileSyncAgain=false;
-  const userId=currentAuthUserId,deviceRevision=profileSyncRevision,localAtSend=profileSnapshot();
-  const pendingAtSend=loadPendingProfileRewards(userId);
+  const runId=++profileSyncRunId;
+  const userId=currentAuthUserId,childId=currentChildId,deviceRevision=profileSyncRevision,localAtSend=profileSnapshot();
+  const pendingAtSend=loadPendingProfileRewards(userId,childId);
   const rewardsAtSend=pendingAtSend.slice(0,100);
   const unsentStars=pendingAtSend.slice(100).reduce((sum,reward)=>sum+reward.stars,0);
   const profileForSync={...localAtSend,stars:Math.max(0,localAtSend.stars-unsentStars)};
   let syncSucceeded=false;
   try{
-    const {data,error}=await supabaseClient.rpc('sync_user_profile',{p_profile:profileForSync,p_rewards:rewardsAtSend});
+    const {data,error}=await supabaseClient.rpc('sync_child_profile',{p_child_id:childId,p_profile:profileForSync,p_rewards:rewardsAtSend});
     if(error)throw error;
-    if(userId!==currentAuthUserId)return;
+    if(userId!==currentAuthUserId||childId!==currentChildId)return;
     if(!data||!data.profile||!Array.isArray(data.processed_reward_ids))throw new Error('Invalid profile synchronization response.');
     const processed=new Set(data.processed_reward_ids);
-    const pending=loadPendingProfileRewards(userId).filter(reward=>!processed.has(reward.id));
-    savePendingProfileRewards(pending,userId);
+    const pending=loadPendingProfileRewards(userId,childId).filter(reward=>!processed.has(reward.id));
+    savePendingProfileRewards(pending,userId,childId);
     const localOverrides={};
     if(deviceRevision!==profileSyncRevision){
       const current=profileSnapshot();
@@ -1179,12 +1238,17 @@ async function syncProfileNow(){
     profileSyncErrorShown=false;
     syncSucceeded=true;
   }catch(error){
+    if(userId!==currentAuthUserId||childId!==currentChildId)return;
     console.error('Could not synchronize account progress:',error);
     if(!profileSyncErrorShown){profileSyncErrorShown=true;toast(tr('progressSyncFailed'))}
   }finally{
+    if(runId!==profileSyncRunId)return;
     profileSyncBusy=false;
-    if(syncSucceeded&&(profileSyncAgain||loadPendingProfileRewards(userId).length))scheduleProfileSync(0);
-    else if(!syncSucceeded&&userId===currentAuthUserId)scheduleProfileSync(30000);
+    if(userId===currentAuthUserId&&currentChildId){
+      if(syncSucceeded&&(profileSyncAgain||loadPendingProfileRewards(userId,currentChildId).length))scheduleProfileSync(0);
+      else if(childId!==currentChildId)scheduleProfileSync(0);
+      else if(!syncSucceeded)scheduleProfileSync(30000);
+    }
   }
 }
 function queueProfileStarReward(stars,id){
@@ -1205,12 +1269,12 @@ async function registerCurrentDevice(){
   if(error)throw error;
   return data&&data.allowed===true;
 }
-function startProfileSyncChannel(userId){
+function startProfileSyncChannel(userId,childId){
   if(profileSyncChannel)supabaseClient.removeChannel(profileSyncChannel);
-  profileSyncChannel=supabaseClient.channel(`profile-${userId}`)
-    .on('postgres_changes',{event:'UPDATE',schema:'public',table:'user_profiles',filter:`user_id=eq.${userId}`},payload=>{
-      if(userId!==currentAuthUserId||profileSyncBusy||profileSyncTimer||!payload.new||!payload.new.profile)return;
-      const pending=loadPendingProfileRewards(userId);
+  profileSyncChannel=supabaseClient.channel(`profile-${userId}-${childId}`)
+    .on('postgres_changes',{event:'UPDATE',schema:'public',table:'user_child_profiles',filter:`child_id=eq.${childId}`},payload=>{
+      if(userId!==currentAuthUserId||childId!==currentChildId||profileSyncBusy||profileSyncTimer||!payload.new||!payload.new.profile)return;
+      const pending=loadPendingProfileRewards(userId,childId);
       applyCloudProfile(payload.new.profile,pending.reduce((sum,reward)=>sum+reward.stars,0));
     }).subscribe(status=>{
       if(status==='CHANNEL_ERROR'||status==='TIMED_OUT')console.error('Account progress realtime synchronization failed:',status);
@@ -1565,6 +1629,11 @@ window.addEventListener('pagehide',()=>{saveMiniGameProgress();flushDailyUsage()
 
 /* ---------- navigation ---------- */
 function go(id){
+  if(id!=='welcome'){
+    if(currentAuthUserId&&!currentChildId&&!['childPicker','childProfile'].includes(id))id='childPicker';
+    else if(currentAuthUserId&&currentChildId&&!isValidChildAgeBand(S.childAgeBand)&&id!=='childProfile')id='childProfile';
+    else if(!currentAuthUserId&&currentUserId==='guest'&&(S.name==='Guest'||!isValidChildAgeBand(S.childAgeBand))&&id!=='childProfile')id='childProfile';
+  }
   if(curScreen==='gameStage'&&id!=='gameStage')saveMiniGameProgress();
   if(curScreen==='paint'&&id!=='paint')savePaintDraft();
   if(id!=='camera')stopCam();
@@ -1584,17 +1653,17 @@ function go(id){
 let amode='login',authErrorState=null,authStatusState=null,passwordRecoveryMode=false;
 function authForm(mode){
   authChoiceMade=true;amode=mode;passwordRecoveryMode=false;$('#auth').style.display='block';clearAuthErrors();clearAuthStatus();
-  $('#aName').style.display=mode==='reg'?'block':'none';
   $('#authEmailGroup').hidden=false;$('#passwordRecoveryTitle').hidden=true;
+  $('#registrationConsent').hidden=mode!=='reg';$('#aConsent').required=mode==='reg';$('#aConsent').checked=false;
   $('#forgotPasswordButton').hidden=mode!=='login';
-  $('#aName').required=mode==='reg';$('#aEmail').required=true;$('#aPassword').required=true;$('#aEmail').value='';$('#aPassword').value='';
+  $('#aEmail').required=true;$('#aPassword').required=true;$('#aEmail').value='';$('#aPassword').value='';
   $('#aPassword').autocomplete=mode==='reg'?'new-password':'current-password';
   $('#aSubmit').textContent=tr(mode==='reg'?'register':'login');
 }
 function clearAuthErrors(){
   authErrorState=null;
-  $('#aErr').textContent='';$('#aEmailErr').textContent='';$('#aPasswordErr').textContent='';
-  $('#aEmail').removeAttribute('aria-invalid');$('#aPassword').removeAttribute('aria-invalid');
+  $('#aErr').textContent='';$('#aEmailErr').textContent='';$('#aPasswordErr').textContent='';$('#aConsentErr').textContent='';
+  $('#aEmail').removeAttribute('aria-invalid');$('#aPassword').removeAttribute('aria-invalid');$('#aConsent').removeAttribute('aria-invalid');
 }
 function renderAuthError(){
   if(!authErrorState)return;
@@ -1605,6 +1674,9 @@ function renderAuthError(){
   if(field==='password'||field==='both'){
     $('#aPasswordErr').textContent=message;$('#aPassword').setAttribute('aria-invalid','true');
   }
+  if(field==='consent'){
+    $('#aConsentErr').textContent=message;$('#aConsent').setAttribute('aria-invalid','true');
+  }
   if(field==='form')$('#aErr').textContent=message;
 }
 function setAuthError(field,key){
@@ -1613,6 +1685,7 @@ function setAuthError(field,key){
   renderAuthError();
   if(field==='email')$('#aEmail').focus();
   if(field==='password')$('#aPassword').focus();
+  if(field==='consent')$('#aConsent').focus();
   if(field==='both')$('#aEmail').focus();
 }
 function clearAuthStatus(){
@@ -1625,7 +1698,7 @@ function renderAuthStatus(){
 function showPasswordRecovery(){
   authChoiceMade=true;amode='recovery';passwordRecoveryMode=true;
   $('#auth').style.display='block';clearAuthErrors();clearAuthStatus();
-  $('#aName').style.display='none';$('#aName').required=false;
+  $('#registrationConsent').hidden=true;$('#aConsent').required=false;$('#aConsent').checked=false;
   $('#authEmailGroup').hidden=true;$('#passwordRecoveryTitle').hidden=false;
   $('#forgotPasswordButton').hidden=true;$('#aEmail').required=false;$('#aPassword').required=true;
   $('#aPassword').value='';$('#aPassword').autocomplete='new-password';
@@ -1654,18 +1727,174 @@ async function requestPasswordReset(){
 }
 function guest(){
   clearBillingAccess();
-  authChoiceMade=true;authGeneration++;currentAuthUserId=null;currentAccountEmail='';loadUserData('Guest');
-  S.vip=false;S.allGamesUnlocked=false;S.unlockedGames=[];sv();go('games');
+  authChoiceMade=true;authGeneration++;currentAuthUserId=null;currentChildId=null;accountChildren=[];profileSyncReady=false;currentAccountEmail='';
+  profileSyncRunId++;profileSyncBusy=false;profileSyncAgain=false;
+  accountEntitlements={vip:false,allGamesUnlocked:false,unlockedGames:[]};accountBillingRestored=false;
+  loadUserData('Guest');
+  S.vip=false;S.allGamesUnlocked=false;S.unlockedGames=[];sv();
+  if(S.name==='Guest'||!isValidChildAgeBand(S.childAgeBand)){
+    setChildProfileForm({creating:false,nickname:S.name==='Guest'?'':S.name,ageBand:S.childAgeBand||''});
+    go('childProfile');
+  }else go('games');
+}
+function showChildPicker(){
+  if(!currentAuthUserId)return;
+  clearTimeout(profileSyncTimer);profileSyncTimer=null;
+  profileSyncReady=false;profileSyncAgain=false;profileSyncBusy=false;profileSyncRunId++;currentChildId=null;profileSyncRevision++;
+  if(profileSyncChannel&&supabaseClient){supabaseClient.removeChannel(profileSyncChannel);profileSyncChannel=null}
+  renderChildPicker();go('childPicker');
+}
+async function selectChildProfile(childId){
+  if(!currentAuthUserId)return;
+  const child=accountChildren.find(item=>item.id===childId);
+  if(!child){toast(tr('childProfilesLoadFailed'));return}
+  const userId=currentAuthUserId;
+  if(accountChildren[0]&&accountChildren[0].id===child.id)migrateLegacyChildStorage(userId,child.id);
+  clearTimeout(profileSyncTimer);profileSyncTimer=null;profileSyncAgain=false;
+  profileSyncBusy=false;profileSyncRunId++;currentChildId=child.id;profileSyncRevision++;
+  const childStorageId=`account:${userId}:child:${child.id}`;
+  let hasLocalChildProfile=false;
+  try{hasLocalChildProfile=localStorage.getItem('cbm_user_'+childStorageId)!==null}
+  catch(error){console.error('Could not inspect local child profile:',error)}
+  loadUserData(childStorageId,child.nickname);
+  if(!hasLocalChildProfile||!S.name)S.name=child.nickname;
+  if(!isValidChildAgeBand(S.childAgeBand))S.childAgeBand=isValidChildAgeBand(child.ageBand)?child.ageBand:null;
+  S.vip=accountEntitlements.vip;S.allGamesUnlocked=accountEntitlements.allGamesUnlocked;
+  S.unlockedGames=accountEntitlements.unlockedGames.slice();
+  profileSyncReady=true;
+  startProfileSyncChannel(userId,child.id);
+  sv();
+  if(isValidChildAgeBand(S.childAgeBand))go('games');
+  else{
+    setChildProfileForm({creating:false,nickname:S.name,ageBand:''});
+    go('childProfile');
+  }
+  void syncProfileNow();
+  if(BILLING_ENABLED&&!accountBillingRestored){
+    accountBillingRestored=true;
+    if(!(S.vip||S.allGamesUnlocked))void restorePurchases(true);
+  }
+}
+function selectChildAgeBand(ageBand){
+  if(!isValidChildAgeBand(ageBand))throw new Error('Invalid child age range.');
+  selectedChildAgeBand=ageBand;
+  for(const band of CHILD_AGE_BANDS){
+    const button=$(`#childAge${band.replace('-','to')}`);
+    button.classList.toggle('on',band===ageBand);
+    button.setAttribute('aria-pressed',String(band===ageBand));
+  }
+}
+function setChildProfileForm({creating=false,nickname='',ageBand=''}={}){
+  childProfileCreating=creating;selectedChildAgeBand='';
+  $('#childProfileTitle').textContent=tr(creating?'childProfileNewTitle':'childProfileEditTitle');
+  $('#childNickname').value=nickname;
+  $('#childProfileErr').textContent='';
+  $('#childProfileBack').hidden=currentAuthUserId
+    ?accountChildren.length===0&&creating
+    :S.name==='Guest'&&!isValidChildAgeBand(S.childAgeBand);
+  for(const band of CHILD_AGE_BANDS){
+    const button=$(`#childAge${band.replace('-','to')}`);
+    button.classList.remove('on');button.setAttribute('aria-pressed','false');
+  }
+  if(isValidChildAgeBand(ageBand))selectChildAgeBand(ageBand);
+}
+function beginAddChildProfile(){
+  if(!currentAuthUserId)return;
+  if(accountChildren.length>=5){toast(tr('childProfileMaxReached'));return}
+  setChildProfileForm({creating:true,nickname:accountChildren.length?'':initialChildNickname});
+  go('childProfile');
+}
+function cancelChildProfile(){
+  if(currentAuthUserId){
+    if(currentChildId||accountChildren.length)showChildPicker();
+    return;
+  }
+  go('welcome');
+}
+function renderChildPicker(){
+  const list=$('#childProfilesList');
+  list.replaceChildren();
+  for(const child of accountChildren){
+    const button=document.createElement('button');
+    button.type='button';button.className='child-profile-choice';
+    const age=child.ageBand?` · ${child.ageBand}`:'';
+    button.textContent=`👤 ${child.nickname}${age}`;
+    button.addEventListener('click',()=>{void selectChildProfile(child.id)});
+    list.append(button);
+  }
+  const atLimit=accountChildren.length>=5;
+  $('#addChildProfileButton').hidden=atLimit;
+  $('#childProfileLimitMessage').hidden=!atLimit;
+}
+async function loadAccountChildren(){
+  const {data,error}=await supabaseClient.rpc('list_user_children');
+  if(error)throw error;
+  if(!Array.isArray(data)||data.some(child=>!child||typeof child.id!=='string'||typeof child.nickname!=='string'
+    ||!(child.ageBand===null||isValidChildAgeBand(child.ageBand))))throw new Error('The child profile list response was invalid.');
+  accountChildren=data;
+  return accountChildren;
+}
+function migrateLegacyChildStorage(userId,childId){
+  const legacyId=`account:${userId}`,childStorageId=`account:${userId}:child:${childId}`;
+  for(const prefix of ['cbm_user_','megical_game_progress_','megical_coloring_drafts_']){
+    const legacyKey=prefix+legacyId,childKey=prefix+childStorageId;
+    try{
+      if(localStorage.getItem(childKey)===null){
+        const legacyValue=localStorage.getItem(legacyKey);
+        if(legacyValue!==null)localStorage.setItem(childKey,legacyValue);
+      }
+    }catch(error){console.error('Could not migrate local child data:',error)}
+  }
+  const legacyRewards=`megical_profile_rewards_${userId}`,childRewards=`megical_profile_rewards_${userId}_${childId}`;
+  try{
+    if(localStorage.getItem(childRewards)===null){
+      const legacyValue=localStorage.getItem(legacyRewards);
+      if(legacyValue!==null)localStorage.setItem(childRewards,legacyValue);
+    }
+  }catch(error){console.error('Could not migrate pending child rewards:',error)}
+}
+async function saveChildProfile(){
+  if(childProfileBusy)return;
+  const nickname=$('#childNickname').value.trim();
+  if(!nickname||nickname.length>16){$('#childProfileErr').textContent=tr('childNicknameRequired');$('#childNickname').focus();return}
+  if(!isValidChildAgeBand(selectedChildAgeBand)){$('#childProfileErr').textContent=tr('childAgeRequired');return}
+  childProfileBusy=true;$('#saveChildProfileButton').disabled=true;$('#childProfileErr').textContent='';
+  try{
+    if(currentAuthUserId&&childProfileCreating){
+      const {data,error}=await supabaseClient.rpc('create_user_child',{p_nickname:nickname,p_age_band:selectedChildAgeBand});
+      if(error)throw error;
+      if(!data||typeof data.id!=='string')throw new Error('Child profile creation returned an invalid response.');
+      await loadAccountChildren();
+      await selectChildProfile(data.id);
+    }else if(currentAuthUserId&&currentChildId){
+      S.name=nickname;S.childAgeBand=selectedChildAgeBand;
+      accountChildren=accountChildren.map(child=>child.id===currentChildId
+        ?{...child,nickname,ageBand:selectedChildAgeBand}:child);
+      sv();go('games');void syncProfileNow();
+    }else if(!currentAuthUserId){
+      S.name=nickname;S.childAgeBand=selectedChildAgeBand;sv();go('games');
+    }else throw new Error('No child profile is selected.');
+  }catch(error){
+    console.error('Could not save child profile:',error);
+    $('#childProfileErr').textContent=/Maximum of five child profiles/.test(error.message||'')
+      ?tr('childProfileMaxReached'):tr('childProfileSaveFailed');
+  }finally{
+    childProfileBusy=false;$('#saveChildProfileButton').disabled=false;
+  }
 }
 async function enterAccount(user){
   if(currentAuthUserId===user.id){currentAccountEmail=user.email||currentAccountEmail;renderProfile();return}
   const generation=++authGeneration;
   const displayName=(user.user_metadata&&user.user_metadata.display_name)||(user.email||'Guest').split('@')[0];
   currentAccountEmail=user.email||'';
-  loadUserData('account:'+user.id,displayName);
+  initialChildNickname=displayName;
+  currentChildId=null;accountChildren=[];profileSyncReady=false;
+  profileSyncRunId++;profileSyncBusy=false;profileSyncAgain=false;
+  accountEntitlements={vip:false,allGamesUnlocked:false,unlockedGames:[]};accountBillingRestored=false;
   let deviceAllowed=false;
   const entitlementsPromise=withTimeout(supabaseClient.from('user_entitlements')
     .select('vip,all_games,unlocked_games').eq('user_id',user.id).maybeSingle(),8000,'Entitlement loading timed out.');
+  void entitlementsPromise.catch(error=>console.error('Could not load account entitlements:',error));
   try{
     deviceAllowed=await withTimeout(registerCurrentDevice(),8000,'Device registration timed out.');
   }catch(error){
@@ -1683,19 +1912,37 @@ async function enterAccount(user){
     return;
   }
   currentAuthUserId=user.id;
-  profileSyncReady=true;
-  startProfileSyncChannel(user.id);startDeviceHeartbeat();
-  sv();go('games');
+  profileSyncReady=false;startDeviceHeartbeat();
+  try{
+    await loadAccountChildren();
+  }catch(error){
+    console.error('Could not load child profiles:',error);
+    toast(tr('childProfilesLoadFailed'));
+    await logout();
+    authForm('login');
+    setAuthError('form','childProfilesLoadFailed');
+    return;
+  }
+  if(generation!==authGeneration||currentAuthUserId!==user.id)return;
+  if(accountChildren.length){
+    renderChildPicker();go('childPicker');
+  }else{
+    setChildProfileForm({creating:true,nickname:initialChildNickname});
+    go('childProfile');
+  }
   void entitlementsPromise.then(({data,error})=>{
     if(generation!==authGeneration||currentAuthUserId!==user.id)return;
     if(error||!data)throw new Error(tr('entitlementsLoadFailed')+(error?` (${error.message})`:''));
-    S.vip=data.vip===true;
-    S.allGamesUnlocked=data.all_games===true;
-    S.unlockedGames=Array.isArray(data.unlocked_games)?data.unlocked_games:[];
+    accountEntitlements.vip=data.vip===true;
+    accountEntitlements.allGamesUnlocked=data.all_games===true;
+    accountEntitlements.unlockedGames=Array.isArray(data.unlocked_games)?data.unlocked_games:[];
+    S.vip=accountEntitlements.vip;
+    S.allGamesUnlocked=accountEntitlements.allGamesUnlocked;
+    S.unlockedGames=accountEntitlements.unlockedGames.slice();
     if(S.vip||S.allGamesUnlocked){
       clearTimeout(billingRefreshTimer);billingRefreshTimer=null;
     }
-    sv();
+    if(currentChildId)sv();
     if($('#games').classList.contains('on'))renderMiniGames();
     if($('#parentM').classList.contains('on'))renderParentDashboard();
   }).catch(error=>{
@@ -1703,13 +1950,10 @@ async function enterAccount(user){
     console.error('Could not load account entitlements:',error);
     toast(tr('entitlementsLoadFailed'));
   });
-  void syncProfileNow();
-  if(BILLING_ENABLED&&!(S.vip||S.allGamesUnlocked))restorePurchases(true);
 }
 async function authGo(){
   if(authBusy)return;
   const email=$('#aEmail').value.trim().toLowerCase(),password=$('#aPassword').value;
-  const name=$('#aName').value.trim();
   clearAuthErrors();clearAuthStatus();
   if(!passwordRecoveryMode){
     if(!email){setAuthError('email','emailRequired');return}
@@ -1717,7 +1961,7 @@ async function authGo(){
   }
   if(!password){setAuthError('password','passwordRequired');return}
   if(password.length<8){setAuthError('password','invalidPassword');return}
-  if(amode==='reg'&&!name){setAuthError('form','authNameError');return}
+  if(amode==='reg'&&!$('#aConsent').checked){setAuthError('consent','registrationConsentRequired');return}
   if(!supabaseClient){setAuthError('form','authNotConfigured');return}
   authBusy=true;$('#aSubmit').disabled=true;
   try{
@@ -1728,7 +1972,7 @@ async function authGo(){
       authStatusState='passwordUpdated';renderAuthStatus();
       await enterAccount(data.user);
     }else if(amode==='reg'){
-      const {data,error}=await supabaseClient.auth.signUp({email,password,options:{data:{display_name:name},emailRedirectTo:location.origin}});
+      const {data,error}=await supabaseClient.auth.signUp({email,password,options:{emailRedirectTo:location.origin}});
       if(error)throw error;
       if(!data.session){
         if(data.user&&Array.isArray(data.user.identities)&&data.user.identities.length===0)setAuthError('email','emailInUse');
@@ -1763,7 +2007,8 @@ async function logout(){
   authGeneration++;
   clearTimeout(profileSyncTimer);clearInterval(deviceHeartbeatTimer);
   if(profileSyncChannel&&supabaseClient){supabaseClient.removeChannel(profileSyncChannel);profileSyncChannel=null}
-  profileSyncReady=false;profileSyncBusy=false;profileSyncAgain=false;profileSyncErrorShown=false;
+  profileSyncReady=false;profileSyncBusy=false;profileSyncAgain=false;profileSyncRunId++;profileSyncErrorShown=false;
+  currentChildId=null;accountChildren=[];accountEntitlements={vip:false,allGamesUnlocked:false,unlockedGames:[]};accountBillingRestored=false;
   clearBillingAccess();currentAuthUserId=null;currentAccountEmail='';loadUserData('Guest');go('welcome');
   if(supabaseClient&&userId){
     try{
@@ -6075,6 +6320,8 @@ function renderProfile(){
   $('#pName').textContent=S.av+' '+S.name;$('#pStars').textContent=S.stars;$('#pVip').textContent=S.vip?tr('active')+' 👑':tr('freeLabel');
   $('#pEmail').textContent=currentAccountEmail?`${tr('connectedEmail')}: ${currentAccountEmail}`:'';
   $('#pEmail').hidden=!currentAccountEmail;
+  $('#switchChildButton').hidden=!currentAuthUserId;
+  $('#editChildProfileButton').hidden=currentAuthUserId?!currentChildId:S.name==='Guest';
   
   $('#avs').innerHTML = AVATARS_LIST.map(a => {
     const isUnlocked = S.stars >= a.req;
@@ -6099,6 +6346,11 @@ function renderProfile(){
   $('#hName').textContent=S.av+' '+S.name;$('#hStars').textContent='⭐ '+S.stars+(S.vip?' 👑':'');
 }
 
+function editCurrentChildProfile(){
+  if(currentAuthUserId&&!currentChildId)return;
+  setChildProfileForm({creating:false,nickname:S.name==='Guest'?'':S.name,ageBand:S.childAgeBand||''});
+  go('childProfile');
+}
 function setAvatar(avIcon){
   S.av = avIcon;
   sv();
