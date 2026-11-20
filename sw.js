@@ -1,10 +1,19 @@
 'use strict';
 
-const CACHE_NAME='magical-fun-shell-v35-coloring-galaxy-fit';
+const CACHE_NAME='magical-fun-shell-v46-terms-age-adaptation';
 const APP_ROOT=new URL('./',self.registration.scope);
 const APP_SHELL=[
   APP_ROOT.href,
   new URL('index.html',APP_ROOT).href,
+  new URL('question-banks/math.js',APP_ROOT).href,
+  new URL('question-banks/story-math.js',APP_ROOT).href,
+  new URL('question-banks/riddles-6-7.js',APP_ROOT).href,
+  new URL('question-banks/riddles-8-9.js',APP_ROOT).href,
+  new URL('question-banks/riddles-10-11.js',APP_ROOT).href,
+  new URL('question-banks/escape-room-6-7.js',APP_ROOT).href,
+  new URL('question-banks/escape-room-8-9.js',APP_ROOT).href,
+  new URL('question-banks/escape-room-10-11.js',APP_ROOT).href,
+  new URL('question-banks/science.js',APP_ROOT).href,
   new URL('images/magical-fun-background.png',APP_ROOT).href,
   new URL('manifest.json',APP_ROOT).href,
   new URL('fonts/GveretLevin-Regular.ttf',APP_ROOT).href,
@@ -53,3 +62,4 @@ self.addEventListener('fetch',event=>{
     return fetch(request).then(response=>cacheResponse(request,response));
   }));
 });
+
