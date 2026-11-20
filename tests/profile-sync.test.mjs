@@ -5,6 +5,7 @@ import vm from 'node:vm';
 
 const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
 const sql = await readFile(new URL('../supabase/profile_sync.sql', import.meta.url), 'utf8');
+const childSql = await readFile(new URL('../supabase/child_profiles.sql', import.meta.url), 'utf8');
 
 function syncContext(rpc) {
   const values = new Map();
@@ -41,6 +42,7 @@ function syncContext(rpc) {
   vm.runInContext(`
     currentUserId = 'account:user-id';
     currentAuthUserId = 'user-id';
+    currentChildId = 'child-id';
     profileSyncReady = true;
     S = {name:'Child',av:'🐶',stars:0,art:[],custom:[],music:true,track:'auto',vol:0.6,
       language:'en',completedEscapeRooms:[],completedPuzzleStars:[],dailyUsageDate:'',
@@ -50,9 +52,9 @@ function syncContext(rpc) {
 }
 
 test('star rewards persist locally until the server confirms their idempotent IDs', async () => {
-  let request;
-  const { context, values, elements } = syncContext(async (_name, args) => {
-    request = args;
+  let request, rpcName;
+  const { context, values, elements } = syncContext(async (name, args) => {
+    rpcName = name;request = args;
     return {
       data: {
         profile: { ...args.p_profile, stars: 12, art: ['cloud-art'] },
@@ -64,12 +66,14 @@ test('star rewards persist locally until the server confirms their idempotent ID
 
   context.queueProfileStarReward(1, 'achievement:physicsPaths:0:path-0');
   assert.equal(vm.runInContext('S.stars', context), 1);
-  assert.equal(JSON.parse(values.get('megical_profile_rewards_user-id')).length, 1);
+  assert.equal(JSON.parse(values.get('megical_profile_rewards_user-id_child-id')).length, 1);
 
   await context.syncProfileNow();
+  assert.equal(rpcName, 'sync_child_profile');
+  assert.equal(request.p_child_id, 'child-id');
   assert.equal(request.p_rewards[0].id, 'achievement:physicsPaths:0:path-0');
   assert.equal(vm.runInContext('S.stars', context), 12);
-  assert.deepEqual(JSON.parse(values.get('megical_profile_rewards_user-id')), []);
+  assert.deepEqual(JSON.parse(values.get('megical_profile_rewards_user-id_child-id')), []);
   assert.equal(vm.runInContext('S.art.includes("cloud-art")', context), true);
   assert.equal(elements.get('#hStars').textContent, '⭐ 12');
 });
@@ -79,7 +83,17 @@ test('duplicate pending reward IDs cannot add stars a second time', () => {
   context.queueProfileStarReward(2, 'daily:2026-11-12');
   context.queueProfileStarReward(2, 'daily:2026-11-12');
   assert.equal(vm.runInContext('S.stars', context), 2);
-  assert.equal(JSON.parse(values.get('megical_profile_rewards_user-id')).length, 1);
+  assert.equal(JSON.parse(values.get('megical_profile_rewards_user-id_child-id')).length, 1);
+});
+
+test('identical reward IDs are independent across child profiles', () => {
+  const { context, values } = syncContext(async () => ({ data: {}, error: null }));
+  context.queueProfileStarReward(1, 'daily:2026-11-12');
+  vm.runInContext("currentChildId='other-child';S.stars=0", context);
+  context.queueProfileStarReward(1, 'daily:2026-11-12');
+  assert.equal(JSON.parse(values.get('megical_profile_rewards_user-id_child-id')).length, 1);
+  assert.equal(JSON.parse(values.get('megical_profile_rewards_user-id_other-child')).length, 1);
+  assert.equal(vm.runInContext('S.stars', context), 1);
 });
 
 test('daily login bonus is awarded only once per local calendar day', () => {
@@ -121,6 +135,34 @@ test('cloud profile synchronization does not replace a newer local daily claim d
   assert.equal(vm.runInContext('S.streak', context), 4);
 });
 
+test('child age range is synchronized and local changes during sync are preserved', async () => {
+  let completeRequest;
+  const { context } = syncContext(() => new Promise((resolve) => { completeRequest = resolve; }));
+  vm.runInContext("S.childAgeBand='8-9'", context);
+  const syncing = context.syncProfileNow();
+  vm.runInContext("S.childAgeBand='10-11';sv()", context);
+  completeRequest({
+    data: {
+      profile: vm.runInContext('({...S, childAgeBand:"8-9"})', context),
+      processed_reward_ids: [],
+    },
+  });
+  await syncing;
+  assert.equal(vm.runInContext('S.childAgeBand', context), '10-11');
+  assert.match(sql, /'childAgeBand',\s*coalesce\(nullif\(p_profile->'childAgeBand'/i);
+  assert.match(sql, /Invalid child age range/);
+});
+
+test('a cloud-synced age range exits the required age screen', () => {
+  const { context } = syncContext(async () => ({ data: {}, error: null }));
+  let destination = '';
+  context.curScreen = 'childProfile';
+  context.go = (screen) => { destination = screen; };
+  context.applyCloudProfile({ stars: 0, childAgeBand: '8-9' });
+  assert.equal(vm.runInContext('S.childAgeBand', context), '8-9');
+  assert.equal(destination, 'games');
+});
+
 test('local edits made during an in-flight sync are not overwritten by its older response', async () => {
   let completeRequest;
   const { context } = syncContext(() => new Promise((resolve) => { completeRequest = resolve; }));
@@ -148,6 +190,12 @@ test('server migration limits active devices and keeps rewards private and idemp
   assert.match(sql, /revoke all on public\.user_profile_rewards from anon, authenticated/i);
   assert.match(sql, /'stars', v_stars/);
   assert.doesNotMatch(sql, /'vip'|'allGamesUnlocked'|'unlockedGames'/);
+  assert.match(childSql, /count\(\*\)[\s\S]*v_child_count >= 5/);
+  assert.match(childSql, /public\.sync_child_profile/);
+  assert.match(childSql, /primary key \(child_id, reward_id\)/);
+  assert.match(childSql, /insert into public\.user_child_profiles[\s\S]*from public\.user_profiles/);
+  assert.match(childSql, /create_user_child\(text, text\)/);
+  assert.match(childSql, /auth\.uid\(\)/);
 });
 
 test('device limit and sync failures have translations in all supported languages', () => {
