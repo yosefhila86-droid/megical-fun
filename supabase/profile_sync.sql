@@ -141,6 +141,11 @@ begin
   if coalesce(p_profile->>'stars', '0') !~ '^\d{1,9}$' then
     raise exception 'Invalid star count';
   end if;
+  if p_profile ? 'childAgeBand'
+     and p_profile->'childAgeBand' <> 'null'::jsonb
+     and p_profile->>'childAgeBand' not in ('6-7', '8-9', '10-11') then
+    raise exception 'Invalid child age range';
+  end if;
   if jsonb_typeof(coalesce(p_profile->'art', '[]'::jsonb)) <> 'array'
      or jsonb_typeof(coalesce(p_profile->'custom', '[]'::jsonb)) <> 'array'
      or jsonb_typeof(coalesce(p_profile->'completedEscapeRooms', '[]'::jsonb)) <> 'array'
@@ -257,6 +262,7 @@ begin
     'track', coalesce(p_profile->'track', v_old->'track', '"auto"'::jsonb),
     'vol', coalesce(p_profile->'vol', v_old->'vol', '0.6'::jsonb),
     'language', coalesce(p_profile->'language', v_old->'language', '"en"'::jsonb),
+    'childAgeBand', coalesce(nullif(p_profile->'childAgeBand', 'null'::jsonb), v_old->'childAgeBand', 'null'::jsonb),
     'completedEscapeRooms', v_escape_rooms,
     'completedPuzzleStars', v_puzzle_stars,
     'streak', v_streak,
