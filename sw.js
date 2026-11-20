@@ -1,6 +1,6 @@
 'use strict';
 
-const CACHE_NAME='magical-fun-shell-v46-terms-age-adaptation';
+const CACHE_NAME='magical-fun-shell-v49-stage-navigation-remember-me';
 const APP_ROOT=new URL('./',self.registration.scope);
 const APP_SHELL=[
   APP_ROOT.href,
