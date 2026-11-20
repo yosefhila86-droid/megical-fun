@@ -160,4 +160,5 @@ test('password recovery callback is recognized in query or hash before normal ac
 test('authentication action buttons share the same full-width sizing', () => {
   assert.match(html, /#auth>button\{width:100%;margin:6px 0\}/);
   assert.match(html, /#auth \.err:empty\{display:none;min-height:0;margin:0\}/);
+  assert.match(html, /\.auth-consent\[hidden\]\{display:none\}/);
 });

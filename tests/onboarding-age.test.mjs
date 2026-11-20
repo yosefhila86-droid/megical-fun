@@ -31,6 +31,17 @@ test('child profile defaults have no age and age selection accepts only supporte
   assert.match(html,/create_user_child/);
 });
 
+test('child age bands map to the matching game difficulty levels', () => {
+  const start = html.indexOf('function childDifficultyLevel('), end = html.indexOf('function withTimeout(', start);
+  assert.ok(start >= 0 && end > start);
+  const context = vm.createContext({});
+  vm.runInContext(html.slice(start, end), context);
+  for (const [ageBand, level] of [['6-7', 1], ['8-9', 2], ['10-11', 3]]) {
+    assert.equal(context.childDifficultyLevel(ageBand), level);
+  }
+  assert.throws(() => context.childDifficultyLevel('7-8'), /Unknown child age band/);
+});
+
 test('the age screen and all three ranges are translated in supported languages', () => {
   for (const language of ['en', 'he', 'ru']) {
     for (const message of ['childProfilesTitle','childProfilesPrompt','addChildProfile','manageChildProfiles','editChildProfile','childNicknameLabel','childAgePrompt','childAge6to7','childAge8to9','childAge10to11']) {

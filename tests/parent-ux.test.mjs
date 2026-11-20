@@ -57,75 +57,123 @@ test('coloring studio keeps its category cards and navigation actions in a scrol
   assert.match(html, /\.coloring-level-actions\{display:grid;grid-template-columns:repeat\(auto-fit,minmax\(min\(100%,180px\),1fr\)\)/);
 });
 
-test('space-station riddle uses a unique meteor question with its correct answer', () => {
-  const context = vm.createContext({ TEXT: { en: {}, he: {}, ru: {} } });
-  vm.runInContext(`${source('const ESCAPE_RIDDLE_BANK=', 'function createEscapeRiddlesLegacy(')}\nglobalThis.testBank=ESCAPE_RIDDLE_BANK;`, context);
-  for (const [language, expectedAnswer, expectedPrompt] of [
-    ['en', 'A meteor', 'A small space rock burns as it enters Earth’s atmosphere, making a bright streak of light. What is that streak called?'],
-    ['he', 'מטאור', 'סלע קטן מהחלל נשרף כשהוא נכנס לאטמוספרה של כדור הארץ, ונראה כפס אור בשמיים. איך נקרא פס האור?'],
-    ['ru', 'Метеор', 'Небольшой космический камень сгорает в атмосфере Земли и оставляет яркую полосу света. Как называется эта полоса?'],
-  ]) {
-    const riddle = context.createEscapeRiddles(language, 2)[0];
-    assert.equal(riddle.prompt, expectedPrompt);
-    assert.equal(riddle.options[riddle.answer], expectedAnswer);
-    const allEscapePrompts = Object.values(context.testBank).flatMap(activities => activities.flatMap(riddles => riddles.map(([prompt]) => prompt)));
-    assert.equal(allEscapePrompts.filter(prompt => prompt === expectedPrompt).length, 1);
-    assert.doesNotMatch(riddle.prompt, /shine in the night sky|מנצנץ בשמי הלילה|мерцаю на ночном небе/i);
-    assert.ok(riddle.explanation);
-    assert.equal(riddle.options.length, 4);
-    assert.equal(new Set(riddle.options).size, 4);
+test('age-specific Escape Room banks have localized stations and usable code parts', async () => {
+  const context = vm.createContext({});
+  for (const file of ['escape-room-6-7.js', 'escape-room-8-9.js', 'escape-room-10-11.js']) {
+    vm.runInContext(await readFile(new URL(`../question-banks/${file}`, import.meta.url), 'utf8'), context);
+  }
+  const banks = context.ESCAPE_ROOM_AGE_BANKS;
+  assert.deepEqual(Object.keys(banks).sort(), ['10-11', '6-7', '8-9']);
+  const colors = new Set(['yellow', 'green', 'red', 'gray', 'blue', 'orange', 'purple', 'pink', 'white', 'brown', 'black', 'gold']);
+  for (const [ageBand, stationCount] of [['6-7', 3], ['8-9', 4], ['10-11', 4]]) {
+    const activities = banks[ageBand].activities;
+    assert.equal(activities.length, 12, `${ageBand} activities`);
+    for (const [activityIndex, activity] of activities.entries()) {
+      for (const language of ['he', 'en', 'ru']) {
+        assert.ok(activity.title[language], `${ageBand} activity ${activityIndex+1} ${language} title`);
+        assert.equal(activity.stations.length, stationCount);
+        for (const [stationIndex, station] of activity.stations.entries()) {
+          assert.ok(station.prompt[language], `${ageBand} activity ${activityIndex+1} station ${stationIndex+1} ${language} prompt`);
+          assert.ok(station.answer[language], `${ageBand} activity ${activityIndex+1} station ${stationIndex+1} ${language} answer`);
+          assert.ok(station.explanation[language], `${ageBand} activity ${activityIndex+1} station ${stationIndex+1} ${language} explanation`);
+          if (ageBand === '6-7' && stationIndex === 0) assert.ok(colors.has(station.codeValue));
+          else assert.match(station.codeValue, /^\d$/);
+        }
+      }
+    }
+    for (let stationIndex = 0; stationIndex < stationCount; stationIndex++) {
+      for (const language of ['he', 'en', 'ru']) {
+        const distinctAnswers = new Set(activities.map(activity => activity.stations[stationIndex].answer[language]));
+        assert.ok(distinctAnswers.size >= 4, `${ageBand} station ${stationIndex+1} has four ${language} answer choices`);
+      }
+    }
+  }
+  const expectedCodes = {
+    '6-7':[
+      ['yellow','2','2'],['green','3','4'],['red','3','2'],['gray','3','1'],
+      ['blue','4','3'],['orange','2','5'],['purple','3','2'],['pink','7','2'],
+      ['white','6','1'],['brown','6','5'],['black','4','2'],['gold','8','2'],
+    ],
+    '8-9':['8361','4594','5266','3104','7486','2415','3484','3752','9633','6973','4255','4155'].map(code => [...code]),
+    '10-11':['2246','0501','6312','9622','4943','9723','2611','1580','4748','9088','6522','0226'].map(code => [...code]),
+  };
+  for (const [ageBand, sequences] of Object.entries(expectedCodes)) {
+    const actual = JSON.parse(JSON.stringify(banks[ageBand].activities.map(activity => activity.stations.map(station => station.codeValue))));
+    assert.deepEqual(actual, sequences, `${ageBand} documented code sequences`);
+  }
+  const namesContext = vm.createContext({
+    S: { childAgeBand: '6-7' },
+    ACTIVITY_NAMES: { en: { escapeRoom: Array(12).fill('Fallback') } },
+    ESCAPE_ROOM_AGE_BANKS: banks,
+  });
+  vm.runInContext(`${source('function activityNames(id,language){', 'function activityCount(')}\nglobalThis.testActivityNames=activityNames;`, namesContext);
+  for (const ageBand of ['6-7', '8-9', '10-11']) {
+    namesContext.S.childAgeBand = ageBand;
+    const expectedNames = JSON.parse(JSON.stringify(banks[ageBand].activities.map(activity => activity.title.en)));
+    assert.deepEqual(Array.from(namesContext.testActivityNames('escapeRoom', 'en')), expectedNames, `${ageBand} activity labels follow the bank`);
   }
 });
 
-test('each escape-room activity has its own themed room and five localized key clues', () => {
-  for (const language of ['en', 'he', 'ru']) {
-    const rooms = vm.createContext({});
-    vm.runInContext(source('const ESCAPE_KEY_ROOMS=', 'let escapeRoomIndex=0') + '\nglobalThis.escapeRooms=ESCAPE_KEY_ROOMS;', rooms);
-    const roomData = rooms.escapeRooms;
-    assert.equal(roomData.length, 12, 'all escape activities have their own room');
-    assert.equal(new Set(roomData.map((room) => room.objects.join(''))).size, 12, `${language} rooms use distinct object sets`);
-    assert.equal(new Set(roomData.map((room) => room.target)).size > 1, true, 'the key is not always hidden in the same place');
-    for (let activity = 0; activity < roomData.length; activity++) {
-      const content = { innerHTML: '' };
-      const context = vm.createContext({
-        currentLanguage: language,
-        selectedLevel: activity,
-        activityNames: () => Array.from({ length: 12 }, (_, index) => `Activity ${index + 1}`),
-        $: () => content,
-        tr: (key) => text[language][key] ?? key,
-        showGameFeedback() {},
-        gameActivityAdvanceLabel: () => text[language].next,
-      });
-      vm.runInContext(source('const ESCAPE_KEY_ROOMS=', 'const GAME_WORDS='), context);
-      vm.runInContext("escapeRoomIndex=4;escapeRoomSolved=true;escapeRoomPhase='keyRoom';renderEscapeKeyRoom()", context);
-      assert.equal(vm.runInContext('escapeRoomPhase', context), 'keyRoom', `${language} activity ${activity+1} opens its room`);
-      assert.equal((content.innerHTML.match(/<li>/g) || []).length, 5, `${language} activity ${activity+1} shows five clues`);
-      assert.equal((content.innerHTML.match(/class="escape-room-object /g) || []).length, 8, `${language} activity ${activity+1} has eight clickable objects`);
-      assert.ok(content.innerHTML.includes(`escape-object-slot-${roomData[activity].target}`), `${language} activity ${activity+1} uses its target position`);
-      assert.ok(content.innerHTML.includes(roomData[activity].window), `${language} activity ${activity+1} uses its themed window`);
-      assert.ok(content.innerHTML.includes(`aria-label="Activity ${activity+1}"`));
-      assert.doesNotMatch(content.innerHTML, /🗝️/, `${language} activity ${activity+1} keeps the key hidden`);
-      const clues = roomData[activity].clues[language];
-      assert.equal(clues.length, 5, `${language} activity ${activity+1} has five clues`);
-      assert.equal(new Set(clues).size, 5, `${language} activity ${activity+1} clues are distinct`);
-      for (const clue of clues) assert.ok(content.innerHTML.includes(clue), `${language} activity ${activity+1} shows clue: ${clue}`);
-      assert.ok(!/Bookcase|Plant|Книжный шкаф|Растение|כוננית ספרים|עציץ/.test(content.innerHTML), `${language} room does not label objects`);
-
-      context.searchEscapeKey((roomData[activity].target + 1) % 8);
-      assert.ok(content.innerHTML.includes(text[language].escapeKeyWrong), `${language} activity ${activity+1} gives wrong-location feedback`);
-      context.searchEscapeKey(roomData[activity].target);
-      assert.ok(content.innerHTML.includes('🗝️'), `${language} activity ${activity+1} reveals the key on its target`);
-      context.finishEscapeRoom();
-      assert.equal(vm.runInContext('escapeRoomPhase', context), 'complete');
-      assert.ok(content.innerHTML.includes(text[language].escapeComplete), `${language} activity ${activity+1} confirms escape`);
-    }
-    for (let left = 0; left < roomData.length; left++) for (let right = left + 1; right < roomData.length; right++) {
-      assert.notDeepEqual(roomData[left].clues[language], roomData[right].clues[language], `${language} activities ${left+1} and ${right+1} clues differ`);
-    }
+test('Escape Room unlocks only after entering the correct age-based station code', async () => {
+  const bankContext = vm.createContext({});
+  for (const file of ['escape-room-6-7.js', 'escape-room-8-9.js', 'escape-room-10-11.js']) {
+    vm.runInContext(await readFile(new URL(`../question-banks/${file}`, import.meta.url), 'utf8'), bankContext);
   }
-  assert.match(source('function renderEscapeRoomSuccess()', 'function enterEscapeKeyRoom()'), /getEscapeKeyRoom\(\)\.clues\[currentLanguage\]\[escapeRoomIndex\]/);
-  assert.match(source('function renderEscapeRoomSuccess()', 'function enterEscapeKeyRoom()'), /tr\('escapeKeyClueLabel'\)\} \$\{clue\}/);
-  for (const language of ['en', 'he', 'ru']) assert.ok(text[language].escapeKeyClueLabel, `${language} labels each clue as a hidden-key hint`);
+  for (const [ageBand, expectedStationCount] of [['6-7', 3], ['8-9', 4], ['10-11', 4]]) {
+    const content = { innerHTML: '' },hint = { textContent: '' };
+    const answerButtons = Array.from({ length: 4 }, () => ({ disabled: false }));
+    const context = vm.createContext({
+      ESCAPE_ROOM_AGE_BANKS: bankContext.ESCAPE_ROOM_AGE_BANKS,
+      S: { childAgeBand: ageBand, completedEscapeRooms: [] },
+      currentLanguage: 'en',
+      selectedLevel: 0,
+      activityNames: (id, language) => bankContext.ESCAPE_ROOM_AGE_BANKS[ageBand].activities.map(activity => activity.title[language]),
+      $: selector => selector === '#learningHint' ? hint : content,
+      document: { querySelectorAll: () => answerButtons },
+      tr: (key, values = {}) => {
+        const phrase = text.en[key] ?? key;
+        return typeof phrase === 'string' ? phrase.replace(/\{(\w+)\}/g, (_, name) => values[name] ?? `{${name}}`) : phrase;
+      },
+      go() {},
+      revealLearningHint() {},
+      queueProfileStarReward() {},
+      showGameFeedback() {},
+      gameActivityAdvanceLabel: () => 'Continue',
+    });
+    vm.runInContext(source('let escapeRoomIndex=0', 'const GAME_WORDS='), context);
+    const read = expression => vm.runInContext(expression, context);
+    context.startEscapeRoom();
+    assert.equal((content.innerHTML.match(/data-answer-index=/g) || []).length, 4);
+    for (let stationIndex = 0; stationIndex < expectedStationCount; stationIndex++) {
+      const puzzle = context.getEscapeRoomPuzzle();
+      assert.equal(puzzle.options.length, 4);
+      assert.equal(new Set(puzzle.options).size, 4);
+      context.answerEscapeRoom({ dataset: { answerIndex: String(puzzle.answerIndex) } });
+      assert.equal(read(`escapeRoomCodeParts[${stationIndex}]`), bankContext.ESCAPE_ROOM_AGE_BANKS[ageBand].activities[0].stations[stationIndex].codeValue);
+      if (stationIndex < expectedStationCount - 1) context.nextEscapeRoom();
+    }
+    context.enterEscapeCode();
+    assert.equal(read('escapeRoomPhase'), 'code');
+    const correctCode = Array.from(read('escapeRoomCodeParts'));
+    const wrongCode = correctCode.map((value, index) => ageBand === '6-7' && index === 0
+      ? (value === 'yellow' ? 'green' : 'yellow')
+      : String((Number(value) + 1) % 10));
+    wrongCode.forEach((value, index) => {
+      context.selectEscapeCodePart(index);
+      context.chooseEscapeCodePart(value);
+    });
+    context.checkEscapeCode();
+    assert.equal(read('escapeRoomPhase'), 'code', `${ageBand} wrong code cannot open the exit`);
+    assert.equal(read('escapeCodeFeedback'), text.en.escapeCodeWrong);
+    context.clearEscapeCode();
+    correctCode.forEach((value, index) => {
+      context.selectEscapeCodePart(index);
+      context.chooseEscapeCodePart(value);
+    });
+    context.checkEscapeCode();
+    assert.equal(read('escapeRoomPhase'), 'complete', `${ageBand} correct code opens the exit`);
+    assert.ok(content.innerHTML.includes(text.en.escapeComplete));
+  }
 });
 
 function dashboard({ vip = false, unlocked = [] } = {}) {
@@ -188,21 +236,96 @@ test('code-breaker rules and animated preview appear once before activity select
   assert.doesNotMatch(html, /codeTutorialM|openCodeTutorial|codeHowTo/);
 });
 
-test('all twelve code-breaker activities have distinct, replayable sequences', () => {
-  const context = vm.createContext({ interactivePuzzle: {}, selectedLevel: 0 });
-  vm.runInContext(source('function setupCodeBreaker()', 'function interactiveGamePrompt('), context);
-  const secrets = [];
-  for (let level = 0; level < 12; level++) {
-    context.selectedLevel = level;
-    context.setupCodeBreaker();
-    const secret = Array.from(context.interactivePuzzle.secret);
-    assert.equal(secret.length, 4);
-    assert.equal(new Set(secret).size, 4);
-    assert.ok(secret.every((color) => Number.isInteger(color) && color >= 0 && color < 6));
-    context.setupCodeBreaker();
-    assert.deepEqual(Array.from(context.interactivePuzzle.secret), secret);
-    secrets.push(secret.join(','));
+test('all twelve code-breaker activities scale by age and keep distinct replayable codes', () => {
+  const context = vm.createContext({
+    S: { childAgeBand: '6-7' },
+    childDifficultyLevel: ageBand => ({ '6-7': 1, '8-9': 2, '10-11': 3 })[ageBand],
+  });
+  vm.runInContext(`${source('const INTERACTIVE_CODE_COLORS=', 'function interactiveGamePrompt(')}
+    globalThis.testSetLevel=level=>selectedLevel=level;
+    globalThis.testSetupCodeBreaker=()=>{interactivePuzzle={};setupCodeBreaker()};
+    globalThis.testPuzzle=()=>interactivePuzzle;`, context);
+  const settings = {
+    '6-7': { pegs: 3, colors: [0, 2, 3, 4], attempts: 8 },
+    '8-9': { pegs: 4, colors: [0, 1, 2, 3, 4, 5], attempts: 8 },
+    '10-11': { pegs: 5, colors: [0, 1, 2, 3, 4, 5], attempts: 9 },
+  };
+  for (const [ageBand, expected] of Object.entries(settings)) {
+    context.S.childAgeBand = ageBand;
+    const secrets = [];
+    for (let level = 0; level < 12; level++) {
+      context.testSetLevel(level);
+      context.testSetupCodeBreaker();
+      const puzzle = context.testPuzzle();
+      const secret = Array.from(puzzle.secret);
+      assert.equal(secret.length, expected.pegs);
+      assert.equal(new Set(secret).size, expected.pegs);
+      assert.ok(secret.every(color => expected.colors.includes(color)));
+      assert.equal(puzzle.guess.length, expected.pegs);
+      assert.equal(puzzle.maxGuesses, expected.attempts);
+      context.testSetupCodeBreaker();
+      assert.deepEqual(Array.from(context.testPuzzle().secret), secret);
+      secrets.push(secret.join(','));
+    }
+    assert.equal(new Set(secrets).size, 12);
   }
-  assert.equal(new Set(secrets).size, 12);
-  assert.deepEqual(secrets.slice(0, 6), ['0,2,5,1', '1,3,0,2', '2,4,1,3', '3,5,2,4', '4,0,3,5', '5,1,4,0']);
+  context.S.childAgeBand = '8-9';
+  const currentAgeSecrets = [];
+  for (let level = 0; level < 6; level++) {
+    context.testSetLevel(level);
+    context.testSetupCodeBreaker();
+    currentAgeSecrets.push(Array.from(context.testPuzzle().secret).join(','));
+  }
+  assert.deepEqual(currentAgeSecrets, ['0,2,5,1', '1,3,0,2', '2,4,1,3', '3,5,2,4', '4,0,3,5', '5,1,4,0']);
+});
+
+test('code-breaker scoring and tutorial use the selected age difficulty', () => {
+  const content = { innerHTML: '', classList: { remove() {} } };
+  const context = vm.createContext({
+    S: { childAgeBand: '6-7' },
+    childDifficultyLevel: ageBand => ({ '6-7': 1, '8-9': 2, '10-11': 3 })[ageBand],
+    currentLanguage: 'en',
+    tr(key, values = {}) {
+      let value = text.en[key] || key;
+      for (const [name, replacement] of Object.entries(values)) value = value.replace(`{${name}}`, replacement);
+      return value;
+    },
+    $: () => content,
+    renderInteractivePuzzle() {},
+    completeInteractivePuzzle(key) { context.completedCodeBreaker = key; },
+  });
+  vm.runInContext(`${source('const INTERACTIVE_CODE_COLORS=', 'let interactivePuzzle=null;')}
+    let interactivePuzzle=null,selectedLevel=0;
+    ${source('function renderCodeBreakerIntro(){', 'function continueCodeBreakerIntro(){')}
+    ${source('function setupCodeBreaker(){', 'function interactiveGamePrompt(')}
+    ${source('function selectCodePeg(', 'const ESCAPE_KEY_ROOMS=')}
+    globalThis.testSetup=()=>{interactivePuzzle={};setupCodeBreaker()};
+    globalThis.testPuzzle=()=>interactivePuzzle;
+    globalThis.testSetLevel=level=>selectedLevel=level;`, context);
+  const cases = [['6-7', 3, 8], ['8-9', 4, 8], ['10-11', 5, 9]];
+  for (const [ageBand, pegs, attempts] of cases) {
+    context.S.childAgeBand = ageBand;
+    context.testSetLevel(0);
+    context.testSetup();
+    const puzzle = context.testPuzzle();
+    assert.equal(puzzle.secret.length, pegs);
+    assert.equal(puzzle.maxGuesses, attempts);
+    const wrongGuess = puzzle.secret.slice(1).concat(puzzle.secret[0]);
+    wrongGuess.forEach(color => context.setCodeColor(color));
+    context.submitCodeGuess();
+    assert.equal(puzzle.guesses[0].exact, 0);
+    assert.equal(puzzle.guesses[0].present, pegs);
+    assert.equal(puzzle.guess.length, pegs);
+    puzzle.secret.forEach(color => context.setCodeColor(color));
+    context.submitCodeGuess();
+    assert.equal(context.completedCodeBreaker, 'codeWin');
+
+    content.innerHTML = '';
+    context.renderCodeBreakerIntro();
+    assert.match(content.innerHTML, new RegExp(`sequence of ${pegs} different colors`));
+    assert.match(content.innerHTML, new RegExp(`up to ${attempts} guesses`));
+    const demoRows = content.innerHTML.split('<div class="code-demo-secret">').slice(1).map(row => row.split('</div>')[0]);
+    assert.equal(demoRows.length, 3);
+    for (const row of demoRows) assert.equal((row.match(/code-demo-slot locked/g) || []).length, pegs);
+  }
 });

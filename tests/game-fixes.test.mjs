@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { access, readFile } from 'node:fs/promises';
+import { access, readFile, readdir } from 'node:fs/promises';
 import vm from 'node:vm';
 
 const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
@@ -14,6 +14,34 @@ const slice = (start, end) => {
   assert.ok(first >= 0 && last > first);
   return html.slice(first, last);
 };
+function languageChangeContext(selectedMiniGame, miniGameScene = 'play', additions = {}) {
+  const nodes = new Map();
+  const context = vm.createContext({
+    TEXT: translations.TEXT,
+    currentLanguage: 'en',
+    selectedMiniGame,
+    selectedLevel: 0,
+    miniGameScene,
+    S: {},
+    authErrorState: false,
+    authStatusState: false,
+    localStorage: { setItem() {} },
+    document: { documentElement: {}, querySelectorAll: () => [] },
+    $: selector => {
+      if (selector === '#drawIdea') return null;
+      if (!nodes.has(selector)) nodes.set(selector, {
+        value: '', href: '', textContent: '', style: { display: 'none' },
+        classList: { contains: name => selector === '#gameStage' && name === 'on' },
+      });
+      return nodes.get(selector);
+    },
+    sv() {},
+    tr: key => key,
+    ...additions,
+  });
+  vm.runInContext(slice('function setLanguage(language){', 'let currentUserId ='), context);
+  return context;
+}
 const tracing = vm.createContext({});
 vm.runInContext(slice('function traceDistances(', 'function traceMatchesLetter('), tracing);
 
@@ -201,6 +229,36 @@ test('Sokoban shows retry feedback when a push makes the box unsolvable', () => 
   assert.equal(renders, 1);
 });
 
+test('Sokoban hides move and push counts from the selector and active board', () => {
+  const gameContent = { innerHTML: '', classList: { toggle() {} } };
+  const context = vm.createContext({
+    S: { completedPuzzleStars: [] },
+    selectedLevel: 0,
+    currentLanguage: 'en',
+    interactivePuzzle: {
+      id: 'gridSokoban', size: 4, walls: new Set(),
+      player: { x: 1, y: 1 }, box: { x: 2, y: 1 }, goal: { x: 2, y: 2 },
+      finished: false, won: false, feedback: '', hint: '',
+    },
+    MINI_GAMES: [{ id: 'gridSokoban', name: 'gridSokoban' }],
+    activityNames: () => ['Activity'],
+    sokobanLevelIsUnlocked: () => true,
+    sokobanLevelStarKey: (_, level) => `box-${level}`,
+    childDifficultyLevel: () => 1,
+    gameActivityAdvanceLabel: () => 'Continue',
+    interactiveGamePrompt: () => 'Push the box to the goal.',
+    tr: (key, values = {}) => key === 'boxLevelLabel' ? `Level ${values.n} · ${values.board}` : key,
+    $: selector => selector === '#gameContent' ? gameContent : selector === '#gameStage' ? { scrollTop: 0 } : null,
+  });
+  vm.runInContext(slice('function renderSokobanLevels(){', 'const RAILWAY_COLOR_VALUES='), context);
+  context.renderSokobanLevels();
+  assert.doesNotMatch(gameContent.innerHTML, /Moves:|Box pushes:|boxMoves|boxPushes/i);
+
+  vm.runInContext(slice('function renderInteractivePuzzle(){', 'function showInteractiveHint(){'), context);
+  context.renderInteractivePuzzle();
+  assert.doesNotMatch(gameContent.innerHTML, /Moves:|Box pushes:|boxMoves|boxPushes/i);
+});
+
 test('riddle answers render without letter or number prefixes', () => {
   const element = { innerHTML: '' };
   const context = vm.createContext({
@@ -249,6 +307,86 @@ test('coloring palette includes black and refreshes translated labels when langu
   context.setLanguage('ru');
   assert.equal(palettesRendered, 1);
   assert.equal(toolsRefreshed, 1);
+});
+
+test('language changes refresh specialized game scenes and preserve their state', () => {
+  let wordSearchContext, wordSearchRendered;
+  const wordSearchContextRef = languageChangeContext('wordSearch', 'play', {
+    createWordSearchPuzzle(activity, level) {
+      return { activity, level, language: wordSearchContext.currentLanguage };
+    },
+    renderWordSearchGame() {
+      wordSearchRendered = vm.runInContext('wordSearchPuzzle', wordSearchContext);
+    },
+  });
+  wordSearchContext = wordSearchContextRef;
+  wordSearchContext.selectedLevel = 4;
+  vm.runInContext('let selectedWordSearchLevel=2;let wordSearchPuzzle={language:"en"};', wordSearchContext);
+  wordSearchContext.setLanguage('ru');
+  assert.deepEqual(wordSearchRendered, { activity: 4, level: 2, language: 'ru' });
+
+  let magneticRenderCount = 0;
+  const magneticContext = languageChangeContext('magneticMaze', 'play', {
+    renderMagneticMaze() { magneticRenderCount++; },
+  });
+  vm.runInContext('let magneticMaze={ball:7,status:"blocked",finished:false};', magneticContext);
+  magneticContext.setLanguage('he');
+  assert.equal(magneticRenderCount, 1);
+  assert.equal(vm.runInContext('magneticMaze.ball', magneticContext), 7);
+  assert.equal(vm.runInContext('magneticMaze.status', magneticContext), '');
+
+  let differenceRenderCount = 0, memoryRenderCount = 0, letterRender;
+  const differencesContext = languageChangeContext('differences', 'play', {
+    renderDifferences() { differenceRenderCount++; },
+  });
+  vm.runInContext('let differenceFound=new Set([1,4]);', differencesContext);
+  differencesContext.setLanguage('ru');
+  assert.equal(differenceRenderCount, 1);
+  assert.deepEqual(Array.from(vm.runInContext('differenceFound', differencesContext)), [1, 4]);
+
+  const memoryContext = languageChangeContext('memory', 'play', {
+    renderMemory() { memoryRenderCount++; },
+  });
+  vm.runInContext('let memoryCards=["A","A"];let memoryMatched=new Set([0]);', memoryContext);
+  memoryContext.setLanguage('ru');
+  assert.equal(memoryRenderCount, 0);
+  assert.deepEqual(Array.from(vm.runInContext('memoryMatched', memoryContext)), [0]);
+
+  let letterContext;
+  letterContext = languageChangeContext('letters', 'play', {
+    traceLetterGroups: () => Array.from({ length: 12 }, () => ['A', 'B']),
+    renderLetterTrace(level) {
+      letterRender = { level, index: vm.runInContext('traceLetterIndex', letterContext) };
+    },
+  });
+  letterContext.selectedLevel = 2;
+  vm.runInContext('let traceLetterIndex=5;let traceLetterStyle="secondary";', letterContext);
+  letterContext.setLanguage('he');
+  assert.deepEqual(letterRender, { level: 2, index: 1 });
+  assert.equal(vm.runInContext('traceLetterStyle', letterContext), 'secondary');
+
+  let freeDrawLaunches = 0;
+  const freeDrawContext = languageChangeContext('coloring', 'play', {
+    launchMiniGame() { freeDrawLaunches++; },
+  });
+  freeDrawContext.setLanguage('ru');
+  assert.equal(freeDrawLaunches, 0);
+});
+
+test('language changes refresh word-search, magnetic-stage, and letter-style selection screens', () => {
+  const cases = [
+    ['wordSearch', 'wordSearchLevels', 'renderWordSearchLevels'],
+    ['magneticMaze', 'magneticStages', 'renderMagneticMazeStages'],
+    ['letters', 'letterStyle', 'renderLetterStyleSelection'],
+  ];
+  for (const [game, scene, renderer] of cases) {
+    let renders = 0;
+    const context = languageChangeContext(game, scene, {
+      [renderer]() { renders++; },
+    });
+    context.setLanguage('ru');
+    assert.equal(renders, 1, `${game} ${scene} screen refreshes`);
+  }
 });
 
 test('math exercises render left to right in Hebrew', () => {
@@ -302,6 +440,137 @@ test('memory and differences activities use images that match their titles', asy
   }
 });
 
+test('differences and memory use age-matched counts', () => {
+  const difficultySource = slice('const CHILD_AGE_BANDS=', 'function withTimeout(');
+  const ageCases = [['6-7', 2, 3], ['8-9', 3, 4], ['10-11', 4, 6]];
+  const differenceContext = vm.createContext({
+    S: { childAgeBand: '6-7' }, Math, currentLanguage: 'en', selectedLevel: 0,
+    $: () => differenceContent, go() {}, tr: key => key, activityNames: () => Array(12).fill('activity'),
+    showGameFeedback() {}, launchMiniGame() {}, renderGameLevels() {},
+  });
+  const differenceContent = { innerHTML: '' };
+  vm.runInContext(`${difficultySource}\n${slice('const CATS=', 'const COLORS=')}\n${slice('let differenceFound=', 'const MEMORY_ICON_SETS=')}\nglobalThis.differenceState=()=>({goal:differenceGoal,spots:differenceSpots.length,html:$('#gameContent').innerHTML});`, differenceContext);
+
+  const memoryContext = vm.createContext({
+    S: { childAgeBand: '6-7' }, Math, selectedLevel: 0, miniGameScene: 'menu',
+    memoryMismatchTimer: null, memoryCards: [], memoryOpen: [], memoryMatched: new Set(),
+    $: () => memoryContent, go() {}, tr: key => key, clearTimeout() {},
+  });
+  const memoryContent = { innerHTML: '' };
+  vm.runInContext(`${difficultySource}\n${slice('const MEMORY_ICON_SETS=', 'function flipMemoryCard(')}\nglobalThis.memoryCardCount=()=>memoryCards.length;`, memoryContext);
+
+  for (const [ageBand, differences, pairs] of ageCases) {
+    differenceContext.S.childAgeBand = ageBand;
+    differenceContext.startDifferences();
+    const differenceState = differenceContext.differenceState();
+    assert.equal(differenceState.goal, differences);
+    assert.equal(differenceState.spots, differences);
+    assert.match(differenceState.html, new RegExp(`0 / ${differences}`));
+
+    memoryContext.S.childAgeBand = ageBand;
+    memoryContext.renderMemory();
+    assert.equal(memoryContext.memoryCardCount(), pairs * 2);
+    assert.equal((memoryContent.innerHTML.match(/id="memory\d+"/g) || []).length, pairs * 2);
+  }
+});
+
+test('word builder letter hints match the age difficulty', () => {
+  const context = vm.createContext({ S: { childAgeBand: '6-7' }, currentLanguage: 'en', Math });
+  vm.runInContext(`function childDifficultyLevel(ageBand){return {'6-7':1,'8-9':2,'10-11':3}[ageBand]}\n${slice('const WORD_QUESTION_DATA=', 'function getPatternQuestion(')}\nglobalThis.makeWordQuestion=getWordQuestion;`, context);
+  for (const [ageBand, difficulty, revealedIndices] of [['6-7', 1, [0, -1]], ['8-9', 2, [0]], ['10-11', 3, []]]) {
+    context.S.childAgeBand = ageBand;
+    const question = context.makeWordQuestion(0, 0);
+    const letters = Array.from(question.answer);
+    const expectedHint = letters.map((letter, index) => revealedIndices.includes(index) || revealedIndices.includes(-1) && index === letters.length - 1 ? letter : '_').join(' ');
+    assert.equal(question.difficultyLevel, difficulty);
+    if (difficulty < 3) assert.equal(question.question.match(/<small>(.*?)<\/small>/)?.[1], expectedHint);
+    else assert.doesNotMatch(question.question, /<small>/);
+  }
+});
+
+test('multi-stage games launch directly at the age-matched stage', () => {
+  const difficultySource = slice('const CHILD_AGE_BANDS=', 'function withTimeout(');
+  const launchSource = slice('function launchMiniGame(id,level){', 'function backFromGame(){');
+  const startWordSearchSource = slice('function startWordSearchActivity(', 'function wordSearchStarKey(');
+  const ids = ['physicsPaths', 'gridSokoban', 'railwayControl', 'magneticMaze', 'wordSearch'];
+  const content = { classList: { remove() {} } };
+  const context = vm.createContext({
+    S: { childAgeBand: '6-7', allGamesUnlocked: false, vip: false, unlockedGames: [] },
+    currentLanguage: 'en', MINI_GAMES: ids.map(id => ({ id })), $: () => content,
+    activityNames: () => Array(12).fill('activity'), learningGameHasTenQuestions: () => false,
+    restoreMiniGameProgress: (_id, _level, stage) => { context.restoredStage = stage; return false; },
+    startInteractivePuzzle: id => { context.startedInteractiveId = id; },
+    startMagneticMaze: (...args) => { context.startedMagneticMaze = args; },
+    launchWordSearchLevel: stage => { context.startedWordSearchStage = stage; },
+    go() {}, playLearningGame() {},
+  });
+  vm.runInContext(`${difficultySource}
+    let selectedMiniGame=null,selectedLevel=0,miniGameScene='menu',selectedPathLevel=0,selectedBoxLevel=0,selectedRailwayLevel=0,selectedWordSearchLevel=0;
+    let learningAnsweredQuestions=new Set();
+    function gameUnlocked(){return false}
+    ${startWordSearchSource}
+    ${launchSource}`, context);
+
+  const stageMap = {
+    '6-7': [0, 0, 0, 0, 0],
+    '8-9': [2, 2, 2, 2, 1],
+    '10-11': [4, 4, 4, 4, 5],
+  };
+  for (const [ageBand, stages] of Object.entries(stageMap)) {
+    context.S.childAgeBand = ageBand;
+    ids.forEach((id, index) => {
+      context.launchMiniGame(id, 0);
+      if (id === 'magneticMaze') assert.deepEqual(Array.from(context.startedMagneticMaze), [0, stages[index]]);
+      else if (id === 'wordSearch') assert.equal(context.startedWordSearchStage, stages[index]);
+      else {
+        assert.equal(context.restoredStage, stages[index]);
+        assert.equal(context.startedInteractiveId, id);
+      }
+    });
+  }
+  assert.doesNotMatch(launchSource, /renderPathLevels|renderSokobanLevels|renderRailwayLevels|renderMagneticMazeStages|renderWordSearchLevels/);
+});
+
+test('magnetic maze play screen omits the stage and difficulty label', () => {
+  const content = { innerHTML: '' };
+  const context = vm.createContext({
+    magneticMaze: { size: 5, ball: 0, goal: 24, holes: new Set(), walls: new Set(), finished: false, won: false, status: '', magnetSide: 'east', magnetSlot: 0 },
+    currentLanguage: 'en',
+    selectedLevel: 0,
+    activityNames: () => ['Activity'],
+    magneticMazeMovePreview: () => '→',
+    $: () => content,
+    tr: key => key,
+  });
+  vm.runInContext(slice('function renderMagneticMaze(){', 'const PATH_LEVEL_CELL_COUNTS='), context);
+  context.renderMagneticMaze();
+  assert.match(content.innerHTML, /<h2>magneticMaze - Activity<\/h2>/);
+  assert.match(content.innerHTML, /class="magnet-maze"/);
+  assert.doesNotMatch(content.innerHTML, /magneticStageLabel|magneticDifficulty|<h3>/);
+});
+
+test('magnetic maze stage choices show no stage or difficulty text at any stage', () => {
+  const content = { innerHTML: '' };
+  const context = vm.createContext({
+    currentLanguage: 'en',
+    selectedLevel: 0,
+    S: { completedPuzzleStars: [] },
+    activityNames: () => ['Activity'],
+    magneticMazeStageIsUnlocked: stage => stage === 0,
+    magneticMazeStarKey: (_, stage) => `stage-${stage}`,
+    $: () => content,
+    tr: (key, values = {}) => key === 'magneticStageLabel'
+      ? `Stage ${values.n} · ${values.difficulty}`
+      : key.startsWith('magneticDifficulty') ? 'Easy' : key,
+  });
+  vm.runInContext(slice('function renderMagneticMazeStages(){', 'function startMagneticMaze('), context);
+  context.renderMagneticMazeStages();
+  const buttons = Array.from(content.innerHTML.matchAll(/<button class="level-choice[^"]*"[^>]*>([\s\S]*?)<\/button>/g), match => match[1]);
+  assert.equal(buttons.length, 6);
+  for (const buttonText of buttons) assert.doesNotMatch(buttonText, /Stage \d|Easy|Medium|Hard|Expert/);
+  assert.match(content.innerHTML, /aria-label="Stage 1 · Easy"/);
+});
+
 test('welcome screen exposes an accessible music toggle that tracks mute state', () => {
   const welcome = slice('<div id="welcome"', '<header id="top"');
   assert.match(html, /\.welcome-controls\{[^}]*align-self:center/);
@@ -353,8 +622,10 @@ test('each Surprise me selection changes the track and automatic screen tracks s
   assert.equal(context.trackFor(), 'chip');
 });
 
-test('level labels include the full requested Russian wording', () => {
-  assert.match(html, /Приспособление животных/);
+test('level labels include the full requested Russian wording', async () => {
+  const context = vm.createContext({});
+  vm.runInContext(await readFile(new URL('../question-banks/science.js', import.meta.url), 'utf8'), context);
+  assert.ok(context.AGE_QUESTION_BANKS.scienceQuest.titles.ru['6-7'].includes('Животные и их среда обитания'));
   assert.match(html, /Школьные принадлежности/);
   assert.match(html, /Музыкальные инструменты/);
   assert.match(html, /\.level-choice\{[^}]*overflow-wrap:anywhere/);
@@ -368,10 +639,168 @@ test('Russian science activity label and first garden question use the requested
   assert.doesNotMatch(html, /Какое маленькое садовое животное может поедать тлю с листьев\?/);
 });
 
-test('Russian riddle explorer label is exact and does not split awkwardly', () => {
-  assert.match(html, /riddles:\[[^\]]*'Исследователь загадок'/);
+test('Russian riddle title is exact and does not split awkwardly', async () => {
+  const context = vm.createContext({});
+  for (const file of ['riddles-6-7.js', 'riddles-8-9.js', 'riddles-10-11.js']) {
+    vm.runInContext(await readFile(new URL(`../question-banks/${file}`, import.meta.url), 'utf8'), context);
+  }
+  assert.equal(context.AGE_QUESTION_BANKS.riddles.titles.ru['8-9'][4], 'Транспорт');
   assert.match(html, /\.level-choice\.riddle-explorer-level\{[^}]*overflow-wrap:normal;word-break:normal/);
   assert.match(html, /game\.id==='riddles'&&currentLanguage==='ru'&&i===4\?' riddle-explorer-level'/);
+});
+
+test('legacy activity names remain paired with their built-in fallback questions', () => {
+  const context = vm.createContext({});
+  vm.runInContext(`${slice('const ACTIVITY_NAMES=', 'let selectedMiniGame=')}\nglobalThis.names=ACTIVITY_NAMES;`, context);
+  const firstAndLast = {
+    en: { math:['Two-Digit Addition','Multiply and Add'],storyMath:['Pencil Box','Picnic Balloons'],riddles:['Riddle Trail','Riddle Master'],scienceQuest:['Plant Clues','Sound Detective'] },
+    he: { math:['חיבור דו-ספרתי','כפל וחיבור'],storyMath:['קלמר העפרונות','בלונים לפיקניק'],riddles:['שביל החידות','אלופי החידות'],scienceQuest:['רמזי הצמח','בלשי הצלילים'] },
+    ru: { math:['Двузначное сложение','Умножение и сложение'],storyMath:['Карандаши в пенале','Шары для пикника'],riddles:['Тропа загадок','Мастер загадок'],scienceQuest:['Подсказки о растении','Детектив звуков'] },
+  };
+  for (const language of ['en', 'he', 'ru']) for (const [game, expected] of Object.entries(firstAndLast[language])) {
+    const actual = Array.from(context.names[language][game]);
+    assert.equal(actual.length, 12, `${language} ${game} retains 12 legacy activities`);
+    assert.deepEqual([actual[0], actual.at(-1)], expected, `${language} ${game} keeps its fallback labels`);
+  }
+});
+
+test('DOCX question banks cover each age with localized prompts and valid answers', async () => {
+  const context = vm.createContext({
+    S: { childAgeBand: '6-7' },
+    currentLanguage: 'he',
+    Math,
+    makeChoices(answer, min, max) {
+      const choices = [answer];
+      for (let value = min; choices.length < 4 && value <= max; value++) {
+        if (value !== answer) choices.push(value);
+      }
+      return choices;
+    },
+  });
+  const bankFiles = ['math.js', 'story-math.js', 'riddles-6-7.js', 'riddles-8-9.js', 'riddles-10-11.js', 'escape-room-6-7.js', 'escape-room-8-9.js', 'escape-room-10-11.js', 'science.js'];
+  for (const file of bankFiles) {
+    vm.runInContext(await readFile(new URL(`../question-banks/${file}`, import.meta.url), 'utf8'), context);
+  }
+  const banks = context.AGE_QUESTION_BANKS;
+  assert.ok(banks);
+  assert.equal(Object.keys(banks).length, 4);
+  const approvedSubtractionQuestions = {
+    '6-7':[
+      ['12 − 5 = ___','7'],['13 − 6 = ___','7'],['14 − 8 = ___','6'],['15 − 7 = ___','8'],['16 − 9 = ___','7'],
+      ['13 − 5 = ___','8'],['11 − 6 = ___','5'],['17 − 8 = ___','9'],['12 − 7 = ___','5'],['18 − 9 = ___','9'],
+    ],
+    '8-9':[
+      ['31 − 16 = ___','15'],['43 − 27 = ___','16'],['62 − 38 = ___','24'],['75 − 49 = ___','26'],['54 − 28 = ___','26'],
+      ['86 − 57 = ___','29'],['90 − 46 = ___','44'],['70 − 34 = ___','36'],['65 − 29 = ___','36'],['82 − 47 = ___','35'],
+    ],
+    '10-11':[
+      ['324 − 158 = ___','166'],['502 − 267 = ___','235'],['731 − 486 = ___','245'],['640 − 275 = ___','365'],['903 − 478 = ___','425'],
+      ['815 − 397 = ___','418'],['700 − 386 = ___','314'],['562 − 278 = ___','284'],['1000 − 648 = ___','352'],['804 − 569 = ___','235'],
+    ],
+  };
+  for (const [age, expected] of Object.entries(approvedSubtractionQuestions)) {
+    const actual = banks.math.levels[age][5].map(row => [row.q.he, row.a.he]);
+    assert.deepEqual(JSON.parse(JSON.stringify(actual)), expected, `approved subtraction questions for age ${age}`);
+  }
+  const namesContext = vm.createContext({ S: { childAgeBand: '6-7' }, AGE_QUESTION_BANKS: banks });
+
+  vm.runInContext(slice('function getRussianCountedItem(', 'function getWordQuestion('), context);
+  vm.runInContext(slice('const SCIENCE_QUESTION_DATA=', 'function getScienceQuestion('), context);
+  vm.runInContext(slice('function getScienceQuestion(', 'const LEGACY_SCIENCE_QUESTIONS='), context);
+  vm.runInContext(`${slice('const RIDDLE_QUESTION_DATA=', 'function getRiddleQuestion(')}\nglobalThis.legacyRiddleData=RIDDLE_QUESTION_DATA;`, context);
+  vm.runInContext(slice('function getRiddleQuestion(', 'const DRAWING_IDEAS='), context);
+  const activityNamesStart = html.indexOf('const ACTIVITY_NAMES=');
+  const activityNamesEnd = html.indexOf('\n};', activityNamesStart) + 3;
+  assert.ok(activityNamesStart >= 0 && activityNamesEnd > activityNamesStart);
+  vm.runInContext(html.slice(activityNamesStart, activityNamesEnd), namesContext);
+  vm.runInContext(`${slice('function activityNames(id,language){', 'function activityCount(')}\nglobalThis.activityNames=activityNames;`, namesContext);
+
+  const games = {
+    math: { count: 12, get: 'getMathQuestion', question: result => result.question },
+    storyMath: { count: 12, get: 'getStoryMathQuestion', question: (result, language) => result.question[language] },
+    riddles: { count: 12, get: 'getRiddleQuestion', question: (result, language) => result.clue[language] },
+    scienceQuest: { count: 12, get: 'getScienceQuestion', question: (result, language) => result.question[language] },
+  };
+  for (const age of ['6-7', '8-9', '10-11']) {
+    context.S.childAgeBand = age;
+    namesContext.S.childAgeBand = age;
+    for (const [id, spec] of Object.entries(games)) {
+      const bank = banks[id], topics = bank.levels[age];
+      assert.equal(topics.length, 12, `${id} activity indices for age ${age}`);
+      const nameCount = spec.count;
+      assert.equal(bank.titles.he[age].length, nameCount, `${id} Hebrew titles for age ${age}`);
+      assert.equal(bank.titles.en[age].length, nameCount, `${id} English titles for age ${age}`);
+      assert.equal(bank.titles.ru[age].length, nameCount, `${id} Russian titles for age ${age}`);
+      for (let bankActivity = 0; bankActivity < topics.length; bankActivity++) {
+        const topic = topics[bankActivity];
+        if (topic === null) {
+          assert.equal(id, 'riddles');
+          assert.equal(age, '10-11');
+          assert.equal(bankActivity, 8);
+          continue;
+        }
+        assert.equal(topic.length, 10, `${id} activity ${bankActivity}, age ${age}`);
+        const activity = bankActivity;
+        for (let question = 0; question < topic.length; question++) {
+          const row = topic[question];
+          if (row === null) {
+            assert.equal(id, 'riddles');
+            assert.equal(age, '6-7');
+            continue;
+          }
+          for (const language of ['he', 'en', 'ru']) {
+            assert.ok(row.q[language].trim(), `${id} prompt ${age}/${activity}/${question}/${language}`);
+            assert.ok(row.a[language].trim(), `${id} answer ${age}/${activity}/${question}/${language}`);
+            context.currentLanguage = language;
+            const result = context[spec.get](activity, question);
+            const numericAnswer = id === 'math' || id === 'storyMath';
+            const answer = numericAnswer ? String(Number(row.a.en)) : row.a[language];
+            const resultAnswer = numericAnswer ? result.answer : result.answer[language];
+            const options = id === 'riddles' || id === 'scienceQuest' ? result.choices[language] : result.options;
+            assert.equal(spec.question(result, language), row.q[language], `${id} prompt selected for age ${age}/${language}`);
+            assert.equal(String(resultAnswer), answer, `${id} answer selected for age ${age}/${language}`);
+            assert.equal(options.length, 4);
+            assert.equal(new Set(options).size, 4);
+            assert.ok(options.includes(answer));
+          }
+        }
+      }
+      for (const language of ['he', 'en', 'ru']) {
+        const names = namesContext.activityNames(id, language);
+        assert.equal(names.length, 12);
+        bank.titles[language][age].forEach((title, index) => {
+          const activity = index;
+          if (id === 'math') assert.doesNotMatch(title, /[()]/, `concise math title ${age}/${language}/${index}`);
+          if (typeof title === 'string') assert.equal(names[activity], title, `${id} activity title ${age}/${language}/${index}`);
+        });
+      }
+      if (id === 'math') assert.equal(namesContext.activityNames(id, 'he')[5], 'חיסור מעבר לעשר');
+    }
+  }
+  assert.equal(banks.riddles.levels['10-11'][8], null);
+  assert.match(banks.riddles.levels['10-11'][9][9].q.he, /שלושה מתגים/);
+  context.S.childAgeBand = '10-11';
+  context.currentLanguage = 'he';
+  namesContext.S.childAgeBand = '10-11';
+  assert.equal(namesContext.activityNames('riddles', 'he')[8], 'אתגר הרמזים');
+  assert.equal(context.getRiddleQuestion(8, 0).clue.he, context.legacyRiddleData[8][0][1]);
+  context.currentLanguage = 'en';
+  assert.match(context.getMathQuestion(5, 0).question, /\d+ − \d+/);
+});
+
+test('level-three switch riddle has localized, distinct correct choices in all languages', () => {
+  const context = vm.createContext({ S: { childAgeBand: '10-11' }, currentLanguage: 'en', Math });
+  vm.runInContext(slice('function getRussianCountedItem(', 'function getMathQuestion('), context);
+  vm.runInContext(`${slice('const RIDDLE_QUESTION_DATA=', 'const DRAWING_IDEAS=')}\nglobalThis.getRiddleQuestion=getRiddleQuestion;`, context);
+  for (const language of ['en', 'he', 'ru']) {
+    context.currentLanguage = language;
+    const result = context.getRiddleQuestion(9, 9);
+    assert.match(result.clue, language === 'he' ? /שלושה מתגים/ : language === 'ru' ? /три выключателя/ : /three switches/i);
+    assert.equal(result.choices.length, 4);
+    assert.equal(new Set(result.choices).size, 4);
+    assert.ok(result.choices.includes(result.answer));
+    assert.match(result.answer, language === 'he' ? /חמה/ : language === 'ru' ? /тёплая/ : /warm/i);
+  }
 });
 
 test('bee-pollen question is clear in all languages and keeps the correct answer', () => {
@@ -408,6 +837,8 @@ test('code-breaker opens one animated rules screen before activity selection in 
     MINI_GAMES: [{ id: 'codeBreaker' }, { id: 'memory' }],
     $: () => ({ classList: { remove() {} }, innerHTML: '' }),
     tr: (key) => key,
+    codeBreakerSettings: () => ({ pegs: 4, colors: [0, 1, 2, 3, 4, 5], attempts: 8 }),
+    INTERACTIVE_CODE_COLORS: ['🔴', '🟠', '🟡', '🟢', '🔵', '🟣'],
     go() {},
     renderGameLevels: () => displayed.push('activities'),
   });
@@ -486,29 +917,27 @@ test('all other mini games have localized animated demos and continue to activit
     }
   }
   for (const id of ids) {
+    if (id === 'logicQuest') continue;
     assert.equal(dataContext.introVisuals[id].length, 3, `${id} demo scenes`);
     assert.ok(dataContext.introVisuals[id].every((scene) => scene.length >= 4), `${id} demo visuals`);
   }
   for (const [language, copy] of Object.entries(dataContext.introCopy)) {
-    assert.match(copy.escapeRoom[1], /key|מפתח|ключ/i, `${language} explains the hidden-key clue`);
-    assert.match(copy.escapeRoom[3], /key|מפתח|ключ/i, `${language} explains that riddles reveal key clues`);
-    assert.match(copy.escapeRoom[4], /click|לחצו|нажимай/i, `${language} explains clicking room objects`);
+    assert.match(copy.escapeRoom[1], /code|קוד|код/i, `${language} explains collecting a code part`);
+    assert.match(copy.escapeRoom[3], /code|קוד|код/i, `${language} explains that stations reveal code parts`);
+    assert.match(copy.escapeRoom[4], /3|4/, `${language} explains entering the age-based number of code parts`);
     assert.match(copy.puzzle[1], /swap|להחליף|поменять/i, `${language} explains swapping puzzle pieces`);
-    assert.match(copy.logicQuest[4], /three clues|שלושת הרמזים|трёх подсказки|все три подсказки/i, `${language} describes the three logic clues`);
+    assert.doesNotMatch(copy.logicQuest[4], /three|שלוש|три/i, `${language} describes a variable number of logic clues`);
     assert.match(copy.words[3], /answer choices|אפשרויות מציגות|варианты ответа/i, `${language} explains the word choices`);
     assert.match(copy.wordSearch[4], /neighboring|סמוכות|соседние/i, `${language} explains selecting neighboring letters`);
   }
   assert.equal(dataContext.introVisuals.puzzle[0].length, 6, 'puzzle demo shows six pieces rather than an empty-space sliding puzzle');
   assert.ok(dataContext.introVisuals.puzzle[1].includes('↔️'), 'puzzle demo shows the actual swap action');
-  assert.equal(dataContext.introVisuals.logicQuest[1].filter((token) => token === '➡️').length, 3, 'logic demo shows three ordering clues');
   assert.deepEqual(Array.from(dataContext.introVisuals.words[0].slice(0, 3)), ['T', 'C', 'A'], 'word builder demo starts with scrambled letters');
   assert.ok(dataContext.introVisuals.words[1].includes('CAT'), 'word builder demo shows answer choices');
   assert.ok(dataContext.introVisuals.wordSearch[0].includes('📋') && dataContext.introVisuals.wordSearch[0].includes('CAT'), 'word-search demo shows a word list beside the letter grid');
-  assert.ok(dataContext.introVisuals.escapeRoom[1].filter((token) => token === '💡').length >= 5, 'demo shows clues accumulating across five riddles');
-  for (const object of ['🕰️', '📚', '🖼️', '🧰', '🗄️', '🏺', '🪴', '🟪']) {
-    assert.ok(dataContext.introVisuals.escapeRoom[2].includes(object), `demo room includes ${object}`);
-  }
-  assert.ok(dataContext.introVisuals.escapeRoom[2].includes('🗝️'), 'demo shows finding the key after searching');
+  assert.ok(dataContext.introVisuals.escapeRoom[1].includes('🔢'), 'demo shows the collected code parts');
+  assert.ok(dataContext.introVisuals.escapeRoom[2].includes('🔐'), 'demo shows the exit lock');
+  assert.ok(dataContext.introVisuals.escapeRoom[2].includes('🚪'), 'demo shows the exit opening');
   assert.match(html, /\.game-demo-frame\.escape-room-final \.game-demo-board\{width:min\(100%,160px\)/);
   assert.match(html, /game\.id==='escapeRoom'&&index===2\?' escape-room-final':''/);
   assert.match(html, /@keyframes game-demo-scene-one\{0%,30%\{opacity:1/);
@@ -527,6 +956,7 @@ test('all other mini games have localized animated demos and continue to activit
     MINI_GAMES: miniGames,
     MINI_GAME_INTRO_COPY: dataContext.introCopy,
     MINI_GAME_INTRO_VISUALS: dataContext.introVisuals,
+    logicQuestIntroVisuals: () => [['🌱', '🌷', '🐝'], ['🌱', '➡️', '🌷', '🐝', '➡️', '🌞'], ['🌱', '🌷', '🐝', '✅']],
     currentLanguage: 'en',
     $: () => container,
     tr: (key) => key,
@@ -549,7 +979,7 @@ test('all other mini games have localized animated demos and continue to activit
   assert.equal(selected.length, ids.length + 1);
 });
 
-test('word search boards mix horizontal, vertical and diagonal words at every level', () => {
+test('word search size, word count, and directions match each age band', () => {
   const engineStart = html.indexOf('const WORD_SEARCH_LEVELS=');
   const engineEnd = html.indexOf('function renderWordSearchGame()', engineStart);
   assert.ok(engineStart >= 0 && engineEnd > engineStart);
@@ -559,24 +989,83 @@ test('word search boards mix horizontal, vertical and diagonal words at every le
     seed = (seed * 16807) % 2147483647;
     return (seed - 1) / 2147483646;
   };
-  const context = vm.createContext({ currentLanguage: 'en', Math: math });
-  vm.runInContext(`${html.slice(engineStart, engineEnd)}\nglobalThis.testLevels=WORD_SEARCH_LEVELS;`, context);
+  const context = vm.createContext({ currentLanguage: 'en', Math: math, S: { childAgeBand: '6-7' } });
+  vm.runInContext(`function childDifficultyLevel(ageBand){return {'6-7':1,'8-9':2,'10-11':3}[ageBand]}\n${html.slice(engineStart, engineEnd)}\nglobalThis.testLevels=WORD_SEARCH_LEVELS;`, context);
+  const ageCases = [
+    { ageBand: '6-7', level: 0, size: 6, words: 3, directions: ['horizontal'] },
+    { ageBand: '8-9', level: 1, size: 7, words: 3, directions: ['horizontal', 'vertical'] },
+    { ageBand: '10-11', level: 5, size: 9, words: 4, directions: ['diagonal', 'horizontal', 'vertical'] },
+  ];
   for (const language of ['en', 'he', 'ru']) {
-    assert.match(textForLanguage(language).wordSearchPrompt, /horizontal|אופקית|горизонтали/i);
-    assert.match(textForLanguage(language).wordSearchPrompt, /diagonally|באלכסון|диагонали/i);
+    assert.ok(textForLanguage(language).wordSearchPromptSimple);
+    assert.ok(textForLanguage(language).wordSearchPromptMedium);
+    assert.ok(textForLanguage(language).wordSearchPromptComplex);
     context.currentLanguage = language;
-    for (let activity = 0; activity < 12; activity++) for (let level = 0; level < 6; level++) {
-      const puzzle = context.createWordSearchPuzzle(activity, level);
-      const directions = new Set(puzzle.words.map(({ cells }) => {
-        const first = cells[0], second = cells[1];
-        const dx = second % puzzle.size - first % puzzle.size;
-        const dy = Math.floor(second / puzzle.size) - Math.floor(first / puzzle.size);
-        return dy === 0 ? 'horizontal' : dx === 0 ? 'vertical' : 'diagonal';
-      }));
-      assert.deepEqual([...directions].sort(), ['diagonal', 'horizontal', 'vertical'], `${language} activity ${activity + 1}, level ${level + 1}`);
+    for (const { ageBand, level, size, words, directions: allowedDirections } of ageCases) {
+      context.S.childAgeBand = ageBand;
+      for (let activity = 0; activity < 12; activity++) {
+        const puzzle = context.createWordSearchPuzzle(activity, level);
+        assert.equal(puzzle.difficultyLevel, { '6-7': 1, '8-9': 2, '10-11': 3 }[ageBand]);
+        assert.equal(puzzle.size, size, `${language} ${ageBand} activity ${activity + 1} board size`);
+        assert.equal(puzzle.words.length, words, `${language} ${ageBand} activity ${activity + 1} word count`);
+        for (const { cells } of puzzle.words) {
+          const first = cells[0], second = cells[1];
+          const dx = second % puzzle.size - first % puzzle.size;
+          const dy = Math.floor(second / puzzle.size) - Math.floor(first / puzzle.size);
+          const direction = dy === 0 ? 'horizontal' : dx === 0 ? 'vertical' : 'diagonal';
+          assert.ok(allowedDirections.includes(direction), `${language} ${ageBand} activity ${activity + 1} used ${direction}`);
+        }
+      }
     }
   }
   assert.deepEqual(Array.from(context.testLevels, config => config.directions.length), Array(6).fill(8));
+});
+
+test('word search fruit category is named fruits and vegetables in every language', () => {
+  const start = html.indexOf('const ACTIVITY_NAMES={');
+  const end = html.indexOf('\nlet selectedMiniGame=', start);
+  assert.ok(start >= 0 && end > start);
+  const context = vm.createContext({});
+  vm.runInContext(`${html.slice(start, end)}\nglobalThis.testNames=ACTIVITY_NAMES;`, context);
+  assert.equal(context.testNames.en.wordSearch[1], 'Fruits & Vegetables');
+  assert.equal(context.testNames.he.wordSearch[1], 'פירות וירקות');
+  assert.equal(context.testNames.ru.wordSearch[1], 'Фрукты и овощи');
+});
+
+test('word search omits level labels from both the selector and active game', () => {
+  const gameContent = { innerHTML: '' };
+  const context = vm.createContext({
+    currentLanguage: 'en',
+    selectedLevel: 0,
+    S: { completedPuzzleStars: [] },
+    WORD_SEARCH_LEVELS: Array.from({ length: 6 }, (_, index) => ({ size: index + 6, words: 3 })),
+    wordSearchLevelIsUnlocked: level => level === 0,
+    wordSearchStarKey: (_, level) => `level-${level}`,
+    wordSearchPuzzle: {
+      size: 3,
+      difficultyLevel: 1,
+      grid: [['C', 'A', 'T'], ['A', 'R', 'E'], ['T', 'E', 'N']],
+      words: [{ word: 'CAT', cells: [0, 1, 2] }],
+      selected: [],
+      found: new Set(),
+      status: '',
+    },
+    activityNames: () => ['Activity'],
+    gameActivityAdvanceLabel: () => 'Continue',
+    showGameFeedback() {},
+    tr: (key, values = {}) => key === 'wordSearchGrid'
+      ? `${values.size} × ${values.cols} grid · ${values.words} words`
+      : key,
+    $: () => gameContent,
+  });
+  vm.runInContext(slice('function renderWordSearchLevels(){', 'function launchWordSearchLevel('), context);
+  context.renderWordSearchLevels();
+  assert.equal(Array.from(gameContent.innerHTML.matchAll(/<button\b/g)).length, 7);
+  assert.doesNotMatch(gameContent.innerHTML, /wordSearchLevel|>Level \d|>שלב \d|>Уровень \d/);
+
+  vm.runInContext(slice('function renderWordSearchGame(){', 'function selectWordSearchCell('), context);
+  context.renderWordSearchGame();
+  assert.doesNotMatch(gameContent.innerHTML, /wordSearchLevel|>Level \d|>שלב \d|>Уровень \d/);
 });
 
 test('multi-stage games expose resume controls and restore saved activity state', () => {
@@ -589,7 +1078,7 @@ test('multi-stage games expose resume controls and restore saved activity state'
     if (match[1] !== 'coloring') assert.ok(captureSource.includes(`'${match[1]}'`), `${match[1]} checkpoint support`);
   }
   assert.match(html, /continueGameProgress:'Continue \{activity\}'/);
-  assert.match(html, /continueGameProgress:'המשך ב־\{activity\}'/);
+  assert.match(html, /continueGameProgress:'המשך ב-\{activity\}'/);
   assert.match(html, /continueGameProgress:'Продолжить: \{activity\}'/);
 
   const gameContent = { innerHTML: 'Question 4', className: 'quiz' };
@@ -624,13 +1113,13 @@ test('multi-stage games expose resume controls and restore saved activity state'
     let interactivePuzzle={turns:7,walls:new Set(['2,3'])},puzzleTiles=[],puzzleImage='',puzzleSelected=-1,puzzleImages=[],puzzleImageIndex=0;
     let differenceFound=new Set(),differenceSpots=[],differenceLeft=[],differenceRight=[];
     let traceLetterIndex=0,traceDistance=0,traceHasInk=false,memoryCards=[],memoryOpen=[],memoryMatched=new Set();
-    let escapeRoomIndex=0,escapeRoomSolved=false,escapeRoomStarEarned=false,escapeRoomAnswer='',escapeRoomAnswerIndex=-1,escapeRoomExplanation='',escapeRoomPhase='riddles',escapeKeyFound=false,escapeKeyFeedback='';
+    let escapeRoomIndex=0,escapeRoomSolved=false,escapeRoomStarEarned=false,escapeRoomAnswer='',escapeRoomAnswerIndex=-1,escapeRoomExplanation='',escapeRoomPhase='stations',escapeRoomCodeParts=[],escapeCodeInput=[],escapeCodeActiveIndex=0,escapeCodeFeedback='';
     let wordSearchPuzzle=null,magneticMaze=null;
     function learningGameHasTenQuestions(){return true}
     function traceLetterGroups(){return Array.from({length:12},()=>Array(10).fill('A'))}
     function retryLearningAnswer(){} function nextRiddleQuestion(){riddleQuestionIndex++} function advanceGameActivity(){}
     function nextPuzzlePicture(){} function nextPuzzleActivity(){} function clearTrace(){} function nextTraceLetter(){}
-    function nextEscapeRoom(){} function enterEscapeKeyRoom(){} function continueInteractivePuzzle(){}
+    function nextEscapeRoom(){} function enterEscapeCode(){} function continueInteractivePuzzle(){}
     function startInteractivePuzzle(){} function clearWordSearchSelection(){} function renderWordSearchLevels(){}
     function startMagneticMaze(){} function renderMagneticMazeStages(){}
     function go(id){globalThis.lastScreen=id}
@@ -677,10 +1166,82 @@ test('multi-stage games expose resume controls and restore saved activity state'
   assert.deepEqual(Array.from(vm.runInContext('interactivePuzzle.walls', stageReloadedContext)), ['3,4']);
 });
 
+test('saved game progress is rejected when it belongs to a different age difficulty', () => {
+  const context = vm.createContext({ S: { childAgeBand: '6-7' } });
+  const progressStart = html.indexOf('function miniGameProgressMatchesAge(');
+  const progressEnd = html.indexOf('function captureMiniGameState(', progressStart);
+  assert.ok(progressStart >= 0 && progressEnd > progressStart);
+  vm.runInContext(`function childDifficultyLevel(ageBand){return {'6-7':1,'8-9':2,'10-11':3}[ageBand]}
+    function memoryPairCountForAge(){return [0,3,4,6][childDifficultyLevel(S.childAgeBand)]}
+    ${html.slice(progressStart, progressEnd)}
+    globalThis.matchesAge=miniGameProgressMatchesAge;`, context);
+  const states = {
+    differences: { differenceGoal: 2 },
+    memory: { memoryPairCount: 3 },
+    logicQuest: { difficultyLevel: 1 },
+    words: { difficultyLevel: 1 },
+    patterns: { difficultyLevel: 1 },
+    wordSearch: { wordSearchPuzzle: { difficultyLevel: 1 } },
+    codeBreaker: { interactivePuzzle: { difficultyLevel: 1 } },
+    escapeRoom: { difficultyLevel: 1 },
+  };
+  for (const [id, state] of Object.entries(states)) assert.equal(context.matchesAge(id, state), true, `${id} resumes at its original age`);
+  context.S.childAgeBand = '8-9';
+  for (const [id, state] of Object.entries(states)) assert.equal(context.matchesAge(id, state), false, `${id} does not restore an easier-age save`);
+});
+
+test('logic quest scales items and clues to the child age without repeating questions', () => {
+  for (const language of ['en', 'he', 'ru']) {
+    assert.doesNotMatch(translations.TEXT[language].logicPrompt, /three|שלוש|три/i, `${language} prompt allows a variable clue count`);
+  }
+  const context = vm.createContext({
+    S: { childAgeBand: '6-7' },
+    Math,
+    tr: (_key, values) => `${values.a} before ${values.b}`,
+  });
+  const difficultyStart = html.indexOf('function childDifficultyLevel(');
+  const difficultyEnd = html.indexOf('function withTimeout(', difficultyStart);
+  const iconStart = html.indexOf('const LOGIC_ICON_SETS=');
+  const iconEnd = html.indexOf('function getLearningQuestionLabel(', iconStart);
+  const questionStart = html.indexOf('function logicQuestPermutations(');
+  const questionEnd = html.indexOf('const LOGIC_QUESTS=', questionStart);
+  assert.ok(difficultyStart >= 0 && difficultyEnd > difficultyStart);
+  assert.ok(iconStart >= 0 && iconEnd > iconStart);
+  assert.ok(questionStart >= 0 && questionEnd > questionStart);
+  vm.runInContext([
+    html.slice(difficultyStart, difficultyEnd),
+    html.slice(iconStart, iconEnd),
+    html.slice(questionStart, questionEnd),
+  ].join('\n'), context);
+
+  for (const [ageBand, itemCount] of [['6-7', 3], ['8-9', 4], ['10-11', 5]]) {
+    context.S.childAgeBand = ageBand;
+    const clueCount = itemCount - 1;
+    const visuals = context.logicQuestIntroVisuals();
+    assert.equal(visuals[0].length, itemCount);
+    assert.equal(visuals[1].filter(token => token === '➡️').length, clueCount);
+    for (let activity = 0; activity < 12; activity++) {
+      const answers = new Set();
+      for (let questionIndex = 0; questionIndex < 10; questionIndex++) {
+        const question = context.getLogicQuestion(activity, questionIndex);
+        assert.equal((question.question.match(/<div>/g) || []).length, clueCount);
+        const items = question.answer.split(' ');
+        assert.equal(items.length, itemCount);
+        assert.equal(new Set(items).size, itemCount);
+        assert.equal(question.options.length, 4);
+        assert.equal(new Set(question.options).size, 4);
+        assert.ok(question.options.includes(question.answer));
+        answers.add(question.answer);
+      }
+      assert.equal(answers.size, 10, `activity ${activity + 1} has ten distinct questions for age ${ageBand}`);
+    }
+  }
+});
+
 test('pattern activities use symbols that match each activity theme', () => {
-  const context = vm.createContext({ Math });
+  const context = vm.createContext({ Math, S: { childAgeBand: '6-7' } });
   const patternSource = slice('const PATTERN_THEMES=', 'function getLogicQuestion(');
-  vm.runInContext(`${patternSource}\nglobalThis.patternThemes=PATTERN_THEMES;globalThis.makePatternQuestion=getPatternQuestion;`, context);
+  vm.runInContext(`function childDifficultyLevel(ageBand){return {'6-7':1,'8-9':2,'10-11':3}[ageBand]}\n${patternSource}\nglobalThis.patternThemes=PATTERN_THEMES;globalThis.makePatternQuestion=getPatternQuestion;`, context);
   const themes = Array.from(context.patternThemes, theme => Array.from(theme));
   assert.deepEqual(themes, [
     ['🔴','🔵','🟡','🟢'],
@@ -696,12 +1257,22 @@ test('pattern activities use symbols that match each activity theme', () => {
     ['🪐','🚀','🌌','☄️'],
     ['❄️','☃️','🧤','🧣'],
   ]);
-  for (let activity = 0; activity < themes.length; activity++) for (let question = 0; question < 10; question++) {
-    const result = context.makePatternQuestion(activity, question);
-    const sequence = result.question.trim().split(/\s+/).slice(0, 8);
-    assert.ok(sequence.every(symbol => themes[activity].includes(symbol)), `activity ${activity + 1}, question ${question + 1} sequence`);
-    assert.ok(themes[activity].includes(result.answer), `activity ${activity + 1}, question ${question + 1} answer`);
-    assert.ok(result.options.every(option => themes[activity].includes(option)), `activity ${activity + 1}, question ${question + 1} options`);
+  for (const [ageBand, difficulty, sequenceLength] of [['6-7', 1, 4], ['8-9', 2, 6], ['10-11', 3, 8]]) {
+    context.S.childAgeBand = ageBand;
+    for (let activity = 0; activity < themes.length; activity++) for (let question = 0; question < 10; question++) {
+      const result = context.makePatternQuestion(activity, question);
+      const sequence = result.question.trim().split(/\s+/).slice(0, sequenceLength);
+      assert.equal(result.difficultyLevel, difficulty);
+      assert.equal(sequence.length, sequenceLength, `${ageBand} question sequence length`);
+      assert.ok(sequence.every(symbol => themes[activity].includes(symbol)), `activity ${activity + 1}, question ${question + 1} sequence`);
+      assert.ok(themes[activity].includes(result.answer), `activity ${activity + 1}, question ${question + 1} answer`);
+      assert.ok(result.options.every(option => themes[activity].includes(option)), `activity ${activity + 1}, question ${question + 1} options`);
+      if (difficulty === 1) {
+        assert.notEqual(sequence[0], sequence[1]);
+        assert.equal(sequence[2], sequence[0]);
+        assert.equal(result.answer, sequence[0]);
+      }
+    }
   }
 });
 
@@ -712,9 +1283,42 @@ test('pastel background is applied across screens and cached for offline use', a
   assert.match(html, /#welcome\{[^}]*background:radial-gradient\([^}]*#ffffff22/i);
   assert.match(html, /#cv\{[^}]*background:#fff/);
   assert.match(html, /\.interactive-puzzle\{[^}]*background:#fff/);
-  assert.match(serviceWorker, /magical-fun-shell-v35-coloring-galaxy-fit/);
+  assert.match(serviceWorker, /magical-fun-shell-v46-terms-age-adaptation/);
+  for (const file of ['math.js', 'story-math.js', 'riddles-6-7.js', 'riddles-8-9.js', 'riddles-10-11.js', 'escape-room-6-7.js', 'escape-room-8-9.js', 'escape-room-10-11.js', 'science.js']) {
+    assert.ok(html.includes(`<script src="./question-banks/${file}"></script>`));
+    assert.ok(serviceWorker.includes(`new URL('question-banks/${file}',APP_ROOT).href`));
+  }
   assert.match(serviceWorker, /new URL\('images\/magical-fun-background\.png',APP_ROOT\)\.href/);
   await access(new URL('../images/magical-fun-background.png', import.meta.url));
+});
+
+test('terms explain age-based game adaptations in all supported languages', async () => {
+  const terms = await readFile(new URL('../terms.html', import.meta.url), 'utf8');
+  assert.match(terms, /עודכן לאחרונה: 20 בנובמבר 2026/);
+  assert.match(terms, /Last updated: November 20, 2026/);
+  assert.match(terms, /Последнее обновление: 20 ноября 2026 г\./);
+  assert.match(terms, /טווח הגיל שנבחר בפרופיל הילד\/ה משמש להתאמת רמת הקושי וסוגי הפעילויות/);
+  assert.match(terms, /The age range selected for a child profile is used to adapt game difficulty and activities/);
+  assert.match(terms, /Возрастная группа, выбранная в профиле ребёнка, используется для настройки сложности игр и подбора заданий/);
+});
+
+test('application, legal, and question-bank copy use en dashes and hyphen-minus consistently', async () => {
+  const files = [
+    new URL('../index.html', import.meta.url),
+    new URL('../terms.html', import.meta.url),
+    new URL('../privacy.html', import.meta.url),
+    new URL('../delete-account.html', import.meta.url),
+    new URL('../promo-maker.html', import.meta.url),
+  ];
+  const questionBankDirectory = new URL('../question-banks/', import.meta.url);
+  for (const file of await readdir(questionBankDirectory)) {
+    if (file.endsWith('.js')) files.push(new URL(file, questionBankDirectory));
+  }
+  for (const file of files) {
+    const text = await readFile(file, 'utf8');
+    assert.doesNotMatch(text, /—/, file.pathname);
+    assert.doesNotMatch(text, /\u05BE/, file.pathname);
+  }
 });
 
 test('drawing screens use one download icon and route saves through the device saver', async () => {
@@ -909,9 +1513,37 @@ test('coloring picture navigation uses side arrows with localized accessible lab
   }
 });
 
+test('picture puzzle uses a grid size matched to the active child age band', () => {
+  const board = {
+    innerHTML: '',
+    style: { setProperty(name, value) { this[name] = value; } },
+  };
+  const context = vm.createContext({
+    S: { childAgeBand: '6-7' },
+    $: selector => selector === '#puzzleBoard' ? board : null,
+  });
+  const difficultyStart = html.indexOf('function childDifficultyLevel(');
+  const difficultyEnd = html.indexOf('function withTimeout(', difficultyStart);
+  vm.runInContext(`${html.slice(difficultyStart, difficultyEnd)}\n${slice('const PUZZLE_CATEGORIES=', 'function movePuzzlePiece(')}`, context);
+
+  for (const [ageBand, gridSize] of [['6-7', 3], ['8-9', 4], ['10-11', 6]]) {
+    context.S.childAgeBand = ageBand;
+    context.shufflePuzzleTiles();
+    assert.equal(vm.runInContext('puzzleTiles.length', context), gridSize * gridSize);
+    assert.equal(vm.runInContext('puzzleTiles.every((tile,index)=>tile===index)', context), false);
+    vm.runInContext(`puzzleTiles=Array.from({length:${gridSize * gridSize}},(_,index)=>index);puzzleImage='images/one.png';puzzleSelected=-1;drawPuzzle()`, context);
+    assert.equal(board.style['--puzzle-grid-size'], gridSize);
+    assert.equal(board.style['--puzzle-image-size'], `${gridSize * 100}%`);
+    assert.equal((board.innerHTML.match(/class="puzzle-piece/g) || []).length, gridSize * gridSize);
+    assert.match(board.innerHTML, /--puzzle-position:100% 100%/);
+  }
+  assert.match(html, /\.game-board\{[^}]*grid-template-columns:repeat\(var\(--puzzle-grid-size,3\)/);
+  assert.match(html, /background-size:var\(--puzzle-image-size,300%\) var\(--puzzle-image-size,300%\)/);
+});
+
 test('picture puzzle success stays on screen and offers next and replay actions', () => {
   const gameContent = { innerHTML: '' };
-  const board = { innerHTML: '' };
+  const board = { innerHTML: '', style: { setProperty(name, value) { this[name] = value; } } };
   const status = { textContent: '' };
   const actions = { innerHTML: '' };
   const elements = new Map([
@@ -921,13 +1553,17 @@ test('picture puzzle success stays on screen and offers next and replay actions'
   const context = vm.createContext({
     selectedLevel: 0,
     currentLanguage: 'he',
+    S: { childAgeBand: '6-7' },
     CATS: [],
     activityNames: () => Array(12).fill('Activity'),
     tr: key => translations.TEXT.he[key] || key,
     $: selector => elements.get(selector),
     showGameFeedback: () => successPopups++,
   });
-  vm.runInContext(`let puzzleTiles=[1,0,2,3,4,5],puzzleImage='images/one.png',puzzleSelected=-1,
+  const difficultyStart = html.indexOf('function childDifficultyLevel(');
+  const difficultyEnd = html.indexOf('function withTimeout(', difficultyStart);
+  vm.runInContext(`${html.slice(difficultyStart, difficultyEnd)}
+    let puzzleTiles=[1,0,2,3,4,5,6,7,8],puzzleImage='images/one.png',puzzleSelected=-1,
     puzzleImages=['images/one.png','images/two.png'],puzzleImageIndex=0;
     ${slice('const PUZZLE_CATEGORIES=', 'let differenceFound=')}`, context);
 
@@ -983,3 +1619,4 @@ test('coloring navigation wraps within the category and stays hidden for photos'
   assert.equal(elements.get('#paintItemNav').hidden, false);
   assert.equal(elements.get('#downloadPaint').style.display, '');
 });
+
