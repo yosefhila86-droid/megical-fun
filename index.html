@@ -12,8 +12,8 @@
 body{margin:0;font-family:system-ui,Arial,sans-serif;background:#fff7e6 url('./images/magical-fun-background.png') center center / cover no-repeat fixed;color:#3b2a66;height:100vh;height:100dvh;display:flex;flex-direction:column;overflow:hidden}
 button{font:inherit;cursor:pointer;border:0;border-radius:16px;padding:12px 16px;background:#7c4dff;color:#fff;font-weight:700}
 button.alt{background:#ffb703;color:#3b2a66}button.ghost{background:#ece6ff;color:#3b2a66}
-button.google-signin{background:#fff;color:#303134;border:1px solid #dadce0}
-button.google-signin::before{content:"G";font-weight:700;color:#4285f4;margin-right:8px}
+button.google-signin{display:flex;align-items:center;justify-content:center;gap:8px;background:#fff;color:#303134;border:1px solid #dadce0}
+button.google-signin .google-signin-logo{width:20px;height:20px;flex:0 0 20px}
 input{font:inherit;padding:12px;border-radius:12px;border:2px solid #d9ccff;width:100%;margin:6px 0}
 input[type=range]{-webkit-appearance:none;appearance:none;height:26px;padding:0;border:0;border-radius:13px;margin:4px 0}
 input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:32px;height:32px;border-radius:50%;background:#fff;border:4px solid #3b2a66}
@@ -32,6 +32,9 @@ input[type=color]{height:46px;padding:2px;border-radius:12px}
 #auth .err:empty{display:none;min-height:0;margin:0}
 .auth-consent,.auth-remember{display:flex;align-items:flex-start;gap:8px;margin:8px 0;font-size:14px;line-height:1.45;text-align:start}
 .auth-consent[hidden],.auth-remember[hidden]{display:none}
+.auth-method-divider{display:flex;align-items:center;gap:12px;margin:8px 0;color:#6b6280;font-size:14px}
+.auth-method-divider:before,.auth-method-divider:after{content:"";height:1px;flex:1;background:#d9ccff}
+.auth-method-divider[hidden]{display:none}
 .auth-consent input,.auth-remember input{flex:0 0 auto;width:18px;height:18px;margin:3px 0 0}
 .welcome-controls{width:min(100%,420px);align-self:center;display:flex;align-items:center;justify-content:center;gap:12px}
 .welcome-controls label{display:flex;align-items:center;gap:8px}
@@ -412,6 +415,11 @@ html.a11y-reduced-motion *,html.a11y-reduced-motion *:before,html.a11y-reduced-m
   <button style="width:100%;margin:6px 0" onclick="authForm('login')" data-i18n="login">Login</button>
   <button class="ghost" style="width:100%;margin:6px 0" onclick="authForm('reg')" data-i18n="register">Register</button>
   <div id="auth" style="display:none;text-align:left">
+    <h3 id="emailMethodTitle" data-i18n="emailAndPassword">Email and password</h3>
+    <div id="parentNameGroup" hidden>
+      <input id="aParentName" type="text" autocomplete="name" maxlength="100" placeholder="Parent/guardian name" data-i18n-placeholder="parentName">
+      <div class="err" id="aParentNameErr" aria-live="polite"></div>
+    </div>
     <div id="authEmailGroup"><input id="aEmail" type="email" autocomplete="email" placeholder="Parent/guardian email" data-i18n-placeholder="accountEmail">
       <div class="err" id="aEmailErr" aria-live="polite"></div>
     </div>
@@ -435,7 +443,16 @@ html.a11y-reduced-motion *,html.a11y-reduced-motion *:before,html.a11y-reduced-m
     <p id="aStatus" class="access-notice" role="status" hidden></p>
     <button id="forgotPasswordButton" class="ghost" type="button" onclick="requestPasswordReset()" data-i18n="forgotPassword">Forgot password?</button>
     <button id="aSubmit" style="width:100%" onclick="authGo()">Continue</button>
-    <button id="googleSignInButton" class="google-signin" type="button" onclick="signInWithGoogle()" data-i18n="googleSignIn" hidden>Continue with Google</button>
+    <div id="googleSignInDivider" class="auth-method-divider" hidden><span data-i18n="orContinueWith">or</span></div>
+    <button id="googleSignInButton" class="google-signin" type="button" onclick="signInWithGoogle()" hidden>
+      <svg class="google-signin-logo" viewBox="10 10 20 20" aria-hidden="true" focusable="false">
+        <path d="M29.6 20.2273C29.6 19.5182 29.5364 18.8364 29.4182 18.1818H20V22.05H25.3818C25.15 23.3 24.4455 24.3591 23.3864 25.0682V27.5773H26.6182C28.5091 25.8364 29.6 23.2727 29.6 20.2273Z" fill="#4285F4"/>
+        <path d="M20 30C22.7 30 24.9636 29.1045 26.6181 27.5773L23.3863 25.0682C22.4909 25.6682 21.3454 26.0227 20 26.0227C17.3954 26.0227 15.1909 24.2636 14.4045 21.9H11.0636V24.4909C12.7091 27.7591 16.0909 30 20 30Z" fill="#34A853"/>
+        <path d="M14.4045 21.9C14.2045 21.3 14.0909 20.6599 14.0909 20C14.0909 19.3401 14.2045 18.7 14.4045 18.1V15.5091H11.0636C10.3864 16.8591 10 18.3864 10 20C10 21.6136 10.3864 23.1409 11.0636 24.4909Z" fill="#FBBC04"/>
+        <path d="M20 13.9773C21.4681 13.9773 22.7863 14.4818 23.8227 15.4727L26.6909 12.6045C24.9591 10.9909 22.6954 10 20 10C16.0909 10 12.7091 12.2409 11.0636 15.5091L14.4045 18.1C15.1909 15.7364 17.3954 13.9773 20 13.9773Z" fill="#E94235"/>
+      </svg>
+      <span data-i18n="googleSignIn">Continue with Google</span>
+    </button>
   </div>
 </div>
 
@@ -977,6 +994,9 @@ Object.assign(TEXT.ru,{cameraPermissionBlocked:'Доступ к камере з�
 Object.assign(TEXT.en,{childName:"Child's nickname",parentYear:'Parent birth year (1950–2006)',profileStars:'Stars',vipLabel:'VIP',freeLabel:'Free',active:'Active',logout:'Log out',noSavedArt:'No saved art yet.',switchCamera:'🔄 Switch camera',cameraPhotoError:'Could not read that image.',soundAuto:'Surprise me',soundGroove:'Bouncy Groove',soundLullaby:'Dreamy Lullaby',soundJungle:'Jungle Beat',soundSpace:'Space Adventure',soundChip:'Game Time',soundOff:'Silent',mixerTitle:'🌈 Color Mixer',mixerHue:'🌈 Pick a rainbow color',mixerSat:'💧 Pale ↔ Bold',mixerValue:'🌓 Dark ↔ Light',mixerChooser:'🎯 Or pick from the color chooser',mixerBlend:'🥣 Mix with my color',mixerAdd:'➕ Add to palette',hintFill:'Tap an area to color it 🎨',hintBrush:'Draw freely - paint stays inside each shape!',authNameError:'Please enter a nickname.',authYearError:'Parent birth year must be 1950–2006.',adultError:'Please ask an adult to continue.'});
 Object.assign(TEXT.he,{childName:'כינוי הילד/ה',parentYear:'שנת הלידה של ההורה (1950–2006)',profileStars:'כוכבים',vipLabel:'VIP',freeLabel:'חינם',active:'פעיל',logout:'יציאה',noSavedArt:'עדיין אין ציורים שמורים.',switchCamera:'🔄 החלפת מצלמה',cameraPhotoError:'לא ניתן לקרוא את התמונה.',soundAuto:'הפתיעו אותי',soundGroove:'קצב קופצני',soundLullaby:'שיר ערש חלומי',soundJungle:'קצב ג׳ונגל',soundSpace:'הרפתקה בחלל',soundChip:'זמן משחק',soundOff:'שקט',mixerTitle:'🌈 מערבל צבעים',mixerHue:'🌈 בחרו צבע מהקשת',mixerSat:'💧 עדין ↔ בולט',mixerValue:'🌓 כהה ↔ בהיר',mixerChooser:'🎯 או בחרו צבע',mixerBlend:'🥣 ערבוב עם הצבע שלי',mixerAdd:'➕ הוספה ללוח הצבעים',hintFill:'לחצו על אזור כדי לצבוע אותו 🎨',hintBrush:'ציירו בחופשיות - הצבע נשאר בתוך הצורה!',authNameError:'נא להזין כינוי.',authYearError:'שנת הלידה של ההורה חייבת להיות בין 1950 ל-2006.',adultError:'בקשו עזרה ממבוגר כדי להמשיך.'});
 Object.assign(TEXT.ru,{childName:'Имя ребёнка',parentYear:'Год рождения родителя (1950–2006)',profileStars:'Звёзды',vipLabel:'VIP',freeLabel:'Бесплатно',active:'Активно',logout:'Выйти',noSavedArt:'Пока нет сохранённых рисунков.',switchCamera:'🔄 Переключить камеру',cameraPhotoError:'Не удалось прочитать изображение.',soundAuto:'Удиви меня',soundGroove:'Бодрый ритм',soundLullaby:'Нежная колыбельная',soundJungle:'Ритм джунглей',soundSpace:'Космическое приключение',soundChip:'Время игры',soundOff:'Без звука',mixerTitle:'🌈 Смешивание цветов',mixerHue:'🌈 Выбери цвет радуги',mixerSat:'💧 Нежный ↔ Яркий',mixerValue:'🌓 Тёмный ↔ Светлый',mixerChooser:'🎯 Или выбери цвет',mixerBlend:'🥣 Смешать с моим цветом',mixerAdd:'➕ Добавить в палитру',hintFill:'Нажми на область, чтобы раскрасить её 🎨',hintBrush:'Рисуй свободно - краска остаётся внутри фигуры!',authNameError:'Введи имя.',authYearError:'Год рождения родителя должен быть от 1950 до 2006.',adultError:'Попроси взрослого помочь.'});
+Object.assign(TEXT.en,{emailAndPassword:'Email and password',parentName:'Parent/guardian name',parentNameRequired:'Enter the parent or guardian’s name.',orContinueWith:'or'});
+Object.assign(TEXT.he,{emailAndPassword:'אימייל וסיסמה',parentName:'שם ההורה או האפוטרופוס',parentNameRequired:'יש להזין את שם ההורה או האפוטרופוס.',orContinueWith:'או'});
+Object.assign(TEXT.ru,{emailAndPassword:'Электронная почта и пароль',parentName:'Имя родителя или опекуна',parentNameRequired:'Введите имя родителя или опекуна.',orContinueWith:'или'});
 Object.assign(TEXT.en,{accountEmail:'Parent or guardian email',accountPassword:'Password (at least 8 characters)',authWorking:'Connecting securely…',authNotConfigured:'The account service is unavailable here, so we could not check this email. Try the published app or try again later. You can still play as a guest.',authFailed:'Could not sign in. Please try again.',invalidEmail:'Enter a valid email address.',invalidPassword:'Enter a password with at least 8 characters.',invalidCredentials:'The email or password is incorrect. Check both fields.',emailInUse:'This email is already registered. Sign in with the existing account.',emailConfirmation:'Check your email to confirm the new account, then log in.',forgotPassword:'Forgot password?',passwordResetSent:'If an account exists for this address, a password reset link has been sent. Check your inbox.',passwordResetFailed:'Could not send the password reset email. Check the address and try again.',passwordRecoveryTitle:'Choose a new password',saveNewPassword:'Save new password',passwordUpdated:'Your password has been updated. Signing you in…',passwordUpdateFailed:'Could not update your password. Open the latest reset link and try again.',passwordResetInvalid:'This password reset link is invalid or expired. Request a new one and try again.',entitlementsLoadFailed:'Could not load this account’s VIP access. Please try again.'});
 Object.assign(TEXT.he,{accountEmail:'כתובת האימייל של ההורה',accountPassword:'סיסמה (לפחות 8 תווים)',authWorking:'מתחברים באופן מאובטח…',authNotConfigured:'שירות החשבונות אינו זמין כאן, ולכן לא ניתן לבדוק אם המייל רשום. נסו באפליקציה שפורסמה או שוב מאוחר יותר. אפשר להמשיך כאורחים.',authFailed:'לא ניתן להתחבר. נסו שוב.',invalidEmail:'כתובת האימייל אינה תקינה. בדקו אותה.',invalidPassword:'הסיסמה צריכה להכיל לפחות 8 תווים.',invalidCredentials:'האימייל או הסיסמה אינם נכונים. בדקו את שני השדות.',emailInUse:'המייל הזה כבר נרשם. התחברו באמצעות החשבון הקיים.',emailConfirmation:'בדקו את האימייל ואשרו את החשבון החדש, ואז התחברו.',forgotPassword:'שכחתי סיסמה',passwordResetSent:'אם קיים חשבון עם כתובת זו, נשלח אליו קישור לאיפוס הסיסמה. בדקו את תיבת הדואר.',passwordResetFailed:'לא ניתן לשלוח הודעת איפוס סיסמה. בדקו את כתובת האימייל ונסו שוב.',passwordRecoveryTitle:'בחירת סיסמה חדשה',saveNewPassword:'שמירת סיסמה חדשה',passwordUpdated:'הסיסמה עודכנה. מתחברים לחשבון…',passwordUpdateFailed:'לא ניתן לעדכן את הסיסמה. פתחו את קישור האיפוס האחרון ונסו שוב.',passwordResetInvalid:'קישור איפוס הסיסמה אינו תקין או שפג תוקפו. בקשו קישור חדש ונסו שוב.',entitlementsLoadFailed:'לא ניתן לטעון את הרשאות ה-VIP של החשבון. נסו שוב.'});
 Object.assign(TEXT.ru,{accountEmail:'Электронная почта родителя или опекуна',accountPassword:'Пароль (не менее 8 символов)',authWorking:'Безопасное подключение…',authNotConfigured:'Сервис аккаунтов здесь недоступен, поэтому проверить этот адрес не удалось. Попробуйте опубликованную версию или повторите попытку позже. Можно играть как гость.',authFailed:'Не удалось войти. Попробуйте ещё раз.',invalidEmail:'Введите правильный адрес электронной почты.',invalidPassword:'Пароль должен содержать не менее 8 символов.',invalidCredentials:'Неверная почта или пароль. Проверьте оба поля.',emailInUse:'Этот адрес уже зарегистрирован. Войдите в существующий аккаунт.',emailConfirmation:'Подтвердите новый аккаунт по ссылке в письме, затем войдите.',forgotPassword:'Забыли пароль?',passwordResetSent:'Если для этого адреса есть аккаунт, ссылка для сброса пароля отправлена. Проверьте почту.',passwordResetFailed:'Не удалось отправить письмо для сброса пароля. Проверьте адрес и попробуйте снова.',passwordRecoveryTitle:'Создайте новый пароль',saveNewPassword:'Сохранить новый пароль',passwordUpdated:'Пароль обновлён. Выполняется вход…',passwordUpdateFailed:'Не удалось обновить пароль. Откройте последнюю ссылку сброса и попробуйте снова.',passwordResetInvalid:'Ссылка для сброса пароля недействительна или устарела. Запросите новую ссылку и попробуйте снова.',entitlementsLoadFailed:'Не удалось загрузить VIP-доступ аккаунта. Попробуйте ещё раз.'});
@@ -989,6 +1009,9 @@ Object.assign(TEXT.ru,{rememberMe:'Запомнить меня на этом у�
 Object.assign(TEXT.en,{googleSignIn:'Continue with Google',googleSignInFailed:'Google sign-in could not be completed. Please try again.'});
 Object.assign(TEXT.he,{googleSignIn:'המשך עם Google',googleSignInFailed:'לא ניתן להשלים את ההתחברות עם Google. נסו שוב.'});
 Object.assign(TEXT.ru,{googleSignIn:'Продолжить с Google',googleSignInFailed:'Не удалось войти через Google. Попробуйте ещё раз.'});
+Object.assign(TEXT.en,{googleSignInUpdateRequired:'Google sign-in needs the updated Android app. Install the latest version and try again.'});
+Object.assign(TEXT.he,{googleSignInUpdateRequired:'ההתחברות עם Google דורשת את גרסת Android המעודכנת. התקינו את הגרסה החדשה ונסו שוב.'});
+Object.assign(TEXT.ru,{googleSignInUpdateRequired:'Для входа через Google требуется обновлённая версия приложения Android. Установите последнюю версию и попробуйте снова.'});
 Object.assign(TEXT.en,{deviceLimitReached:'This account is already active on 5 devices. Sign out from another device and try again.',progressSyncFailed:'Progress could not be synchronized. Check your connection; your progress is saved on this device.',profileSyncUnavailable:'Account sync is not ready yet. Please try again later.'});
 Object.assign(TEXT.he,{deviceLimitReached:'החשבון פעיל כבר ב-5 מכשירים. התנתקו ממכשיר אחר ונסו שוב.',progressSyncFailed:'לא ניתן לסנכרן את ההתקדמות. בדקו את החיבור; ההתקדמות נשמרה במכשיר הזה.',profileSyncUnavailable:'סנכרון החשבון עדיין אינו זמין. נסו שוב מאוחר יותר.'});
 Object.assign(TEXT.ru,{deviceLimitReached:'Этот аккаунт уже используется на 5 устройствах. Выйдите из аккаунта на другом устройстве и попробуйте снова.',progressSyncFailed:'Не удалось синхронизировать прогресс. Проверьте подключение; данные сохранены на этом устройстве.',profileSyncUnavailable:'Синхронизация аккаунта пока недоступна. Попробуйте позже.'});
@@ -1867,6 +1890,7 @@ function isAndroidApp(){
 function nativeGoogleOAuthPlugins(){
   const capacitor=window.Capacitor;
   if(!isAndroidApp()||!capacitor||typeof capacitor.registerPlugin!=='function')return null;
+  if(typeof capacitor.isPluginAvailable==='function'&&(!capacitor.isPluginAvailable('App')||!capacitor.isPluginAvailable('Browser')))return null;
   if(!googleOAuthPlugins){
     googleOAuthPlugins={App:capacitor.registerPlugin('App'),Browser:capacitor.registerPlugin('Browser')};
   }
@@ -1886,23 +1910,28 @@ const rememberMeAuthStorage={
 };
 function authForm(mode){
   authChoiceMade=true;amode=mode;passwordRecoveryMode=false;$('#auth').style.display='block';clearAuthErrors();clearAuthStatus();
+  $('#emailMethodTitle').hidden=false;
   $('#authEmailGroup').hidden=false;$('#passwordRecoveryTitle').hidden=true;
+  $('#parentNameGroup').hidden=mode!=='reg';$('#aParentName').required=mode==='reg';$('#aParentName').value='';
   $('#rememberMeRow').hidden=false;$('#aRemember').checked=shouldRememberAuthSession();
   $('#registrationConsent').hidden=mode!=='reg'&&!isAndroidApp();$('#aConsent').required=mode==='reg';$('#aConsent').checked=false;
   $('#forgotPasswordButton').hidden=mode!=='login';
-  $('#googleSignInButton').hidden=!isAndroidApp();
+  $('#googleSignInButton').hidden=!isAndroidApp();$('#googleSignInDivider').hidden=!isAndroidApp();
   $('#aEmail').required=true;$('#aPassword').required=true;$('#aEmail').value='';$('#aPassword').value='';
   $('#aPassword').autocomplete=mode==='reg'?'new-password':'current-password';
   $('#aSubmit').textContent=tr(mode==='reg'?'register':'login');
 }
 function clearAuthErrors(){
   authErrorState=null;
-  $('#aErr').textContent='';$('#aEmailErr').textContent='';$('#aPasswordErr').textContent='';$('#aConsentErr').textContent='';
-  $('#aEmail').removeAttribute('aria-invalid');$('#aPassword').removeAttribute('aria-invalid');$('#aConsent').removeAttribute('aria-invalid');
+  $('#aErr').textContent='';$('#aParentNameErr').textContent='';$('#aEmailErr').textContent='';$('#aPasswordErr').textContent='';$('#aConsentErr').textContent='';
+  $('#aParentName').removeAttribute('aria-invalid');$('#aEmail').removeAttribute('aria-invalid');$('#aPassword').removeAttribute('aria-invalid');$('#aConsent').removeAttribute('aria-invalid');
 }
 function renderAuthError(){
   if(!authErrorState)return;
   const {field,key}=authErrorState,message=tr(key);
+  if(field==='parentName'){
+    $('#aParentNameErr').textContent=message;$('#aParentName').setAttribute('aria-invalid','true');
+  }
   if(field==='email'||field==='both'){
     $('#aEmailErr').textContent=message;$('#aEmail').setAttribute('aria-invalid','true');
   }
@@ -1918,6 +1947,7 @@ function setAuthError(field,key){
   clearAuthErrors();
   authErrorState={field,key};
   renderAuthError();
+  if(field==='parentName')$('#aParentName').focus();
   if(field==='email')$('#aEmail').focus();
   if(field==='password')$('#aPassword').focus();
   if(field==='consent')$('#aConsent').focus();
@@ -1933,10 +1963,12 @@ function renderAuthStatus(){
 function showPasswordRecovery(){
   authChoiceMade=true;amode='recovery';passwordRecoveryMode=true;
   $('#auth').style.display='block';clearAuthErrors();clearAuthStatus();
+  $('#emailMethodTitle').hidden=true;
   $('#rememberMeRow').hidden=true;
+  $('#parentNameGroup').hidden=true;$('#aParentName').required=false;
   $('#registrationConsent').hidden=true;$('#aConsent').required=false;$('#aConsent').checked=false;
   $('#authEmailGroup').hidden=true;$('#passwordRecoveryTitle').hidden=false;
-  $('#forgotPasswordButton').hidden=true;$('#googleSignInButton').hidden=true;$('#aEmail').required=false;$('#aPassword').required=true;
+  $('#forgotPasswordButton').hidden=true;$('#googleSignInButton').hidden=true;$('#googleSignInDivider').hidden=true;$('#aEmail').required=false;$('#aPassword').required=true;
   $('#aPassword').value='';$('#aPassword').autocomplete='new-password';
   $('#aSubmit').textContent=tr('saveNewPassword');
 }
@@ -1980,8 +2012,15 @@ async function handleGoogleOAuthCallback(callbackUrl){
     if(!code)throw new Error('Google sign-in callback did not include an authorization code.');
     const {data,error}=await supabaseClient.auth.exchangeCodeForSession(code);
     if(error)throw error;
-    const user=data&&data.session&&data.session.user;
+    let user=data&&data.session&&data.session.user;
     if(!user)throw new Error('Google sign-in returned no authenticated user.');
+    const userMetadata=user.user_metadata||{};
+    const googleParentName=userMetadata.full_name||userMetadata.name;
+    if(!userMetadata.parent_name&&typeof googleParentName==='string'&&googleParentName.trim()){
+      const {data:profileData,error:profileError}=await supabaseClient.auth.updateUser({data:{parent_name:googleParentName.trim()}});
+      if(profileError)throw profileError;
+      if(profileData&&profileData.user)user=profileData.user;
+    }
     await enterAccount(user);
   }catch(error){
     console.error('Google sign-in failed:',error);
@@ -2015,7 +2054,7 @@ async function signInWithGoogle(){
   if(!isAndroidApp()){setAuthError('form','googleSignInFailed');return}
   if(!$('#aConsent').checked){setAuthError('consent','registrationConsentRequired');return}
   const plugins=nativeGoogleOAuthPlugins();
-  if(!plugins){setAuthError('form','googleSignInFailed');return}
+  if(!plugins){setAuthError('form','googleSignInUpdateRequired');return}
   googleOAuthBusy=true;googleOAuthCallbackPending=false;googleOAuthCallbackHandled=null;
   $('#googleSignInButton').disabled=true;
   try{
@@ -2193,9 +2232,8 @@ async function saveChildProfile(){
 async function enterAccount(user){
   if(currentAuthUserId===user.id){currentAccountEmail=user.email||currentAccountEmail;renderProfile();return}
   const generation=++authGeneration;
-  const displayName=(user.user_metadata&&(user.user_metadata.display_name||user.user_metadata.full_name||user.user_metadata.name))||(user.email||'Guest').split('@')[0];
   currentAccountEmail=user.email||'';
-  initialChildNickname=displayName;
+  initialChildNickname=(user.user_metadata&&typeof user.user_metadata.child_nickname==='string')?user.user_metadata.child_nickname:'';
   currentChildId=null;accountChildren=[];profileSyncReady=false;
   profileSyncRunId++;profileSyncBusy=false;profileSyncAgain=false;
   accountEntitlements={vip:false,allGamesUnlocked:false,unlockedGames:[]};accountBillingRestored=false;
@@ -2247,8 +2285,9 @@ async function enterAccount(user){
 }
 async function authGo(){
   if(authBusy||googleOAuthBusy)return;
-  const email=$('#aEmail').value.trim().toLowerCase(),password=$('#aPassword').value;
+  const parentName=$('#aParentName').value.trim(),email=$('#aEmail').value.trim().toLowerCase(),password=$('#aPassword').value;
   clearAuthErrors();clearAuthStatus();
+  if(amode==='reg'&&!parentName){setAuthError('parentName','parentNameRequired');return}
   if(!passwordRecoveryMode){
     if(!email){setAuthError('email','emailRequired');return}
     if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){setAuthError('email','invalidEmail');return}
@@ -2267,7 +2306,7 @@ async function authGo(){
       authStatusState='passwordUpdated';renderAuthStatus();
       await enterAccount(data.user);
     }else if(amode==='reg'){
-      const {data,error}=await supabaseClient.auth.signUp({email,password,options:{emailRedirectTo:location.origin}});
+      const {data,error}=await supabaseClient.auth.signUp({email,password,options:{emailRedirectTo:location.origin,data:{parent_name:parentName}}});
       if(error)throw error;
       if(!data.session){
         if(data.user&&Array.isArray(data.user.identities)&&data.user.identities.length===0)setAuthError('email','emailInUse');
