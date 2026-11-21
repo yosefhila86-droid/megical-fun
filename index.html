@@ -1923,10 +1923,11 @@ function closeAuthFlow(){
 }
 function nativeGoogleOAuthPlugins(){
   const capacitor=window.Capacitor;
-  if(!isAndroidApp()||!capacitor||typeof capacitor.registerPlugin!=='function')return null;
-  if(typeof capacitor.isPluginAvailable==='function'&&(!capacitor.isPluginAvailable('App')||!capacitor.isPluginAvailable('Browser')))return null;
+  if(!isAndroidApp()||!capacitor||!capacitor.Plugins)return null;
+  const {App,Browser}=capacitor.Plugins;
+  if(!App||!Browser)return null;
   if(!googleOAuthPlugins){
-    googleOAuthPlugins={App:capacitor.registerPlugin('App'),Browser:capacitor.registerPlugin('Browser')};
+    googleOAuthPlugins={App,Browser};
   }
   return googleOAuthPlugins;
 }
