@@ -32,12 +32,12 @@ input[type=color]{height:46px;padding:2px;border-radius:12px}
 #auth input{text-align:center}
 #authEmailForm[hidden]{display:none}
 #auth .err:empty{display:none;min-height:0;margin:0}
-.auth-consent,.auth-remember{display:flex;align-items:center;justify-content:center;gap:8px;margin:8px 0;font-size:14px;line-height:1.45;text-align:center}
-.auth-consent[hidden],.auth-remember[hidden]{display:none}
+.auth-consent{display:flex;align-items:center;justify-content:center;gap:8px;margin:8px 0;font-size:14px;line-height:1.45;text-align:center}
+.auth-consent[hidden]{display:none}
 .auth-method-divider{display:flex;align-items:center;gap:12px;margin:8px 0;color:#6b6280;font-size:14px}
 .auth-method-divider:before,.auth-method-divider:after{content:"";height:1px;flex:1;background:#d9ccff}
 .auth-method-divider[hidden]{display:none}
-.auth-consent input,.auth-remember input{flex:0 0 auto;width:18px;height:18px;margin:0}
+.auth-consent input{flex:0 0 auto;width:18px;height:18px;margin:0}
 .welcome-controls{width:min(100%,420px);align-self:center;display:flex;align-items:center;justify-content:center;gap:12px}
 .welcome-controls label{display:flex;align-items:center;gap:8px}
 .welcome-controls select{width:auto;margin:0}
@@ -428,10 +428,6 @@ html.a11y-reduced-motion *,html.a11y-reduced-motion *:before,html.a11y-reduced-m
     </label>
     <div class="err" id="aConsentErr" aria-live="polite"></div>
     <div class="err" id="aErr" aria-live="polite"></div>
-    <label id="rememberMeRow" class="auth-remember">
-      <input id="aRemember" type="checkbox">
-      <span data-i18n="rememberMe">Remember me on this device</span>
-    </label>
     <div id="authEmailForm" hidden>
       <div id="parentNameGroup" hidden>
         <input id="aParentName" type="text" autocomplete="name" maxlength="100" placeholder="Parent/guardian name" data-i18n-placeholder="parentName">
@@ -997,9 +993,6 @@ Object.assign(TEXT.ru,{accountEmail:'Электронная почта роди�
 Object.assign(TEXT.en,{registrationConsentPrefix:'I have read and agree to the',registrationConsentJoin:'and',registrationConsentRequired:'Please accept the Terms of Use and Privacy Policy to continue.'});
 Object.assign(TEXT.he,{registrationConsentPrefix:'קראתי ואני מאשר/ת את',registrationConsentJoin:'ואת',registrationConsentRequired:'כדי להמשיך, יש לאשר את תנאי השימוש ואת מדיניות הפרטיות.'});
 Object.assign(TEXT.ru,{registrationConsentPrefix:'Я прочитал(а) и принимаю',registrationConsentJoin:'и',registrationConsentRequired:'Чтобы продолжить, примите Условия использования и Политику конфиденциальности.'});
-Object.assign(TEXT.en,{rememberMe:'Remember me on this device'});
-Object.assign(TEXT.he,{rememberMe:'זכור אותי במכשיר זה'});
-Object.assign(TEXT.ru,{rememberMe:'Запомнить меня на этом устройстве'});
 Object.assign(TEXT.en,{deviceLimitReached:'This account is already active on 5 devices. Sign out from another device and try again.',progressSyncFailed:'Progress could not be synchronized. Check your connection; your progress is saved on this device.',profileSyncUnavailable:'Account sync is not ready yet. Please try again later.'});
 Object.assign(TEXT.he,{deviceLimitReached:'החשבון פעיל כבר ב-5 מכשירים. התנתקו ממכשיר אחר ונסו שוב.',progressSyncFailed:'לא ניתן לסנכרן את ההתקדמות. בדקו את החיבור; ההתקדמות נשמרה במכשיר הזה.',profileSyncUnavailable:'סנכרון החשבון עדיין אינו זמין. נסו שוב מאוחר יותר.'});
 Object.assign(TEXT.ru,{deviceLimitReached:'Этот аккаунт уже используется на 5 устройствах. Выйдите из аккаунта на другом устройстве и попробуйте снова.',progressSyncFailed:'Не удалось синхронизировать прогресс. Проверьте подключение; данные сохранены на этом устройстве.',profileSyncUnavailable:'Синхронизация аккаунта пока недоступна. Попробуйте позже.'});
@@ -1867,31 +1860,15 @@ function go(id){
 
 /* ---------- onboarding ---------- */
 let amode='login',authErrorState=null,authStatusState=null,passwordRecoveryMode=false;
-const AUTH_REMEMBER_ME_KEY='megical_fun_remember_auth_session';
-function shouldRememberAuthSession(){return localStorage.getItem(AUTH_REMEMBER_ME_KEY)==='true'}
-function setRememberAuthSession(remember){localStorage.setItem(AUTH_REMEMBER_ME_KEY,remember?'true':'false')}
 function closeAuthFlow(){
   authChoiceMade=false;$('#auth').style.display='none';$('#welcome').classList.remove('auth-flow');
   clearAuthErrors();clearAuthStatus();
 }
-const rememberMeAuthStorage={
-  getItem(key){
-    const remembered=localStorage.getItem(key);
-    return remembered!==null?remembered:sessionStorage.getItem(key);
-  },
-  setItem(key,value){
-    const target=shouldRememberAuthSession()?localStorage:sessionStorage;
-    const other=target===localStorage?sessionStorage:localStorage;
-    other.removeItem(key);target.setItem(key,value);
-  },
-  removeItem(key){localStorage.removeItem(key);sessionStorage.removeItem(key)}
-};
 function authForm(mode){
   authChoiceMade=true;amode=mode;passwordRecoveryMode=false;$('#welcome').classList.add('auth-flow');$('#auth').style.display='block';clearAuthErrors();clearAuthStatus();
   $('#authEmailForm').hidden=false;
   $('#authEmailGroup').hidden=false;$('#passwordRecoveryTitle').hidden=true;
   $('#parentNameGroup').hidden=mode!=='reg';$('#aParentName').required=mode==='reg';$('#aParentName').value='';
-  $('#rememberMeRow').hidden=false;$('#aRemember').checked=shouldRememberAuthSession();
   $('#registrationConsent').hidden=mode!=='reg';$('#aConsent').required=mode==='reg';$('#aConsent').checked=false;
   $('#forgotPasswordButton').hidden=mode!=='login';
   $('#aEmail').required=true;$('#aPassword').required=true;$('#aEmail').value='';$('#aPassword').value='';
@@ -1940,7 +1917,6 @@ function renderAuthStatus(){
 function showPasswordRecovery(){
   authChoiceMade=true;amode='recovery';passwordRecoveryMode=true;
   $('#welcome').classList.add('auth-flow');$('#auth').style.display='block';$('#authEmailForm').hidden=false;clearAuthErrors();clearAuthStatus();
-  $('#rememberMeRow').hidden=true;
   $('#parentNameGroup').hidden=true;$('#aParentName').required=false;
   $('#registrationConsent').hidden=true;$('#aConsent').required=false;$('#aConsent').checked=false;
   $('#authEmailGroup').hidden=true;$('#passwordRecoveryTitle').hidden=false;
@@ -2195,7 +2171,6 @@ async function authGo(){
   if(!supabaseClient){setAuthError('form','authNotConfigured');return}
   authBusy=true;$('#aSubmit').disabled=true;
   try{
-    if(!passwordRecoveryMode)setRememberAuthSession($('#aRemember').checked);
     if(passwordRecoveryMode){
       const {data,error}=await supabaseClient.auth.updateUser({password});
       if(error)throw error;
@@ -2274,7 +2249,12 @@ async function initializeAuth(){
     const config=await response.json();
     if(typeof config.supabaseUrl!=='string'||typeof config.supabaseAnonKey!=='string')throw new Error('Supabase public configuration is incomplete.');
     await loadSupabaseLibrary();
-    supabaseClient=window.supabase.createClient(config.supabaseUrl,config.supabaseAnonKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,storage:rememberMeAuthStorage}});
+    const projectRef=new URL(config.supabaseUrl).hostname.split('.')[0];
+    const authStorageKey=`sb-${projectRef}-auth-token`;
+    for(const key of [authStorageKey,'megical_fun_remember_auth_session']){
+      try{localStorage.removeItem(key)}catch(error){console.error('Could not clear a previous persistent auth setting:',error)}
+    }
+    supabaseClient=window.supabase.createClient(config.supabaseUrl,config.supabaseAnonKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,storage:sessionStorage,storageKey:authStorageKey}});
     supabaseClient.auth.onAuthStateChange(event=>{
       if(event==='PASSWORD_RECOVERY')showPasswordRecovery();
     });
