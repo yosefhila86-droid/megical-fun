@@ -2411,7 +2411,7 @@ async function initializeAuth(){
     const config=await response.json();
     if(typeof config.supabaseUrl!=='string'||typeof config.supabaseAnonKey!=='string')throw new Error('Supabase public configuration is incomplete.');
     await loadSupabaseLibrary();
-    supabaseClient=window.supabase.createClient(config.supabaseUrl,config.supabaseAnonKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,storage:rememberMeAuthStorage}});
+    supabaseClient=window.supabase.createClient(config.supabaseUrl,config.supabaseAnonKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,flowType:'pkce',storage:rememberMeAuthStorage}});
     supabaseClient.auth.onAuthStateChange(event=>{
       if(event==='PASSWORD_RECOVERY')showPasswordRecovery();
     });
