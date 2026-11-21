@@ -12,6 +12,8 @@
 body{margin:0;font-family:system-ui,Arial,sans-serif;background:#fff7e6 url('./images/magical-fun-background.png') center center / cover no-repeat fixed;color:#3b2a66;height:100vh;height:100dvh;display:flex;flex-direction:column;overflow:hidden}
 button{font:inherit;cursor:pointer;border:0;border-radius:16px;padding:12px 16px;background:#7c4dff;color:#fff;font-weight:700}
 button.alt{background:#ffb703;color:#3b2a66}button.ghost{background:#ece6ff;color:#3b2a66}
+button.google-signin{background:#fff;color:#303134;border:1px solid #dadce0}
+button.google-signin::before{content:"G";font-weight:700;color:#4285f4;margin-right:8px}
 input{font:inherit;padding:12px;border-radius:12px;border:2px solid #d9ccff;width:100%;margin:6px 0}
 input[type=range]{-webkit-appearance:none;appearance:none;height:26px;padding:0;border:0;border-radius:13px;margin:4px 0}
 input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:32px;height:32px;border-radius:50%;background:#fff;border:4px solid #3b2a66}
@@ -433,6 +435,7 @@ html.a11y-reduced-motion *,html.a11y-reduced-motion *:before,html.a11y-reduced-m
     <p id="aStatus" class="access-notice" role="status" hidden></p>
     <button id="forgotPasswordButton" class="ghost" type="button" onclick="requestPasswordReset()" data-i18n="forgotPassword">Forgot password?</button>
     <button id="aSubmit" style="width:100%" onclick="authGo()">Continue</button>
+    <button id="googleSignInButton" class="google-signin" type="button" onclick="signInWithGoogle()" data-i18n="googleSignIn" hidden>Continue with Google</button>
   </div>
 </div>
 
@@ -983,6 +986,9 @@ Object.assign(TEXT.ru,{registrationConsentPrefix:'Я прочитал(а) и п�
 Object.assign(TEXT.en,{rememberMe:'Remember me on this device'});
 Object.assign(TEXT.he,{rememberMe:'זכור אותי במכשיר זה'});
 Object.assign(TEXT.ru,{rememberMe:'Запомнить меня на этом устройстве'});
+Object.assign(TEXT.en,{googleSignIn:'Continue with Google',googleSignInFailed:'Google sign-in could not be completed. Please try again.'});
+Object.assign(TEXT.he,{googleSignIn:'המשך עם Google',googleSignInFailed:'לא ניתן להשלים את ההתחברות עם Google. נסו שוב.'});
+Object.assign(TEXT.ru,{googleSignIn:'Продолжить с Google',googleSignInFailed:'Не удалось войти через Google. Попробуйте ещё раз.'});
 Object.assign(TEXT.en,{deviceLimitReached:'This account is already active on 5 devices. Sign out from another device and try again.',progressSyncFailed:'Progress could not be synchronized. Check your connection; your progress is saved on this device.',profileSyncUnavailable:'Account sync is not ready yet. Please try again later.'});
 Object.assign(TEXT.he,{deviceLimitReached:'החשבון פעיל כבר ב-5 מכשירים. התנתקו ממכשיר אחר ונסו שוב.',progressSyncFailed:'לא ניתן לסנכרן את ההתקדמות. בדקו את החיבור; ההתקדמות נשמרה במכשיר הזה.',profileSyncUnavailable:'סנכרון החשבון עדיין אינו זמין. נסו שוב מאוחר יותר.'});
 Object.assign(TEXT.ru,{deviceLimitReached:'Этот аккаунт уже используется на 5 устройствах. Выйдите из аккаунта на другом устройстве и попробуйте снова.',progressSyncFailed:'Не удалось синхронизировать прогресс. Проверьте подключение; данные сохранены на этом устройстве.',profileSyncUnavailable:'Синхронизация аккаунта пока недоступна. Попробуйте позже.'});
@@ -1458,6 +1464,16 @@ async function registerCurrentDevice(){
   if(error)throw error;
   return data&&data.allowed===true;
 }
+async function fetchAccountEntitlements(userId){
+  const {data,error}=await withTimeout(supabaseClient.from('user_entitlements')
+    .select('vip,all_games,unlocked_games').eq('user_id',userId).maybeSingle(),8000,'Entitlement loading timed out.');
+  if(error||!data)throw new Error(tr('entitlementsLoadFailed')+(error?` (${error.message})`:''));
+  return {
+    vip:data.vip===true,
+    allGamesUnlocked:data.all_games===true,
+    unlockedGames:Array.isArray(data.unlocked_games)?data.unlocked_games:[],
+  };
+}
 function startProfileSyncChannel(userId,childId){
   if(profileSyncChannel)supabaseClient.removeChannel(profileSyncChannel);
   profileSyncChannel=supabaseClient.channel(`profile-${userId}-${childId}`)
@@ -1841,8 +1857,21 @@ function go(id){
 /* ---------- onboarding ---------- */
 let amode='login',authErrorState=null,authStatusState=null,passwordRecoveryMode=false;
 const AUTH_REMEMBER_ME_KEY='megical_fun_remember_auth_session';
+const GOOGLE_AUTH_REDIRECT='com.megical.fun://login-callback';
+let googleOAuthBusy=false,googleOAuthCallbackPending=false,googleOAuthCallbackHandled=null,googleOAuthPlugins=null;
 function shouldRememberAuthSession(){return localStorage.getItem(AUTH_REMEMBER_ME_KEY)==='true'}
 function setRememberAuthSession(remember){localStorage.setItem(AUTH_REMEMBER_ME_KEY,remember?'true':'false')}
+function isAndroidApp(){
+  return Boolean(window.Capacitor&&window.Capacitor.getPlatform&&window.Capacitor.getPlatform()==='android');
+}
+function nativeGoogleOAuthPlugins(){
+  const capacitor=window.Capacitor;
+  if(!isAndroidApp()||!capacitor||typeof capacitor.registerPlugin!=='function')return null;
+  if(!googleOAuthPlugins){
+    googleOAuthPlugins={App:capacitor.registerPlugin('App'),Browser:capacitor.registerPlugin('Browser')};
+  }
+  return googleOAuthPlugins;
+}
 const rememberMeAuthStorage={
   getItem(key){
     const remembered=localStorage.getItem(key);
@@ -1859,8 +1888,9 @@ function authForm(mode){
   authChoiceMade=true;amode=mode;passwordRecoveryMode=false;$('#auth').style.display='block';clearAuthErrors();clearAuthStatus();
   $('#authEmailGroup').hidden=false;$('#passwordRecoveryTitle').hidden=true;
   $('#rememberMeRow').hidden=false;$('#aRemember').checked=shouldRememberAuthSession();
-  $('#registrationConsent').hidden=mode!=='reg';$('#aConsent').required=mode==='reg';$('#aConsent').checked=false;
+  $('#registrationConsent').hidden=mode!=='reg'&&!isAndroidApp();$('#aConsent').required=mode==='reg';$('#aConsent').checked=false;
   $('#forgotPasswordButton').hidden=mode!=='login';
+  $('#googleSignInButton').hidden=!isAndroidApp();
   $('#aEmail').required=true;$('#aPassword').required=true;$('#aEmail').value='';$('#aPassword').value='';
   $('#aPassword').autocomplete=mode==='reg'?'new-password':'current-password';
   $('#aSubmit').textContent=tr(mode==='reg'?'register':'login');
@@ -1906,12 +1936,12 @@ function showPasswordRecovery(){
   $('#rememberMeRow').hidden=true;
   $('#registrationConsent').hidden=true;$('#aConsent').required=false;$('#aConsent').checked=false;
   $('#authEmailGroup').hidden=true;$('#passwordRecoveryTitle').hidden=false;
-  $('#forgotPasswordButton').hidden=true;$('#aEmail').required=false;$('#aPassword').required=true;
+  $('#forgotPasswordButton').hidden=true;$('#googleSignInButton').hidden=true;$('#aEmail').required=false;$('#aPassword').required=true;
   $('#aPassword').value='';$('#aPassword').autocomplete='new-password';
   $('#aSubmit').textContent=tr('saveNewPassword');
 }
 async function requestPasswordReset(){
-  if(authBusy)return;
+  if(authBusy||googleOAuthBusy)return;
   clearAuthErrors();clearAuthStatus();
   const email=$('#aEmail').value.trim().toLowerCase();
   if(!email){setAuthError('email','emailRequired');return}
@@ -1929,6 +1959,78 @@ async function requestPasswordReset(){
     setAuthError('form','passwordResetFailed');
   }finally{
     authBusy=false;$('#forgotPasswordButton').disabled=false;
+  }
+}
+function isGoogleOAuthCallbackUrl(value){
+  try{
+    const url=new URL(value);
+    return url.protocol==='com.megical.fun:'&&url.hostname==='login-callback';
+  }catch(error){return false}
+}
+async function handleGoogleOAuthCallback(callbackUrl){
+  if(!isGoogleOAuthCallbackUrl(callbackUrl)||!supabaseClient||callbackUrl===googleOAuthCallbackHandled)return;
+  googleOAuthCallbackHandled=callbackUrl;googleOAuthCallbackPending=true;authChoiceMade=true;
+  const plugins=nativeGoogleOAuthPlugins();
+  if(plugins){
+    try{await plugins.Browser.close()}
+    catch(error){console.error('Could not close the Google sign-in browser:',error)}
+  }
+  try{
+    const code=new URL(callbackUrl).searchParams.get('code');
+    if(!code)throw new Error('Google sign-in callback did not include an authorization code.');
+    const {data,error}=await supabaseClient.auth.exchangeCodeForSession(code);
+    if(error)throw error;
+    const user=data&&data.session&&data.session.user;
+    if(!user)throw new Error('Google sign-in returned no authenticated user.');
+    await enterAccount(user);
+  }catch(error){
+    console.error('Google sign-in failed:',error);
+    authForm('login');setAuthError('form','googleSignInFailed');
+  }finally{
+    googleOAuthCallbackPending=false;googleOAuthBusy=false;
+    $('#googleSignInButton').disabled=false;
+  }
+}
+async function initializeAndroidGoogleOAuth(){
+  const plugins=nativeGoogleOAuthPlugins();
+  if(!plugins)return;
+  try{
+    await plugins.App.addListener('appUrlOpen',({url})=>{void handleGoogleOAuthCallback(url)});
+    await plugins.Browser.addListener('browserFinished',()=>{
+      if(!googleOAuthCallbackPending){
+        googleOAuthBusy=false;
+        $('#googleSignInButton').disabled=false;
+      }
+    });
+    const launch=await plugins.App.getLaunchUrl();
+    if(launch&&launch.url)await handleGoogleOAuthCallback(launch.url);
+  }catch(error){
+    console.error('Could not initialize Android Google sign-in:',error);
+  }
+}
+async function signInWithGoogle(){
+  if(authBusy||googleOAuthBusy)return;
+  clearAuthErrors();clearAuthStatus();
+  if(!supabaseClient){setAuthError('form','authNotConfigured');return}
+  if(!isAndroidApp()){setAuthError('form','googleSignInFailed');return}
+  if(!$('#aConsent').checked){setAuthError('consent','registrationConsentRequired');return}
+  const plugins=nativeGoogleOAuthPlugins();
+  if(!plugins){setAuthError('form','googleSignInFailed');return}
+  googleOAuthBusy=true;googleOAuthCallbackPending=false;googleOAuthCallbackHandled=null;
+  $('#googleSignInButton').disabled=true;
+  try{
+    setRememberAuthSession($('#aRemember').checked);
+    const {data,error}=await supabaseClient.auth.signInWithOAuth({
+      provider:'google',
+      options:{redirectTo:GOOGLE_AUTH_REDIRECT,skipBrowserRedirect:true},
+    });
+    if(error)throw error;
+    if(!data||typeof data.url!=='string')throw new Error('Google sign-in did not return an authorization URL.');
+    await plugins.Browser.open({url:data.url});
+  }catch(error){
+    console.error('Could not start Google sign-in:',error);
+    googleOAuthBusy=false;$('#googleSignInButton').disabled=false;
+    setAuthError('form','googleSignInFailed');
   }
 }
 function guest(){
@@ -2091,16 +2193,22 @@ async function saveChildProfile(){
 async function enterAccount(user){
   if(currentAuthUserId===user.id){currentAccountEmail=user.email||currentAccountEmail;renderProfile();return}
   const generation=++authGeneration;
-  const displayName=(user.user_metadata&&user.user_metadata.display_name)||(user.email||'Guest').split('@')[0];
+  const displayName=(user.user_metadata&&(user.user_metadata.display_name||user.user_metadata.full_name||user.user_metadata.name))||(user.email||'Guest').split('@')[0];
   currentAccountEmail=user.email||'';
   initialChildNickname=displayName;
   currentChildId=null;accountChildren=[];profileSyncReady=false;
   profileSyncRunId++;profileSyncBusy=false;profileSyncAgain=false;
   accountEntitlements={vip:false,allGamesUnlocked:false,unlockedGames:[]};accountBillingRestored=false;
+  try{
+    accountEntitlements=await fetchAccountEntitlements(user.id);
+  }catch(error){
+    console.error('Could not load account entitlements:',error);
+    authForm('login');setAuthError('form','entitlementsLoadFailed');
+    const {error:signOutError}=await supabaseClient.auth.signOut();
+    if(signOutError)console.error('Could not sign out after entitlement loading failed:',signOutError);
+    return;
+  }
   let deviceAllowed=false;
-  const entitlementsPromise=withTimeout(supabaseClient.from('user_entitlements')
-    .select('vip,all_games,unlocked_games').eq('user_id',user.id).maybeSingle(),8000,'Entitlement loading timed out.');
-  void entitlementsPromise.catch(error=>console.error('Could not load account entitlements:',error));
   try{
     deviceAllowed=await withTimeout(registerCurrentDevice(),8000,'Device registration timed out.');
   }catch(error){
@@ -2136,29 +2244,9 @@ async function enterAccount(user){
     setChildProfileForm({creating:true,nickname:initialChildNickname});
     go('childProfile');
   }
-  void entitlementsPromise.then(({data,error})=>{
-    if(generation!==authGeneration||currentAuthUserId!==user.id)return;
-    if(error||!data)throw new Error(tr('entitlementsLoadFailed')+(error?` (${error.message})`:''));
-    accountEntitlements.vip=data.vip===true;
-    accountEntitlements.allGamesUnlocked=data.all_games===true;
-    accountEntitlements.unlockedGames=Array.isArray(data.unlocked_games)?data.unlocked_games:[];
-    S.vip=accountEntitlements.vip;
-    S.allGamesUnlocked=accountEntitlements.allGamesUnlocked;
-    S.unlockedGames=accountEntitlements.unlockedGames.slice();
-    if(S.vip||S.allGamesUnlocked){
-      clearTimeout(billingRefreshTimer);billingRefreshTimer=null;
-    }
-    if(currentChildId)sv();
-    if($('#games').classList.contains('on'))renderMiniGames();
-    if($('#parentM').classList.contains('on'))renderParentDashboard();
-  }).catch(error=>{
-    if(generation!==authGeneration||currentAuthUserId!==user.id)return;
-    console.error('Could not load account entitlements:',error);
-    toast(tr('entitlementsLoadFailed'));
-  });
 }
 async function authGo(){
-  if(authBusy)return;
+  if(authBusy||googleOAuthBusy)return;
   const email=$('#aEmail').value.trim().toLowerCase(),password=$('#aPassword').value;
   clearAuthErrors();clearAuthStatus();
   if(!passwordRecoveryMode){
@@ -2254,6 +2342,7 @@ async function initializeAuth(){
     supabaseClient.auth.onAuthStateChange(event=>{
       if(event==='PASSWORD_RECOVERY')showPasswordRecovery();
     });
+    if(isAndroidApp())await initializeAndroidGoogleOAuth();
     const {data,error}=await supabaseClient.auth.getSession();
     if(error)throw error;
     if(recoveryCallback){
