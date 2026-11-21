@@ -28,14 +28,20 @@ input[type=color]{height:46px;padding:2px;border-radius:12px}
 #welcome.screen.on{display:flex;flex:1 1 auto;flex-direction:column;justify-content:safe center;align-self:stretch;width:100%;max-width:none;margin:0}
 #welcome{position:relative;isolation:isolate;overflow-y:auto;background:radial-gradient(ellipse at 50% 35%,#ffffff22 0%,#fff8e622 48%,#f1eaff18 100%)}
 #welcome>button,#welcome #auth{width:100%;max-width:420px;align-self:center}
+#welcome.auth-flow>.guest-button,#welcome.auth-flow>#loginButton,#welcome.auth-flow>#registerButton{display:none!important}
 #auth>button{width:100%;margin:6px 0}
+#auth{text-align:center}
+#auth input{text-align:center}
+#authMethodChoices[hidden],#authEmailForm[hidden]{display:none}
+#authMethodChoices{display:grid;gap:8px}
+#authMethodChoices button{width:100%;margin:0}
 #auth .err:empty{display:none;min-height:0;margin:0}
-.auth-consent,.auth-remember{display:flex;align-items:flex-start;gap:8px;margin:8px 0;font-size:14px;line-height:1.45;text-align:start}
+.auth-consent,.auth-remember{display:flex;align-items:center;justify-content:center;gap:8px;margin:8px 0;font-size:14px;line-height:1.45;text-align:center}
 .auth-consent[hidden],.auth-remember[hidden]{display:none}
 .auth-method-divider{display:flex;align-items:center;gap:12px;margin:8px 0;color:#6b6280;font-size:14px}
 .auth-method-divider:before,.auth-method-divider:after{content:"";height:1px;flex:1;background:#d9ccff}
 .auth-method-divider[hidden]{display:none}
-.auth-consent input,.auth-remember input{flex:0 0 auto;width:18px;height:18px;margin:3px 0 0}
+.auth-consent input,.auth-remember input{flex:0 0 auto;width:18px;height:18px;margin:0}
 .welcome-controls{width:min(100%,420px);align-self:center;display:flex;align-items:center;justify-content:center;gap:12px}
 .welcome-controls label{display:flex;align-items:center;gap:8px}
 .welcome-controls select{width:auto;margin:0}
@@ -412,24 +418,22 @@ html.a11y-reduced-motion *,html.a11y-reduced-motion *:before,html.a11y-reduced-m
   <div class="welcome-controls"><label><span data-i18n="language">Language</span><select id="welcomeLanguage" onchange="setLanguage(this.value)" aria-label="Language" data-i18n-aria="language"><option value="en">English</option><option value="he">עברית</option><option value="ru">Русский</option></select></label><button id="welcomeSndBtn" class="welcome-sound-toggle" onclick="toggleMusic()" aria-label="Music on or off" aria-pressed="true" data-i18n-aria="musicToggle">🔊</button><button class="welcome-sound-toggle" type="button" onclick="openAccessibilitySettings()" aria-label="Accessibility settings" data-i18n-aria="accessibilityTitle">♿</button></div>
   <p><a id="privacyLink" href="./privacy.html?lang=en" data-i18n="privacyPolicyLink">Privacy policy</a> · <a id="termsLink" href="./terms.html?lang=en" data-i18n="termsOfUseLink">Terms of use</a></p>
   <button class="guest-button" style="width:100%;margin:6px 0" onclick="guest()" data-i18n="playGuest">Play as Guest</button>
-  <button style="width:100%;margin:6px 0" onclick="authForm('login')" data-i18n="login">Login</button>
-  <button class="ghost" style="width:100%;margin:6px 0" onclick="authForm('reg')" data-i18n="register">Register</button>
-  <div id="auth" style="display:none;text-align:left">
-    <h3 id="emailMethodTitle" data-i18n="emailAndPassword">Email and password</h3>
-    <div id="parentNameGroup" hidden>
-      <input id="aParentName" type="text" autocomplete="name" maxlength="100" placeholder="Parent/guardian name" data-i18n-placeholder="parentName">
-      <div class="err" id="aParentNameErr" aria-live="polite"></div>
+  <button id="loginButton" style="width:100%;margin:6px 0" onclick="startAuthFlow('login')" data-i18n="login">Login</button>
+  <button id="registerButton" class="ghost" style="width:100%;margin:6px 0" onclick="startAuthFlow('reg')" data-i18n="register">Register</button>
+  <div id="auth" style="display:none">
+    <button id="authBackButton" class="ghost" type="button" onclick="closeAuthFlow()" data-i18n="back">Back</button>
+    <div id="authMethodChoices" hidden>
+      <button id="authEmailChoiceButton" type="button" onclick="authForm(amode)" data-i18n="loginWithEmail">Sign in with email and password</button>
+      <button id="googleSignInButton" class="google-signin" type="button" onclick="signInWithGoogle()">
+        <svg class="google-signin-logo" viewBox="10 10 20 20" aria-hidden="true" focusable="false">
+          <path d="M29.6 20.2273C29.6 19.5182 29.5364 18.8364 29.4182 18.1818H20V22.05H25.3818C25.15 23.3 24.4455 24.3591 23.3864 25.0682V27.5773H26.6182C28.5091 25.8364 29.6 23.2727 29.6 20.2273Z" fill="#4285F4"/>
+          <path d="M20 30C22.7 30 24.9636 29.1045 26.6181 27.5773L23.3863 25.0682C22.4909 25.6682 21.3454 26.0227 20 26.0227C17.3954 26.0227 15.1909 24.2636 14.4045 21.9H11.0636V24.4909C12.7091 27.7591 16.0909 30 20 30Z" fill="#34A853"/>
+          <path d="M14.4045 21.9C14.2045 21.3 14.0909 20.6599 14.0909 20C14.0909 19.3401 14.2045 18.7 14.4045 18.1V15.5091H11.0636C10.3864 16.8591 10 18.3864 10 20C10 21.6136 10.3864 23.1409 11.0636 24.4909Z" fill="#FBBC04"/>
+          <path d="M20 13.9773C21.4681 13.9773 22.7863 14.4818 23.8227 15.4727L26.6909 12.6045C24.9591 10.9909 22.6954 10 20 10C16.0909 10 12.7091 12.2409 11.0636 15.5091L14.4045 18.1C15.1909 15.7364 17.3954 13.9773 20 13.9773Z" fill="#E94235"/>
+        </svg>
+        <span id="googleSignInLabel" data-i18n="googleSignIn">Continue with Google</span>
+      </button>
     </div>
-    <div id="authEmailGroup"><input id="aEmail" type="email" autocomplete="email" placeholder="Parent/guardian email" data-i18n-placeholder="accountEmail">
-      <div class="err" id="aEmailErr" aria-live="polite"></div>
-    </div>
-    <h3 id="passwordRecoveryTitle" data-i18n="passwordRecoveryTitle" hidden></h3>
-    <input id="aPassword" type="password" autocomplete="current-password" placeholder="Password (at least 8 characters)" data-i18n-placeholder="accountPassword">
-    <div class="err" id="aPasswordErr" aria-live="polite"></div>
-    <label id="rememberMeRow" class="auth-remember">
-      <input id="aRemember" type="checkbox">
-      <span data-i18n="rememberMe">Remember me on this device</span>
-    </label>
     <label id="registrationConsent" class="auth-consent" hidden>
       <input id="aConsent" type="checkbox" aria-describedby="aConsentErr">
       <span><span data-i18n="registrationConsentPrefix">I have read and agree to the</span>
@@ -440,19 +444,25 @@ html.a11y-reduced-motion *,html.a11y-reduced-motion *:before,html.a11y-reduced-m
     </label>
     <div class="err" id="aConsentErr" aria-live="polite"></div>
     <div class="err" id="aErr" aria-live="polite"></div>
-    <p id="aStatus" class="access-notice" role="status" hidden></p>
-    <button id="forgotPasswordButton" class="ghost" type="button" onclick="requestPasswordReset()" data-i18n="forgotPassword">Forgot password?</button>
-    <button id="aSubmit" style="width:100%" onclick="authGo()">Continue</button>
-    <div id="googleSignInDivider" class="auth-method-divider" hidden><span data-i18n="orContinueWith">or</span></div>
-    <button id="googleSignInButton" class="google-signin" type="button" onclick="signInWithGoogle()" hidden>
-      <svg class="google-signin-logo" viewBox="10 10 20 20" aria-hidden="true" focusable="false">
-        <path d="M29.6 20.2273C29.6 19.5182 29.5364 18.8364 29.4182 18.1818H20V22.05H25.3818C25.15 23.3 24.4455 24.3591 23.3864 25.0682V27.5773H26.6182C28.5091 25.8364 29.6 23.2727 29.6 20.2273Z" fill="#4285F4"/>
-        <path d="M20 30C22.7 30 24.9636 29.1045 26.6181 27.5773L23.3863 25.0682C22.4909 25.6682 21.3454 26.0227 20 26.0227C17.3954 26.0227 15.1909 24.2636 14.4045 21.9H11.0636V24.4909C12.7091 27.7591 16.0909 30 20 30Z" fill="#34A853"/>
-        <path d="M14.4045 21.9C14.2045 21.3 14.0909 20.6599 14.0909 20C14.0909 19.3401 14.2045 18.7 14.4045 18.1V15.5091H11.0636C10.3864 16.8591 10 18.3864 10 20C10 21.6136 10.3864 23.1409 11.0636 24.4909Z" fill="#FBBC04"/>
-        <path d="M20 13.9773C21.4681 13.9773 22.7863 14.4818 23.8227 15.4727L26.6909 12.6045C24.9591 10.9909 22.6954 10 20 10C16.0909 10 12.7091 12.2409 11.0636 15.5091L14.4045 18.1C15.1909 15.7364 17.3954 13.9773 20 13.9773Z" fill="#E94235"/>
-      </svg>
-      <span data-i18n="googleSignIn">Continue with Google</span>
-    </button>
+    <label id="rememberMeRow" class="auth-remember">
+      <input id="aRemember" type="checkbox">
+      <span data-i18n="rememberMe">Remember me on this device</span>
+    </label>
+    <div id="authEmailForm" hidden>
+      <div id="parentNameGroup" hidden>
+        <input id="aParentName" type="text" autocomplete="name" maxlength="100" placeholder="Parent/guardian name" data-i18n-placeholder="parentName">
+        <div class="err" id="aParentNameErr" aria-live="polite"></div>
+      </div>
+      <div id="authEmailGroup"><input id="aEmail" type="email" autocomplete="email" placeholder="Parent/guardian email" data-i18n-placeholder="accountEmail">
+        <div class="err" id="aEmailErr" aria-live="polite"></div>
+      </div>
+      <h3 id="passwordRecoveryTitle" data-i18n="passwordRecoveryTitle" hidden></h3>
+      <input id="aPassword" type="password" autocomplete="current-password" placeholder="Password (at least 8 characters)" data-i18n-placeholder="accountPassword">
+      <div class="err" id="aPasswordErr" aria-live="polite"></div>
+      <p id="aStatus" class="access-notice" role="status" hidden></p>
+      <button id="forgotPasswordButton" class="ghost" type="button" onclick="requestPasswordReset()" data-i18n="forgotPassword">Forgot password?</button>
+      <button id="aSubmit" style="width:100%" onclick="authGo()">Continue</button>
+    </div>
   </div>
 </div>
 
@@ -994,15 +1004,18 @@ Object.assign(TEXT.ru,{cameraPermissionBlocked:'Доступ к камере з�
 Object.assign(TEXT.en,{childName:"Child's nickname",parentYear:'Parent birth year (1950–2006)',profileStars:'Stars',vipLabel:'VIP',freeLabel:'Free',active:'Active',logout:'Log out',noSavedArt:'No saved art yet.',switchCamera:'🔄 Switch camera',cameraPhotoError:'Could not read that image.',soundAuto:'Surprise me',soundGroove:'Bouncy Groove',soundLullaby:'Dreamy Lullaby',soundJungle:'Jungle Beat',soundSpace:'Space Adventure',soundChip:'Game Time',soundOff:'Silent',mixerTitle:'🌈 Color Mixer',mixerHue:'🌈 Pick a rainbow color',mixerSat:'💧 Pale ↔ Bold',mixerValue:'🌓 Dark ↔ Light',mixerChooser:'🎯 Or pick from the color chooser',mixerBlend:'🥣 Mix with my color',mixerAdd:'➕ Add to palette',hintFill:'Tap an area to color it 🎨',hintBrush:'Draw freely - paint stays inside each shape!',authNameError:'Please enter a nickname.',authYearError:'Parent birth year must be 1950–2006.',adultError:'Please ask an adult to continue.'});
 Object.assign(TEXT.he,{childName:'כינוי הילד/ה',parentYear:'שנת הלידה של ההורה (1950–2006)',profileStars:'כוכבים',vipLabel:'VIP',freeLabel:'חינם',active:'פעיל',logout:'יציאה',noSavedArt:'עדיין אין ציורים שמורים.',switchCamera:'🔄 החלפת מצלמה',cameraPhotoError:'לא ניתן לקרוא את התמונה.',soundAuto:'הפתיעו אותי',soundGroove:'קצב קופצני',soundLullaby:'שיר ערש חלומי',soundJungle:'קצב ג׳ונגל',soundSpace:'הרפתקה בחלל',soundChip:'זמן משחק',soundOff:'שקט',mixerTitle:'🌈 מערבל צבעים',mixerHue:'🌈 בחרו צבע מהקשת',mixerSat:'💧 עדין ↔ בולט',mixerValue:'🌓 כהה ↔ בהיר',mixerChooser:'🎯 או בחרו צבע',mixerBlend:'🥣 ערבוב עם הצבע שלי',mixerAdd:'➕ הוספה ללוח הצבעים',hintFill:'לחצו על אזור כדי לצבוע אותו 🎨',hintBrush:'ציירו בחופשיות - הצבע נשאר בתוך הצורה!',authNameError:'נא להזין כינוי.',authYearError:'שנת הלידה של ההורה חייבת להיות בין 1950 ל-2006.',adultError:'בקשו עזרה ממבוגר כדי להמשיך.'});
 Object.assign(TEXT.ru,{childName:'Имя ребёнка',parentYear:'Год рождения родителя (1950–2006)',profileStars:'Звёзды',vipLabel:'VIP',freeLabel:'Бесплатно',active:'Активно',logout:'Выйти',noSavedArt:'Пока нет сохранённых рисунков.',switchCamera:'🔄 Переключить камеру',cameraPhotoError:'Не удалось прочитать изображение.',soundAuto:'Удиви меня',soundGroove:'Бодрый ритм',soundLullaby:'Нежная колыбельная',soundJungle:'Ритм джунглей',soundSpace:'Космическое приключение',soundChip:'Время игры',soundOff:'Без звука',mixerTitle:'🌈 Смешивание цветов',mixerHue:'🌈 Выбери цвет радуги',mixerSat:'💧 Нежный ↔ Яркий',mixerValue:'🌓 Тёмный ↔ Светлый',mixerChooser:'🎯 Или выбери цвет',mixerBlend:'🥣 Смешать с моим цветом',mixerAdd:'➕ Добавить в палитру',hintFill:'Нажми на область, чтобы раскрасить её 🎨',hintBrush:'Рисуй свободно - краска остаётся внутри фигуры!',authNameError:'Введи имя.',authYearError:'Год рождения родителя должен быть от 1950 до 2006.',adultError:'Попроси взрослого помочь.'});
-Object.assign(TEXT.en,{emailAndPassword:'Email and password',parentName:'Parent/guardian name',parentNameRequired:'Enter the parent or guardian’s name.',orContinueWith:'or'});
-Object.assign(TEXT.he,{emailAndPassword:'אימייל וסיסמה',parentName:'שם ההורה או האפוטרופוס',parentNameRequired:'יש להזין את שם ההורה או האפוטרופוס.',orContinueWith:'או'});
-Object.assign(TEXT.ru,{emailAndPassword:'Электронная почта и пароль',parentName:'Имя родителя или опекуна',parentNameRequired:'Введите имя родителя или опекуна.',orContinueWith:'или'});
+Object.assign(TEXT.en,{parentName:'Parent/guardian name',parentNameRequired:'Enter the parent or guardian’s name.'});
+Object.assign(TEXT.he,{parentName:'שם ההורה',parentNameRequired:'יש להזין את שם ההורה.'});
+Object.assign(TEXT.ru,{parentName:'Имя родителя или опекуна',parentNameRequired:'Введите имя родителя или опекуна.'});
+Object.assign(TEXT.en,{loginWithEmail:'Sign in with email and password',registerWithEmail:'Sign up with parent name, email and password',loginWithGoogle:'Sign in with Google',registerWithGoogle:'Sign up with Google'});
+Object.assign(TEXT.he,{loginWithEmail:'כניסה עם אימייל וסיסמה',registerWithEmail:'הרשמה עם שם הורה, אימייל וסיסמה',loginWithGoogle:'כניסה עם Google',registerWithGoogle:'הרשמה עם Google'});
+Object.assign(TEXT.ru,{loginWithEmail:'Войти по электронной почте и паролю',registerWithEmail:'Регистрация: имя родителя, почта и пароль',loginWithGoogle:'Войти через Google',registerWithGoogle:'Зарегистрироваться через Google'});
 Object.assign(TEXT.en,{accountEmail:'Parent or guardian email',accountPassword:'Password (at least 8 characters)',authWorking:'Connecting securely…',authNotConfigured:'The account service is unavailable here, so we could not check this email. Try the published app or try again later. You can still play as a guest.',authFailed:'Could not sign in. Please try again.',invalidEmail:'Enter a valid email address.',invalidPassword:'Enter a password with at least 8 characters.',invalidCredentials:'The email or password is incorrect. Check both fields.',emailInUse:'This email is already registered. Sign in with the existing account.',emailConfirmation:'Check your email to confirm the new account, then log in.',forgotPassword:'Forgot password?',passwordResetSent:'If an account exists for this address, a password reset link has been sent. Check your inbox.',passwordResetFailed:'Could not send the password reset email. Check the address and try again.',passwordRecoveryTitle:'Choose a new password',saveNewPassword:'Save new password',passwordUpdated:'Your password has been updated. Signing you in…',passwordUpdateFailed:'Could not update your password. Open the latest reset link and try again.',passwordResetInvalid:'This password reset link is invalid or expired. Request a new one and try again.',entitlementsLoadFailed:'Could not load this account’s VIP access. Please try again.'});
 Object.assign(TEXT.he,{accountEmail:'כתובת האימייל של ההורה',accountPassword:'סיסמה (לפחות 8 תווים)',authWorking:'מתחברים באופן מאובטח…',authNotConfigured:'שירות החשבונות אינו זמין כאן, ולכן לא ניתן לבדוק אם המייל רשום. נסו באפליקציה שפורסמה או שוב מאוחר יותר. אפשר להמשיך כאורחים.',authFailed:'לא ניתן להתחבר. נסו שוב.',invalidEmail:'כתובת האימייל אינה תקינה. בדקו אותה.',invalidPassword:'הסיסמה צריכה להכיל לפחות 8 תווים.',invalidCredentials:'האימייל או הסיסמה אינם נכונים. בדקו את שני השדות.',emailInUse:'המייל הזה כבר נרשם. התחברו באמצעות החשבון הקיים.',emailConfirmation:'בדקו את האימייל ואשרו את החשבון החדש, ואז התחברו.',forgotPassword:'שכחתי סיסמה',passwordResetSent:'אם קיים חשבון עם כתובת זו, נשלח אליו קישור לאיפוס הסיסמה. בדקו את תיבת הדואר.',passwordResetFailed:'לא ניתן לשלוח הודעת איפוס סיסמה. בדקו את כתובת האימייל ונסו שוב.',passwordRecoveryTitle:'בחירת סיסמה חדשה',saveNewPassword:'שמירת סיסמה חדשה',passwordUpdated:'הסיסמה עודכנה. מתחברים לחשבון…',passwordUpdateFailed:'לא ניתן לעדכן את הסיסמה. פתחו את קישור האיפוס האחרון ונסו שוב.',passwordResetInvalid:'קישור איפוס הסיסמה אינו תקין או שפג תוקפו. בקשו קישור חדש ונסו שוב.',entitlementsLoadFailed:'לא ניתן לטעון את הרשאות ה-VIP של החשבון. נסו שוב.'});
 Object.assign(TEXT.ru,{accountEmail:'Электронная почта родителя или опекуна',accountPassword:'Пароль (не менее 8 символов)',authWorking:'Безопасное подключение…',authNotConfigured:'Сервис аккаунтов здесь недоступен, поэтому проверить этот адрес не удалось. Попробуйте опубликованную версию или повторите попытку позже. Можно играть как гость.',authFailed:'Не удалось войти. Попробуйте ещё раз.',invalidEmail:'Введите правильный адрес электронной почты.',invalidPassword:'Пароль должен содержать не менее 8 символов.',invalidCredentials:'Неверная почта или пароль. Проверьте оба поля.',emailInUse:'Этот адрес уже зарегистрирован. Войдите в существующий аккаунт.',emailConfirmation:'Подтвердите новый аккаунт по ссылке в письме, затем войдите.',forgotPassword:'Забыли пароль?',passwordResetSent:'Если для этого адреса есть аккаунт, ссылка для сброса пароля отправлена. Проверьте почту.',passwordResetFailed:'Не удалось отправить письмо для сброса пароля. Проверьте адрес и попробуйте снова.',passwordRecoveryTitle:'Создайте новый пароль',saveNewPassword:'Сохранить новый пароль',passwordUpdated:'Пароль обновлён. Выполняется вход…',passwordUpdateFailed:'Не удалось обновить пароль. Откройте последнюю ссылку сброса и попробуйте снова.',passwordResetInvalid:'Ссылка для сброса пароля недействительна или устарела. Запросите новую ссылку и попробуйте снова.',entitlementsLoadFailed:'Не удалось загрузить VIP-доступ аккаунта. Попробуйте ещё раз.'});
-Object.assign(TEXT.en,{registrationConsentPrefix:'I have read and agree to the',registrationConsentJoin:'and',registrationConsentRequired:'Please accept the Terms of Use and Privacy Policy to register.'});
-Object.assign(TEXT.he,{registrationConsentPrefix:'קראתי ואני מאשר/ת את',registrationConsentJoin:'ואת',registrationConsentRequired:'כדי להירשם, יש לאשר את תנאי השימוש ואת מדיניות הפרטיות.'});
-Object.assign(TEXT.ru,{registrationConsentPrefix:'Я прочитал(а) и принимаю',registrationConsentJoin:'и',registrationConsentRequired:'Чтобы зарегистрироваться, примите Условия использования и Политику конфиденциальности.'});
+Object.assign(TEXT.en,{registrationConsentPrefix:'I have read and agree to the',registrationConsentJoin:'and',registrationConsentRequired:'Please accept the Terms of Use and Privacy Policy to continue.'});
+Object.assign(TEXT.he,{registrationConsentPrefix:'קראתי ואני מאשר/ת את',registrationConsentJoin:'ואת',registrationConsentRequired:'כדי להמשיך, יש לאשר את תנאי השימוש ואת מדיניות הפרטיות.'});
+Object.assign(TEXT.ru,{registrationConsentPrefix:'Я прочитал(а) и принимаю',registrationConsentJoin:'и',registrationConsentRequired:'Чтобы продолжить, примите Условия использования и Политику конфиденциальности.'});
 Object.assign(TEXT.en,{rememberMe:'Remember me on this device'});
 Object.assign(TEXT.he,{rememberMe:'זכור אותי במכשיר זה'});
 Object.assign(TEXT.ru,{rememberMe:'Запомнить меня на этом устройстве'});
@@ -1159,6 +1172,10 @@ function setLanguage(language){
   document.querySelectorAll('[data-i18n]').forEach(node=>{node.textContent=tr(node.dataset.i18n)});
   document.querySelectorAll('[data-i18n-placeholder]').forEach(node=>{node.placeholder=tr(node.dataset.i18nPlaceholder)});
   document.querySelectorAll('[data-i18n-aria]').forEach(node=>{node.setAttribute('aria-label',tr(node.dataset.i18nAria))});
+  if(typeof authMethodSelectionOpen!=='undefined'&&authMethodSelectionOpen){
+    $('#authEmailChoiceButton').textContent=tr(amode==='reg'?'registerWithEmail':'loginWithEmail');
+    $('#googleSignInLabel').textContent=tr(amode==='reg'?'registerWithGoogle':'loginWithGoogle');
+  }
   if(authErrorState)renderAuthError();
   if(authStatusState)renderAuthStatus();
   if($('#auth').style.display!=='none')$('#aSubmit').textContent=tr(passwordRecoveryMode?'saveNewPassword':amode==='reg'?'register':'login');
@@ -1878,7 +1895,7 @@ function go(id){
 }
 
 /* ---------- onboarding ---------- */
-let amode='login',authErrorState=null,authStatusState=null,passwordRecoveryMode=false;
+let amode='login',authErrorState=null,authStatusState=null,passwordRecoveryMode=false,authMethodSelectionOpen=false;
 const AUTH_REMEMBER_ME_KEY='megical_fun_remember_auth_session';
 const GOOGLE_AUTH_REDIRECT='com.megical.fun://login-callback';
 let googleOAuthBusy=false,googleOAuthCallbackPending=false,googleOAuthCallbackHandled=null,googleOAuthPlugins=null;
@@ -1886,6 +1903,23 @@ function shouldRememberAuthSession(){return localStorage.getItem(AUTH_REMEMBER_M
 function setRememberAuthSession(remember){localStorage.setItem(AUTH_REMEMBER_ME_KEY,remember?'true':'false')}
 function isAndroidApp(){
   return Boolean(window.Capacitor&&window.Capacitor.getPlatform&&window.Capacitor.getPlatform()==='android');
+}
+function startAuthFlow(mode){
+  authChoiceMade=true;amode=mode;passwordRecoveryMode=false;authMethodSelectionOpen=true;
+  $('#welcome').classList.add('auth-flow');$('#auth').style.display='block';
+  $('#authEmailChoiceButton').textContent=tr(mode==='reg'?'registerWithEmail':'loginWithEmail');
+  $('#googleSignInLabel').textContent=tr(mode==='reg'?'registerWithGoogle':'loginWithGoogle');
+  $('#authMethodChoices').hidden=false;$('#authEmailForm').hidden=true;
+  $('#registrationConsent').hidden=false;$('#aConsent').required=false;$('#aConsent').checked=false;
+  $('#aParentName').required=false;$('#aEmail').required=false;$('#aPassword').required=false;
+  $('#rememberMeRow').hidden=false;$('#aRemember').checked=shouldRememberAuthSession();
+  $('#aParentName').value='';$('#aEmail').value='';$('#aPassword').value='';
+  $('#aPassword').autocomplete=mode==='reg'?'new-password':'current-password';
+  clearAuthErrors();clearAuthStatus();
+}
+function closeAuthFlow(){
+  authChoiceMade=false;authMethodSelectionOpen=false;$('#auth').style.display='none';$('#welcome').classList.remove('auth-flow');
+  clearAuthErrors();clearAuthStatus();
 }
 function nativeGoogleOAuthPlugins(){
   const capacitor=window.Capacitor;
@@ -1909,14 +1943,13 @@ const rememberMeAuthStorage={
   removeItem(key){localStorage.removeItem(key);sessionStorage.removeItem(key)}
 };
 function authForm(mode){
-  authChoiceMade=true;amode=mode;passwordRecoveryMode=false;$('#auth').style.display='block';clearAuthErrors();clearAuthStatus();
-  $('#emailMethodTitle').hidden=false;
+  authChoiceMade=true;amode=mode;passwordRecoveryMode=false;authMethodSelectionOpen=false;$('#welcome').classList.add('auth-flow');$('#auth').style.display='block';clearAuthErrors();clearAuthStatus();
+  $('#authMethodChoices').hidden=true;$('#authEmailForm').hidden=false;
   $('#authEmailGroup').hidden=false;$('#passwordRecoveryTitle').hidden=true;
   $('#parentNameGroup').hidden=mode!=='reg';$('#aParentName').required=mode==='reg';$('#aParentName').value='';
   $('#rememberMeRow').hidden=false;$('#aRemember').checked=shouldRememberAuthSession();
-  $('#registrationConsent').hidden=mode!=='reg'&&!isAndroidApp();$('#aConsent').required=mode==='reg';$('#aConsent').checked=false;
+  $('#registrationConsent').hidden=mode!=='reg';$('#aConsent').required=mode==='reg';$('#aConsent').checked=false;
   $('#forgotPasswordButton').hidden=mode!=='login';
-  $('#googleSignInButton').hidden=!isAndroidApp();$('#googleSignInDivider').hidden=!isAndroidApp();
   $('#aEmail').required=true;$('#aPassword').required=true;$('#aEmail').value='';$('#aPassword').value='';
   $('#aPassword').autocomplete=mode==='reg'?'new-password':'current-password';
   $('#aSubmit').textContent=tr(mode==='reg'?'register':'login');
@@ -1961,14 +1994,13 @@ function renderAuthStatus(){
   $('#aStatus').textContent=tr(authStatusState);$('#aStatus').hidden=false;
 }
 function showPasswordRecovery(){
-  authChoiceMade=true;amode='recovery';passwordRecoveryMode=true;
-  $('#auth').style.display='block';clearAuthErrors();clearAuthStatus();
-  $('#emailMethodTitle').hidden=true;
+  authChoiceMade=true;amode='recovery';passwordRecoveryMode=true;authMethodSelectionOpen=false;
+  $('#welcome').classList.add('auth-flow');$('#auth').style.display='block';$('#authMethodChoices').hidden=true;$('#authEmailForm').hidden=false;clearAuthErrors();clearAuthStatus();
   $('#rememberMeRow').hidden=true;
   $('#parentNameGroup').hidden=true;$('#aParentName').required=false;
   $('#registrationConsent').hidden=true;$('#aConsent').required=false;$('#aConsent').checked=false;
   $('#authEmailGroup').hidden=true;$('#passwordRecoveryTitle').hidden=false;
-  $('#forgotPasswordButton').hidden=true;$('#googleSignInButton').hidden=true;$('#googleSignInDivider').hidden=true;$('#aEmail').required=false;$('#aPassword').required=true;
+  $('#forgotPasswordButton').hidden=true;$('#aEmail').required=false;$('#aPassword').required=true;
   $('#aPassword').value='';$('#aPassword').autocomplete='new-password';
   $('#aSubmit').textContent=tr('saveNewPassword');
 }
@@ -2024,7 +2056,7 @@ async function handleGoogleOAuthCallback(callbackUrl){
     await enterAccount(user);
   }catch(error){
     console.error('Google sign-in failed:',error);
-    authForm('login');setAuthError('form','googleSignInFailed');
+    startAuthFlow('login');setAuthError('form','googleSignInFailed');
   }finally{
     googleOAuthCallbackPending=false;googleOAuthBusy=false;
     $('#googleSignInButton').disabled=false;
@@ -2051,21 +2083,22 @@ async function signInWithGoogle(){
   if(authBusy||googleOAuthBusy)return;
   clearAuthErrors();clearAuthStatus();
   if(!supabaseClient){setAuthError('form','authNotConfigured');return}
-  if(!isAndroidApp()){setAuthError('form','googleSignInFailed');return}
   if(!$('#aConsent').checked){setAuthError('consent','registrationConsentRequired');return}
-  const plugins=nativeGoogleOAuthPlugins();
-  if(!plugins){setAuthError('form','googleSignInUpdateRequired');return}
+  const androidApp=isAndroidApp(),plugins=androidApp?nativeGoogleOAuthPlugins():null;
+  if(androidApp&&!plugins){setAuthError('form','googleSignInUpdateRequired');return}
   googleOAuthBusy=true;googleOAuthCallbackPending=false;googleOAuthCallbackHandled=null;
   $('#googleSignInButton').disabled=true;
   try{
     setRememberAuthSession($('#aRemember').checked);
     const {data,error}=await supabaseClient.auth.signInWithOAuth({
       provider:'google',
-      options:{redirectTo:GOOGLE_AUTH_REDIRECT,skipBrowserRedirect:true},
+      options:androidApp
+        ?{redirectTo:GOOGLE_AUTH_REDIRECT,skipBrowserRedirect:true}
+        :{redirectTo:location.origin},
     });
     if(error)throw error;
     if(!data||typeof data.url!=='string')throw new Error('Google sign-in did not return an authorization URL.');
-    await plugins.Browser.open({url:data.url});
+    if(androidApp)await plugins.Browser.open({url:data.url});
   }catch(error){
     console.error('Could not start Google sign-in:',error);
     googleOAuthBusy=false;$('#googleSignInButton').disabled=false;
