@@ -57,9 +57,9 @@ self.addEventListener('fetch',event=>{
     return;
   }
 
-  event.respondWith(caches.match(request).then(cached=>{
-    if(cached)return cached;
-    return fetch(request).then(response=>cacheResponse(request,response));
+  event.respondWith(fetch(request).then(response=>cacheResponse(request,response)).catch(async()=>{
+    const cached=await caches.match(request);
+    return cached;
   }));
 });
 
