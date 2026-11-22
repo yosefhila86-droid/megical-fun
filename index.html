@@ -428,21 +428,25 @@ html.a11y-reduced-motion *,html.a11y-reduced-motion *:before,html.a11y-reduced-m
     </label>
     <div class="err" id="aConsentErr" aria-live="polite"></div>
     <div class="err" id="aErr" aria-live="polite"></div>
-    <div id="authEmailForm" hidden>
+    <form id="authEmailForm" onsubmit="event.preventDefault();authGo()" hidden>
       <div id="parentNameGroup" hidden>
         <input id="aParentName" type="text" autocomplete="name" maxlength="100" placeholder="Parent/guardian name" data-i18n-placeholder="parentName">
         <div class="err" id="aParentNameErr" aria-live="polite"></div>
       </div>
-      <div id="authEmailGroup"><input id="aEmail" type="email" autocomplete="email" placeholder="Parent/guardian email" data-i18n-placeholder="accountEmail">
+      <div id="authEmailGroup"><input id="aEmail" type="email" autocomplete="username email" placeholder="Parent/guardian email" data-i18n-placeholder="accountEmail">
         <div class="err" id="aEmailErr" aria-live="polite"></div>
       </div>
       <h3 id="passwordRecoveryTitle" data-i18n="passwordRecoveryTitle" hidden></h3>
       <input id="aPassword" type="password" autocomplete="current-password" placeholder="Password (at least 8 characters)" data-i18n-placeholder="accountPassword">
       <div class="err" id="aPasswordErr" aria-live="polite"></div>
+      <label id="authRememberGroup" class="auth-consent">
+        <input id="aRememberData" type="checkbox">
+        <span data-i18n="rememberData">Remember my details on this device</span>
+      </label>
       <p id="aStatus" class="access-notice" role="status" hidden></p>
       <button id="forgotPasswordButton" class="ghost" type="button" onclick="requestPasswordReset()" data-i18n="forgotPassword">Forgot password?</button>
-      <button id="aSubmit" style="width:100%" onclick="authGo()">Continue</button>
-    </div>
+      <button id="aSubmit" type="submit" style="width:100%" onclick="authGo()">Continue</button>
+    </form>
   </div>
 </div>
 
@@ -999,9 +1003,9 @@ Object.assign(TEXT.ru,{parentName:'Имя родителя или опекуна
 Object.assign(TEXT.en,{accountEmail:'Parent or guardian email',accountPassword:'Password (at least 8 characters)',authWorking:'Connecting securely…',authNotConfigured:'The account service is unavailable here, so we could not check this email. Try the published app or try again later. You can still play as a guest.',authFailed:'Could not sign in. Please try again.',invalidEmail:'Enter a valid email address.',invalidPassword:'Enter a password with at least 8 characters.',invalidCredentials:'The email or password is incorrect. Check both fields.',emailInUse:'This email is already registered. Sign in with the existing account.',emailConfirmation:'Check your email to confirm the new account, then log in.',forgotPassword:'Forgot password?',passwordResetSent:'If an account exists for this address, a password reset link has been sent. Check your inbox.',passwordResetFailed:'Could not send the password reset email. Check the address and try again.',passwordRecoveryTitle:'Choose a new password',saveNewPassword:'Save new password',passwordUpdated:'Your password has been updated. Signing you in…',passwordUpdateFailed:'Could not update your password. Open the latest reset link and try again.',passwordResetInvalid:'This password reset link is invalid or expired. Request a new one and try again.',entitlementsLoadFailed:'Could not load this account’s VIP access. Please try again.'});
 Object.assign(TEXT.he,{accountEmail:'כתובת האימייל של ההורה',accountPassword:'סיסמה (לפחות 8 תווים)',authWorking:'מתחברים באופן מאובטח…',authNotConfigured:'שירות החשבונות אינו זמין כאן, ולכן לא ניתן לבדוק אם המייל רשום. נסו באפליקציה שפורסמה או שוב מאוחר יותר. אפשר להמשיך כאורחים.',authFailed:'לא ניתן להתחבר. נסו שוב.',invalidEmail:'כתובת האימייל אינה תקינה. בדקו אותה.',invalidPassword:'הסיסמה צריכה להכיל לפחות 8 תווים.',invalidCredentials:'האימייל או הסיסמה אינם נכונים. בדקו את שני השדות.',emailInUse:'המייל הזה כבר נרשם. התחברו באמצעות החשבון הקיים.',emailConfirmation:'בדקו את האימייל ואשרו את החשבון החדש, ואז התחברו.',forgotPassword:'שכחתי סיסמה',passwordResetSent:'אם קיים חשבון עם כתובת זו, נשלח אליו קישור לאיפוס הסיסמה. בדקו את תיבת הדואר.',passwordResetFailed:'לא ניתן לשלוח הודעת איפוס סיסמה. בדקו את כתובת האימייל ונסו שוב.',passwordRecoveryTitle:'בחירת סיסמה חדשה',saveNewPassword:'שמירת סיסמה חדשה',passwordUpdated:'הסיסמה עודכנה. מתחברים לחשבון…',passwordUpdateFailed:'לא ניתן לעדכן את הסיסמה. פתחו את קישור האיפוס האחרון ונסו שוב.',passwordResetInvalid:'קישור איפוס הסיסמה אינו תקין או שפג תוקפו. בקשו קישור חדש ונסו שוב.',entitlementsLoadFailed:'לא ניתן לטעון את הרשאות ה-VIP של החשבון. נסו שוב.'});
 Object.assign(TEXT.ru,{accountEmail:'Электронная почта родителя или опекуна',accountPassword:'Пароль (не менее 8 символов)',authWorking:'Безопасное подключение…',authNotConfigured:'Сервис аккаунтов здесь недоступен, поэтому проверить этот адрес не удалось. Попробуйте опубликованную версию или повторите попытку позже. Можно играть как гость.',authFailed:'Не удалось войти. Попробуйте ещё раз.',invalidEmail:'Введите правильный адрес электронной почты.',invalidPassword:'Пароль должен содержать не менее 8 символов.',invalidCredentials:'Неверная почта или пароль. Проверьте оба поля.',emailInUse:'Этот адрес уже зарегистрирован. Войдите в существующий аккаунт.',emailConfirmation:'Подтвердите новый аккаунт по ссылке в письме, затем войдите.',forgotPassword:'Забыли пароль?',passwordResetSent:'Если для этого адреса есть аккаунт, ссылка для сброса пароля отправлена. Проверьте почту.',passwordResetFailed:'Не удалось отправить письмо для сброса пароля. Проверьте адрес и попробуйте снова.',passwordRecoveryTitle:'Создайте новый пароль',saveNewPassword:'Сохранить новый пароль',passwordUpdated:'Пароль обновлён. Выполняется вход…',passwordUpdateFailed:'Не удалось обновить пароль. Откройте последнюю ссылку сброса и попробуйте снова.',passwordResetInvalid:'Ссылка для сброса пароля недействительна или устарела. Запросите новую ссылку и попробуйте снова.',entitlementsLoadFailed:'Не удалось загрузить VIP-доступ аккаунта. Попробуйте ещё раз.'});
-Object.assign(TEXT.en,{registrationConsentPrefix:'I have read and agree to the',registrationConsentJoin:'and',registrationConsentRequired:'Please accept the Terms of Use and Privacy Policy to continue.'});
-Object.assign(TEXT.he,{registrationConsentPrefix:'קראתי ואני מאשר/ת את',registrationConsentJoin:'ואת',registrationConsentRequired:'כדי להמשיך, יש לאשר את תנאי השימוש ואת מדיניות הפרטיות.'});
-Object.assign(TEXT.ru,{registrationConsentPrefix:'Я прочитал(а) и принимаю',registrationConsentJoin:'и',registrationConsentRequired:'Чтобы продолжить, примите Условия использования и Политику конфиденциальности.'});
+Object.assign(TEXT.en,{registrationConsentPrefix:'I have read and agree to the',registrationConsentJoin:'and',registrationConsentRequired:'Please accept the Terms of Use and Privacy Policy to continue.',rememberData:'Remember my details on this device'});
+Object.assign(TEXT.he,{registrationConsentPrefix:'קראתי ואני מאשר/ת את',registrationConsentJoin:'ואת',registrationConsentRequired:'כדי להמשיך, יש לאשר את תנאי השימוש ואת מדיניות הפרטיות.',rememberData:'שמירת הנתונים במכשיר זה'});
+Object.assign(TEXT.ru,{registrationConsentPrefix:'Я прочитал(а) и принимаю',registrationConsentJoin:'и',registrationConsentRequired:'Чтобы продолжить, примите Условия использования и Политику конфиденциальности.',rememberData:'Сохранить данные на этом устройстве'});
 Object.assign(TEXT.en,{deviceLimitReached:'This account is already active on 5 devices. Sign out from another device and try again.',progressSyncFailed:'Progress could not be synchronized. Check your connection; your progress is saved on this device.',profileSyncUnavailable:'Account sync is not ready yet. Please try again later.'});
 Object.assign(TEXT.he,{deviceLimitReached:'החשבון פעיל כבר ב-5 מכשירים. התנתקו ממכשיר אחר ונסו שוב.',progressSyncFailed:'לא ניתן לסנכרן את ההתקדמות. בדקו את החיבור; ההתקדמות נשמרה במכשיר הזה.',profileSyncUnavailable:'סנכרון החשבון עדיין אינו זמין. נסו שוב מאוחר יותר.'});
 Object.assign(TEXT.ru,{deviceLimitReached:'Этот аккаунт уже используется на 5 устройствах. Выйдите из аккаунта на другом устройстве и попробуйте снова.',progressSyncFailed:'Не удалось синхронизировать прогресс. Проверьте подключение; данные сохранены на этом устройстве.',profileSyncUnavailable:'Синхронизация аккаунта пока недоступна. Попробуйте позже.'});
@@ -1880,7 +1884,17 @@ function authForm(mode){
   $('#parentNameGroup').hidden=mode!=='reg';$('#aParentName').required=mode==='reg';$('#aParentName').value='';
   $('#registrationConsent').hidden=mode!=='reg';$('#aConsent').required=mode==='reg';$('#aConsent').checked=false;
   $('#forgotPasswordButton').hidden=mode!=='login';
-  $('#aEmail').required=true;$('#aPassword').required=true;$('#aEmail').value='';$('#aPassword').value='';
+  if($('#authRememberGroup'))$('#authRememberGroup').hidden=false;
+  let savedEmail='';
+  let rememberPref=true;
+  try{
+    savedEmail=localStorage.getItem('megical_fun_saved_email')||'';
+    rememberPref=localStorage.getItem('megical_fun_remember_auth_session')!=='false';
+  }catch(e){}
+  if($('#aRememberData'))$('#aRememberData').checked=rememberPref;
+  $('#aEmail').required=true;$('#aPassword').required=true;
+  $('#aEmail').value=(mode==='login'&&savedEmail)?savedEmail:'';
+  $('#aPassword').value='';
   $('#aPassword').autocomplete=mode==='reg'?'new-password':'current-password';
   $('#aSubmit').textContent=tr(mode==='reg'?'register':'login');
 }
@@ -1930,6 +1944,7 @@ function showPasswordRecovery(){
   $('#registrationConsent').hidden=true;$('#aConsent').required=false;$('#aConsent').checked=false;
   $('#authEmailGroup').hidden=true;$('#passwordRecoveryTitle').hidden=false;
   $('#forgotPasswordButton').hidden=true;$('#aEmail').required=false;$('#aPassword').required=true;
+  if($('#authRememberGroup'))$('#authRememberGroup').hidden=true;
   $('#aPassword').value='';$('#aPassword').autocomplete='new-password';
   $('#aSubmit').textContent=tr('saveNewPassword');
 }
@@ -2194,6 +2209,16 @@ async function authGo(){
         else setAuthError('form','emailConfirmation');
         return;
       }
+      const shouldRemember=$('#aRememberData')?$('#aRememberData').checked:true;
+      try{
+        if(shouldRemember){
+          localStorage.setItem('megical_fun_remember_auth_session','true');
+          localStorage.setItem('megical_fun_saved_email',email);
+        }else{
+          localStorage.setItem('megical_fun_remember_auth_session','false');
+          localStorage.removeItem('megical_fun_saved_email');
+        }
+      }catch(e){}
       await enterAccount(data.user);
     }else{
       const {data,error}=await supabaseClient.auth.signInWithPassword({email,password});
@@ -2204,6 +2229,16 @@ async function authGo(){
         if(error.code==='email_not_confirmed'){setAuthError('email','emailConfirmation');return}
         throw error;
       }
+      const shouldRemember=$('#aRememberData')?$('#aRememberData').checked:true;
+      try{
+        if(shouldRemember){
+          localStorage.setItem('megical_fun_remember_auth_session','true');
+          localStorage.setItem('megical_fun_saved_email',email);
+        }else{
+          localStorage.setItem('megical_fun_remember_auth_session','false');
+          localStorage.removeItem('megical_fun_saved_email');
+        }
+      }catch(e){}
       await enterAccount(data.user);
     }
   }catch(error){
@@ -2248,6 +2283,13 @@ function isPasswordRecoveryCallback(url){
   const query=new URLSearchParams(url.search||''),hash=new URLSearchParams((url.hash||'').replace(/^#/,'').replace(/^\?/,''));
   return query.get('type')==='recovery'||hash.get('type')==='recovery'||query.get('flow')==='password-reset';
 }
+function isAuthRememberEnabled(){
+  try{
+    return localStorage.getItem('megical_fun_remember_auth_session')!=='false';
+  }catch(e){
+    return true;
+  }
+}
 async function initializeAuth(){
   try{
     if(location.protocol==='file:')return;
@@ -2260,10 +2302,32 @@ async function initializeAuth(){
     await loadSupabaseLibrary();
     const projectRef=new URL(config.supabaseUrl).hostname.split('.')[0];
     const authStorageKey=`sb-${projectRef}-auth-token`;
-    for(const key of [authStorageKey,'megical_fun_remember_auth_session']){
-      try{localStorage.removeItem(key)}catch(error){console.error('Could not clear a previous persistent auth setting:',error)}
-    }
-    supabaseClient=window.supabase.createClient(config.supabaseUrl,config.supabaseAnonKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,storage:sessionStorage,storageKey:authStorageKey}});
+    const authStorage={
+      getItem(key){
+        try{
+          if(isAuthRememberEnabled()){
+            const val=localStorage.getItem(key);
+            if(val)return val;
+          }
+          return sessionStorage.getItem(key);
+        }catch(e){return null}
+      },
+      setItem(key,val){
+        try{
+          if(isAuthRememberEnabled()){
+            localStorage.setItem(key,val);
+            sessionStorage.removeItem(key);
+          }else{
+            sessionStorage.setItem(key,val);
+            localStorage.removeItem(key);
+          }
+        }catch(e){console.error('Could not save auth session:',e)}
+      },
+      removeItem(key){
+        try{localStorage.removeItem(key);sessionStorage.removeItem(key)}catch(e){}
+      }
+    };
+    supabaseClient=window.supabase.createClient(config.supabaseUrl,config.supabaseAnonKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,storage:authStorage,storageKey:authStorageKey}});
     supabaseClient.auth.onAuthStateChange(event=>{
       if(event==='PASSWORD_RECOVERY')showPasswordRecovery();
     });
