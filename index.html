@@ -32,6 +32,10 @@ input[type=color]{height:46px;padding:2px;border-radius:12px}
 #auth input{text-align:center}
 #authEmailForm[hidden]{display:none}
 #auth .err:empty{display:none;min-height:0;margin:0}
+.password-input-group{position:relative;display:flex;align-items:center;width:100%;margin:6px 0}
+.password-input-group input{margin:0!important;padding-inline-end:46px}
+.password-toggle-btn{position:absolute;inset-inline-end:8px;top:50%;transform:translateY(-50%);background:none!important;border:none!important;box-shadow:none!important;color:#7c4dff;font-size:20px;padding:6px;line-height:1;min-height:0;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;opacity:.8}
+.password-toggle-btn:hover{opacity:1}
 .auth-consent{display:flex;align-items:center;justify-content:center;gap:8px;margin:8px 0;font-size:14px;line-height:1.45;text-align:center}
 .auth-consent[hidden]{display:none}
 .auth-method-divider{display:flex;align-items:center;gap:12px;margin:8px 0;color:#6b6280;font-size:14px}
@@ -437,7 +441,13 @@ html.a11y-reduced-motion *,html.a11y-reduced-motion *:before,html.a11y-reduced-m
         <div class="err" id="aEmailErr" aria-live="polite"></div>
       </div>
       <h3 id="passwordRecoveryTitle" data-i18n="passwordRecoveryTitle" hidden></h3>
-      <input id="aPassword" type="password" autocomplete="current-password" placeholder="Password (at least 8 characters)" data-i18n-placeholder="accountPassword">
+      <div class="password-input-group">
+        <input id="aPassword" type="password" autocomplete="current-password" placeholder="Password (at least 8 characters)" data-i18n-placeholder="accountPassword">
+        <button type="button" id="togglePasswordBtn" class="password-toggle-btn" onclick="togglePasswordVisibility()" aria-label="Show password" data-i18n-aria="showPassword">
+          <svg id="eyeIconOpen" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          <svg id="eyeIconClosed" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+        </button>
+      </div>
       <div class="err" id="aPasswordErr" aria-live="polite"></div>
       <label id="authRememberGroup" class="auth-consent">
         <input id="aRememberData" type="checkbox">
@@ -1003,9 +1013,9 @@ Object.assign(TEXT.ru,{parentName:'Имя родителя или опекуна
 Object.assign(TEXT.en,{accountEmail:'Parent or guardian email',accountPassword:'Password (at least 8 characters)',authWorking:'Connecting securely…',authNotConfigured:'The account service is unavailable here, so we could not check this email. Try the published app or try again later. You can still play as a guest.',authFailed:'Could not sign in. Please try again.',invalidEmail:'Enter a valid email address.',invalidPassword:'Enter a password with at least 8 characters.',invalidCredentials:'The email or password is incorrect. Check both fields.',emailInUse:'This email is already registered. Sign in with the existing account.',emailConfirmation:'Check your email to confirm the new account, then log in.',forgotPassword:'Forgot password?',passwordResetSent:'If an account exists for this address, a password reset link has been sent. Check your inbox.',passwordResetFailed:'Could not send the password reset email. Check the address and try again.',passwordRecoveryTitle:'Choose a new password',saveNewPassword:'Save new password',passwordUpdated:'Your password has been updated. Signing you in…',passwordUpdateFailed:'Could not update your password. Open the latest reset link and try again.',passwordResetInvalid:'This password reset link is invalid or expired. Request a new one and try again.',entitlementsLoadFailed:'Could not load this account’s VIP access. Please try again.'});
 Object.assign(TEXT.he,{accountEmail:'כתובת האימייל של ההורה',accountPassword:'סיסמה (לפחות 8 תווים)',authWorking:'מתחברים באופן מאובטח…',authNotConfigured:'שירות החשבונות אינו זמין כאן, ולכן לא ניתן לבדוק אם המייל רשום. נסו באפליקציה שפורסמה או שוב מאוחר יותר. אפשר להמשיך כאורחים.',authFailed:'לא ניתן להתחבר. נסו שוב.',invalidEmail:'כתובת האימייל אינה תקינה. בדקו אותה.',invalidPassword:'הסיסמה צריכה להכיל לפחות 8 תווים.',invalidCredentials:'האימייל או הסיסמה אינם נכונים. בדקו את שני השדות.',emailInUse:'המייל הזה כבר נרשם. התחברו באמצעות החשבון הקיים.',emailConfirmation:'בדקו את האימייל ואשרו את החשבון החדש, ואז התחברו.',forgotPassword:'שכחתי סיסמה',passwordResetSent:'אם קיים חשבון עם כתובת זו, נשלח אליו קישור לאיפוס הסיסמה. בדקו את תיבת הדואר.',passwordResetFailed:'לא ניתן לשלוח הודעת איפוס סיסמה. בדקו את כתובת האימייל ונסו שוב.',passwordRecoveryTitle:'בחירת סיסמה חדשה',saveNewPassword:'שמירת סיסמה חדשה',passwordUpdated:'הסיסמה עודכנה. מתחברים לחשבון…',passwordUpdateFailed:'לא ניתן לעדכן את הסיסמה. פתחו את קישור האיפוס האחרון ונסו שוב.',passwordResetInvalid:'קישור איפוס הסיסמה אינו תקין או שפג תוקפו. בקשו קישור חדש ונסו שוב.',entitlementsLoadFailed:'לא ניתן לטעון את הרשאות ה-VIP של החשבון. נסו שוב.'});
 Object.assign(TEXT.ru,{accountEmail:'Электронная почта родителя или опекуна',accountPassword:'Пароль (не менее 8 символов)',authWorking:'Безопасное подключение…',authNotConfigured:'Сервис аккаунтов здесь недоступен, поэтому проверить этот адрес не удалось. Попробуйте опубликованную версию или повторите попытку позже. Можно играть как гость.',authFailed:'Не удалось войти. Попробуйте ещё раз.',invalidEmail:'Введите правильный адрес электронной почты.',invalidPassword:'Пароль должен содержать не менее 8 символов.',invalidCredentials:'Неверная почта или пароль. Проверьте оба поля.',emailInUse:'Этот адрес уже зарегистрирован. Войдите в существующий аккаунт.',emailConfirmation:'Подтвердите новый аккаунт по ссылке в письме, затем войдите.',forgotPassword:'Забыли пароль?',passwordResetSent:'Если для этого адреса есть аккаунт, ссылка для сброса пароля отправлена. Проверьте почту.',passwordResetFailed:'Не удалось отправить письмо для сброса пароля. Проверьте адрес и попробуйте снова.',passwordRecoveryTitle:'Создайте новый пароль',saveNewPassword:'Сохранить новый пароль',passwordUpdated:'Пароль обновлён. Выполняется вход…',passwordUpdateFailed:'Не удалось обновить пароль. Откройте последнюю ссылку сброса и попробуйте снова.',passwordResetInvalid:'Ссылка для сброса пароля недействительна или устарела. Запросите новую ссылку и попробуйте снова.',entitlementsLoadFailed:'Не удалось загрузить VIP-доступ аккаунта. Попробуйте ещё раз.'});
-Object.assign(TEXT.en,{registrationConsentPrefix:'I have read and agree to the',registrationConsentJoin:'and',registrationConsentRequired:'Please accept the Terms of Use and Privacy Policy to continue.',rememberData:'Remember my details on this device'});
-Object.assign(TEXT.he,{registrationConsentPrefix:'קראתי ואני מאשר/ת את',registrationConsentJoin:'ואת',registrationConsentRequired:'כדי להמשיך, יש לאשר את תנאי השימוש ואת מדיניות הפרטיות.',rememberData:'שמירת הנתונים במכשיר זה'});
-Object.assign(TEXT.ru,{registrationConsentPrefix:'Я прочитал(а) и принимаю',registrationConsentJoin:'и',registrationConsentRequired:'Чтобы продолжить, примите Условия использования и Политику конфиденциальности.',rememberData:'Сохранить данные на этом устройстве'});
+Object.assign(TEXT.en,{registrationConsentPrefix:'I have read and agree to the',registrationConsentJoin:'and',registrationConsentRequired:'Please accept the Terms of Use and Privacy Policy to continue.',rememberData:'Remember my details on this device',showPassword:'Show password',hidePassword:'Hide password'});
+Object.assign(TEXT.he,{registrationConsentPrefix:'קראתי ואני מאשר/ת את',registrationConsentJoin:'ואת',registrationConsentRequired:'כדי להמשיך, יש לאשר את תנאי השימוש ואת מדיניות הפרטיות.',rememberData:'שמירת הנתונים במכשיר זה',showPassword:'הצגת סיסמה',hidePassword:'הסתרת סיסמה'});
+Object.assign(TEXT.ru,{registrationConsentPrefix:'Я прочитал(а) и принимаю',registrationConsentJoin:'и',registrationConsentRequired:'Чтобы продолжить, примите Условия использования и Политику конфиденциальности.',rememberData:'Сохранить данные на этом устройстве',showPassword:'Показать пароль',hidePassword:'Скрыть пароль'});
 Object.assign(TEXT.en,{deviceLimitReached:'This account is already active on 5 devices. Sign out from another device and try again.',progressSyncFailed:'Progress could not be synchronized. Check your connection; your progress is saved on this device.',profileSyncUnavailable:'Account sync is not ready yet. Please try again later.'});
 Object.assign(TEXT.he,{deviceLimitReached:'החשבון פעיל כבר ב-5 מכשירים. התנתקו ממכשיר אחר ונסו שוב.',progressSyncFailed:'לא ניתן לסנכרן את ההתקדמות. בדקו את החיבור; ההתקדמות נשמרה במכשיר הזה.',profileSyncUnavailable:'סנכרון החשבון עדיין אינו זמין. נסו שוב מאוחר יותר.'});
 Object.assign(TEXT.ru,{deviceLimitReached:'Этот аккаунт уже используется на 5 устройствах. Выйдите из аккаунта на другом устройстве и попробуйте снова.',progressSyncFailed:'Не удалось синхронизировать прогресс. Проверьте подключение; данные сохранены на этом устройстве.',profileSyncUnavailable:'Синхронизация аккаунта пока недоступна. Попробуйте позже.'});
@@ -1481,12 +1491,32 @@ async function registerCurrentDevice(){
   if(error)throw error;
   return data&&data.allowed===true;
 }
-async function fetchAccountEntitlements(userId){
+async function fetchAccountEntitlements(userOrId){
+  const userId=typeof userOrId==='object'&&userOrId?userOrId.id:userOrId;
+  const userMetadata=typeof userOrId==='object'&&userOrId?(userOrId.user_metadata||{}):{};
+  const appMetadata=typeof userOrId==='object'&&userOrId?(userOrId.app_metadata||{}):{};
+  const metadataVip=userMetadata.vip===true||userMetadata.is_vip===true||appMetadata.vip===true||appMetadata.is_vip===true||userMetadata.role==='vip'||appMetadata.role==='vip';
+  try{
+    if(supabaseClient&&typeof supabaseClient.rpc==='function'){
+      const {data:rpcData,error:rpcError}=await withTimeout(supabaseClient.rpc('get_my_entitlements'),15000,'RPC loading timed out.');
+      if(!rpcError&&rpcData&&typeof rpcData==='object'){
+        return {
+          vip:rpcData.vip===true||metadataVip,
+          allGamesUnlocked:rpcData.all_games===true,
+          unlockedGames:Array.isArray(rpcData.unlocked_games)?rpcData.unlocked_games:[],
+        };
+      }
+    }
+  }catch(rpcErr){console.warn('RPC entitlements fallback to table query:',rpcErr)}
   const {data,error}=await withTimeout(supabaseClient.from('user_entitlements')
-    .select('vip,all_games,unlocked_games').eq('user_id',userId).maybeSingle(),8000,'Entitlement loading timed out.');
-  if(error||!data)throw new Error(tr('entitlementsLoadFailed')+(error?` (${error.message})`:''));
+    .select('vip,all_games,unlocked_games').eq('user_id',userId).maybeSingle(),15000,'Entitlement loading timed out.');
+  if(error)throw new Error(tr('entitlementsLoadFailed')+(error?` (${error.message})`:''));
+  if(!data){
+    if(metadataVip)return {vip:true,allGamesUnlocked:false,unlockedGames:[]};
+    throw new Error(tr('entitlementsLoadFailed'));
+  }
   return {
-    vip:data.vip===true,
+    vip:data.vip===true||metadataVip,
     allGamesUnlocked:data.all_games===true,
     unlockedGames:Array.isArray(data.unlocked_games)?data.unlocked_games:[],
   };
@@ -1895,6 +1925,7 @@ function authForm(mode){
   $('#aEmail').required=true;$('#aPassword').required=true;
   $('#aEmail').value=(mode==='login'&&savedEmail)?savedEmail:'';
   $('#aPassword').value='';
+  resetPasswordVisibility();
   $('#aPassword').autocomplete=mode==='reg'?'new-password':'current-password';
   $('#aSubmit').textContent=tr(mode==='reg'?'register':'login');
 }
@@ -1945,8 +1976,35 @@ function showPasswordRecovery(){
   $('#authEmailGroup').hidden=true;$('#passwordRecoveryTitle').hidden=false;
   $('#forgotPasswordButton').hidden=true;$('#aEmail').required=false;$('#aPassword').required=true;
   if($('#authRememberGroup'))$('#authRememberGroup').hidden=true;
-  $('#aPassword').value='';$('#aPassword').autocomplete='new-password';
+  $('#aPassword').value='';
+  resetPasswordVisibility();
+  $('#aPassword').autocomplete='new-password';
   $('#aSubmit').textContent=tr('saveNewPassword');
+}
+function togglePasswordVisibility(){
+  const input=$('#aPassword'),eyeOpen=$('#eyeIconOpen'),eyeClosed=$('#eyeIconClosed'),btn=$('#togglePasswordBtn');
+  if(!input)return;
+  const isHidden=input.type==='password';
+  input.type=isHidden?'text':'password';
+  if(eyeOpen&&eyeClosed){
+    eyeOpen.style.display=isHidden?'none':'inline-block';
+    eyeClosed.style.display=isHidden?'inline-block':'none';
+  }
+  const labelKey=isHidden?'hidePassword':'showPassword';
+  if(btn){
+    btn.setAttribute('aria-label',tr(labelKey));
+    btn.setAttribute('data-i18n-aria',labelKey);
+  }
+}
+function resetPasswordVisibility(){
+  const input=$('#aPassword'),eyeOpen=$('#eyeIconOpen'),eyeClosed=$('#eyeIconClosed'),btn=$('#togglePasswordBtn');
+  if(input&&input.type!=='password')input.type='password';
+  if(eyeOpen)eyeOpen.style.display='inline-block';
+  if(eyeClosed)eyeClosed.style.display='none';
+  if(btn){
+    btn.setAttribute('aria-label',tr('showPassword'));
+    btn.setAttribute('data-i18n-aria','showPassword');
+  }
 }
 async function requestPasswordReset(){
   if(authBusy)return;
@@ -2135,7 +2193,7 @@ async function enterAccount(user){
   profileSyncRunId++;profileSyncBusy=false;profileSyncAgain=false;
   accountEntitlements={vip:false,allGamesUnlocked:false,unlockedGames:[]};accountBillingRestored=false;
   try{
-    accountEntitlements=await fetchAccountEntitlements(user.id);
+    accountEntitlements=await fetchAccountEntitlements(user);
   }catch(error){
     console.error('Could not load account entitlements:',error);
     authForm('login');setAuthError('form','entitlementsLoadFailed');
