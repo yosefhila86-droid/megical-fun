@@ -67,7 +67,7 @@ nav button.on{color:#7c4dff;background:#f3eeff}
 .modal{position:fixed;inset:0;background:#000a;display:none;align-items:center;justify-content:center;z-index:9;padding:20px}
 .modal.on{display:flex}.box{background:#fff;border-radius:24px;padding:22px;max-width:360px;width:100%;text-align:center;max-height:92vh;overflow-y:auto}
 .box button{margin:6px 3px}
-#gameFeedbackM{z-index:30}
+#gameFeedbackM{z-index:30}#gameFeedbackMessage{white-space:pre-line}
 #cv{width:100%;max-width:min(100%,52vh);aspect-ratio:1;background:#fff;border-radius:16px;box-shadow:0 3px 10px #0003;display:block;margin:0 auto;touch-action:none}
 .tools{display:flex;gap:8px;justify-content:center;margin:4px 0 8px}
 .tools button{flex:1;max-width:190px;background:#ece6ff;color:#3b2a66}
@@ -683,6 +683,9 @@ Object.assign(TEXT.en,{
   escapePrompt:'Solve each station and remember its code part. Enter all parts at the exit lock.',
   escapeRoomProgress:'Station {n} of {total} - {room}',
   escapeRoomCleared:'Station solved. Code part: {value}',
+  escapeGetClue:'Get Clue 🔑',
+  escapeClueTitle:'Clue Received',
+  escapeClueReceived:'Code part collected: {value}',
   escapeComplete:'Correct code! You opened the door and escaped.',
   escapeNextRoom:'Next station',
   escapeCodeTitle:'Exit lock',
@@ -702,6 +705,9 @@ Object.assign(TEXT.he,{
   escapePrompt:'פתרו כל תחנה ושמרו את חלק הקוד שהתקבל. הזינו את כל החלקים במנעול היציאה.',
   escapeRoomProgress:'תחנה {n} מתוך {total} - {room}',
   escapeRoomCleared:'התחנה נפתרה. חלק הקוד: {value}',
+  escapeGetClue:'קבלת הרמז 🔑',
+  escapeClueTitle:'הרמז שהתקבל',
+  escapeClueReceived:'חלק הקוד שהתקבל: {value}',
   escapeComplete:'הקוד נכון! פתחתם את הדלת וברחתם.',
   escapeNextRoom:'לתחנה הבאה',
   escapeCodeTitle:'מנעול היציאה',
@@ -721,6 +727,9 @@ Object.assign(TEXT.ru,{
   escapePrompt:'Реши каждую станцию и запомни её часть кода. Введи все части в замок выхода.',
   escapeRoomProgress:'Станция {n} из {total} – {room}',
   escapeRoomCleared:'Станция пройдена. Часть кода: {value}',
+  escapeGetClue:'Получить подсказку 🔑',
+  escapeClueTitle:'Полученная подсказка',
+  escapeClueReceived:'Полученная часть кода: {value}',
   escapeComplete:'Код верный! Дверь открыта, ты выбрался.',
   escapeNextRoom:'Следующая станция',
   escapeCodeTitle:'Замок выхода',
@@ -1533,15 +1542,15 @@ const cv=$('#cv'),ctx=cv.getContext('2d',{willReadFrequently:true});
 
 function toast(t){const e=$('#toast');e.textContent=t;e.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(()=>{e.style.display='none'},2200)}
 let gameFeedbackAction=null;
-function showGameFeedback(message,actionLabel,action,success=false){
+function showGameFeedback(message,actionLabel,action,success=false,customIcon=null,customTitle=null){
   if(selectedMiniGame==='coloring')return;
   if(typeof action!=='function')throw new TypeError('Game feedback requires a follow-up action.');
   const phrase=tr(success?'done':'tryAgain').replace(/[!！.。]+$/,'').trim();
   const repeated=new RegExp(`^\\s*${phrase.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}[!！.。\\s]*`,'i');
   const cleaned=String(message).replace(repeated,'').replace(repeated,'').trim();
-  $('#gameFeedbackIcon').textContent=success?'🎉':'💪';
-  $('#gameFeedbackTitle').textContent=tr(success?'done':'tryAgain');
-  $('#gameFeedbackTitle').hidden=true;
+  $('#gameFeedbackIcon').textContent=customIcon||(success?'🎉':'💪');
+  $('#gameFeedbackTitle').textContent=customTitle||tr(success?'done':'tryAgain');
+  $('#gameFeedbackTitle').hidden=!customTitle;
   $('#gameFeedbackMessage').textContent=cleaned;
   $('#gameFeedbackMessage').hidden=!cleaned;
   const button=$('#gameFeedbackAction');
@@ -3755,12 +3764,19 @@ function createEscapeRoomPuzzle(language=currentLanguage,activityIndex=selectedL
     ||(isColorCode?!ESCAPE_ROOM_CODE_COLORS[codeValue]:!/^\d$/.test(codeValue))){
     throw new Error(`Invalid escape-room station ${stationIndex+1} for activity ${activityIndex+1}, language ${language}`);
   }
-  const answers=[...new Set(bank.activities.map(item=>item.stations[stationIndex]?.answer?.[language]).filter(value=>typeof value==='string'&&value.trim()&&value!==answer))];
-  if(answers.length<3)throw new Error(`Not enough localized escape-room answer choices for station ${stationIndex+1}, language ${language}`);
-  const offset=(activityIndex*3+stationIndex)%answers.length;
-  const options=[answer,...Array.from({length:3},(_,index)=>answers[(offset+index)%answers.length])];
-  const shift=(activityIndex+stationIndex)%options.length;
-  const rotated=options.map((_,index)=>options[(index+shift)%options.length]);
+  let rotated;
+  if(Array.isArray(station?.choices?.[language])&&station.choices[language].length===4&&station.choices[language].includes(answer)&&new Set(station.choices[language]).size===4){
+    const choices=[...station.choices[language]];
+    const shift=(activityIndex+stationIndex)%choices.length;
+    rotated=choices.map((_,index)=>choices[(index+shift)%choices.length]);
+  }else{
+    const answers=[...new Set(bank.activities.map(item=>item.stations[stationIndex]?.answer?.[language]).filter(value=>typeof value==='string'&&value.trim()&&value!==answer))];
+    if(answers.length<3)throw new Error(`Not enough localized escape-room answer choices for station ${stationIndex+1}, language ${language}`);
+    const offset=(activityIndex*3+stationIndex)%answers.length;
+    const options=[answer,...Array.from({length:3},(_,index)=>answers[(offset+index)%answers.length])];
+    const shift=(activityIndex+stationIndex)%options.length;
+    rotated=options.map((_,index)=>options[(index+shift)%options.length]);
+  }
   return {prompt,answer,explanation,codeValue,options:rotated,answerIndex:rotated.indexOf(answer)};
 }
 function startEscapeRoom(){
@@ -3877,12 +3893,18 @@ function renderEscapeRoomSuccess(){
   document.querySelectorAll('#gameContent .answer-grid button').forEach(button=>button.disabled=true);
   const reward=escapeRoomStarEarned?` ${tr('starEarned')}`:'';
   const codePart=escapeRoomCodeParts[escapeRoomIndex];
-  const message=`${tr('correct')} ${reward} ${tr('escapeRoomCleared',{value:escapeRoomCodeToken(codePart)})} ${escapeRoomExplanation}`;
-  if(escapeRoomIndex<escapeRoomStationCount()-1){
-    showGameFeedback(message,tr('escapeNextRoom'),nextEscapeRoom,true);
-    return;
-  }
-  showGameFeedback(message,tr('escapeCodeTitle'),enterEscapeCode,true);
+  const successMessage=`${tr('correct')}${reward}${escapeRoomExplanation?'\n\n'+escapeRoomExplanation:''}`;
+  const clueMessage=`${tr('escapeClueReceived',{value:escapeRoomCodeToken(codePart)})}\n${tr('escapeCodePrompt')}`;
+  const nextAction=escapeRoomIndex<escapeRoomStationCount()-1?nextEscapeRoom:enterEscapeCode;
+  const nextLabel=escapeRoomIndex<escapeRoomStationCount()-1?tr('escapeNextRoom'):tr('escapeCodeTitle');
+  showGameFeedback(
+    successMessage,
+    tr('escapeGetClue'),
+    ()=>{
+      showGameFeedback(clueMessage,nextLabel,nextAction,true,'🔑',tr('escapeClueTitle'));
+    },
+    true
+  );
 }
 function clearLearningHint(){
   const hint=$('#learningHint');
@@ -4307,14 +4329,24 @@ function getAgeBankChoices(id,activityIndex,questionIndex,language){
   const questions=activities?.[activityIndex];
   if(!Array.isArray(questions))throw new Error(`Missing age-based answer choices (${id}, ${S.childAgeBand}, ${activityIndex}).`);
   const answer=questions[questionIndex]?.a?.[language];
+  const explicitChoices=questions[questionIndex]?.choices?.[language];
+  if(Array.isArray(explicitChoices)&&explicitChoices.length===4&&explicitChoices.includes(answer)&&new Set(explicitChoices).size===4){
+    return [...explicitChoices].sort(()=>Math.random()-.5);
+  }
   const validAnswers=values=>values.filter(value=>typeof value==='string'&&value.trim()&&value!==answer);
   const topicAnswers=validAnswers(questions.map(row=>row?.a?.[language]));
   const otherAnswers=validAnswers(activities.flatMap(topic=>Array.isArray(topic)?topic.map(row=>row?.a?.[language]):[]));
   const alternatives=[...new Set([...topicAnswers,...otherAnswers])];
   if(alternatives.length<3)throw new Error(`Not enough distinct age-based answer choices (${id}, ${S.childAgeBand}, ${activityIndex}, ${questionIndex}, ${language}).`);
+  const topicDistinct=[...new Set(topicAnswers)];
+  const pool=topicDistinct.length>=3?topicDistinct:alternatives;
   const choices=[answer];
+  for(let offset=0;choices.length<4&&offset<pool.length*2;offset++){
+    const candidate=pool[(questionIndex*3+activityIndex+offset)%pool.length];
+    if(!choices.includes(candidate))choices.push(candidate);
+  }
   for(let offset=0;choices.length<4;offset++){
-    const candidate=alternatives[(questionIndex*3+activityIndex+offset)%alternatives.length];
+    const candidate=alternatives[offset%alternatives.length];
     if(!choices.includes(candidate))choices.push(candidate);
   }
   return choices.sort(()=>Math.random()-.5);
