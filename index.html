@@ -639,13 +639,10 @@ html.a11y-reduced-motion *,html.a11y-reduced-motion *:before,html.a11y-reduced-m
 
 <script src="./question-banks/math.js"></script>
 <script src="./question-banks/story-math.js"></script>
-<script src="./question-banks/riddles-6-7.js"></script>
-<script src="./question-banks/riddles-8-9.js"></script>
-<script src="./question-banks/riddles-10-11.js"></script>
 <script src="./question-banks/escape-room-6-7.js"></script>
 <script src="./question-banks/escape-room-8-9.js"></script>
 <script src="./question-banks/escape-room-10-11.js"></script>
-<script src="./question-banks/science.js"></script>
+<script src="./question-banks/science_he_6-11.js"></script>
 <script>
 "use strict";
 const $=s=>document.querySelector(s),N=512,P=N*N;
@@ -2489,7 +2486,7 @@ function navItem(dir) {
 let puzzleTiles=[],puzzleImage='',puzzleSelected=-1,puzzleImages=[],puzzleImageIndex=0;
 const PUZZLE_CATEGORIES=['animals','vehicles','food','dino','fairy','space','ocean','hero','sport','nature','dragon'];
 function puzzleGridSize(){
-  return [0,3,4,6][childDifficultyLevel(S.childAgeBand)];
+  return [0,3,4,5][childDifficultyLevel(S.childAgeBand)];
 }
 function puzzleActivityImages(level){
   if(level===11)return CATS.flatMap(category=>category.items);
@@ -2595,7 +2592,7 @@ function startDifferences(){
 }
 function renderDifferences(){
   const board=images=>images.map((src,i)=>`<button class="difference-cell ${differenceFound.has(i)?'found':''}" onclick="findDifference(${i})" aria-label="Picture ${i+1}" ${differenceFound.has(i)?'aria-pressed="true"':''}><img src="${src}" alt=""></button>`).join('');
-  $('#gameContent').innerHTML=`<h2 data-i18n="differences">🔎 ${tr('differences')}</h2><p data-i18n="differencesPrompt">${tr('differencesPrompt')}</p><div class="difference-boards"><div><b>1</b><div class="difference-board">${board(differenceLeft)}</div></div><div><b>2</b><div class="difference-board">${board(differenceRight)}</div></div></div><p id="differenceStatus" aria-live="polite">${differenceFound.size} / ${differenceGoal}</p>`;
+  $('#gameContent').innerHTML=`<h2 data-i18n="differences">🔎 ${tr('differences')}</h2><p data-i18n="differencesPrompt">${tr('differencesPrompt')}</p><p id="differenceStatus" aria-live="polite">${differenceFound.size} / ${differenceGoal}</p><div class="difference-boards"><div><b>1</b><div class="difference-board">${board(differenceLeft)}</div></div><div><b>2</b><div class="difference-board">${board(differenceRight)}</div></div></div>`;
 }
 function nextDifferenceActivity(){
   if(differenceFound.size!==differenceGoal)return;
@@ -5188,7 +5185,7 @@ function traceLetterGroups(language,style='primary'){
   });
 }
 function activityNames(id,language){
-  if(id==='letters')return traceLetterGroups(language).map((group,index)=>language==='he'?`אותיות ${index+1} (${group.join(', ')})`:language==='ru'?`Буквы ${index+1} (${group.join(', ')})`:`Letters ${index+1} (${group.join(', ')})`);
+  if(id==='letters')return traceLetterGroups(language).map(group=>language==='he'?`אותיות (${group.join(', ')})`:language==='ru'?`Буквы (${group.join(', ')})`:`Letters (${group.join(', ')})`);
   if(id==='coloring')return [];
   const names=ACTIVITY_NAMES[language][id].slice();
   if(id==='escapeRoom'){
@@ -5528,7 +5525,8 @@ function playLearningGame(id,level){
   const questionDirection=id==='math'?(currentLanguage==='he'&&level===2?'rtl':'ltr'):currentLanguage==='he'?'rtl':'ltr';
   const previousButton=learningGameHasTenQuestions(id)&&riddleQuestionIndex>0
     ?`<button class="ghost" onclick="previousLearningQuestion()" data-i18n="previousQuestion">${tr('previousQuestion')}</button>`:'';
-  $('#gameContent').innerHTML=`<h2 data-i18n="${game.name}">${game.icon} ${tr(game.name)}</h2><p>${questionLabel}</p><p data-i18n="${promptKey}">${prompt}</p><div id="learningQuestion" class="quiz-swatch" dir="${questionDirection}" style="width:auto;height:auto;min-height:60px;border:0;box-shadow:none;font-size:${['storyMath','scienceQuest','logicQuest','riddles'].includes(id)?'18':'32'}px">${question}</div><div class="answer-grid">${options.map(option=>`<button data-answer="${encodeURIComponent(option)}" onclick="answerLearningGame(this)">${option}</button>`).join('')}</div><div class="learning-tools">${previousButton}<button class="ghost" onclick="revealLearningHint()" data-i18n="hintButton">${tr('hintButton')}</button></div><p id="learningHint" class="learning-hint" aria-live="polite"></p><p id="learningFeedback" class="play-status" aria-live="polite"></p>`;
+  const activityTitle=id==='math'?` - ${activityNames('math',currentLanguage)[level]}`:'';
+  $('#gameContent').innerHTML=`<h2 data-i18n="${game.name}">${game.icon} ${tr(game.name)}${activityTitle}</h2><p>${questionLabel}</p><p data-i18n="${promptKey}">${prompt}</p><div id="learningQuestion" class="quiz-swatch" dir="${questionDirection}" style="width:auto;height:auto;min-height:60px;border:0;box-shadow:none;font-size:${['storyMath','scienceQuest','logicQuest','riddles'].includes(id)?'18':'32'}px">${question}</div><div class="answer-grid">${options.map(option=>`<button data-answer="${encodeURIComponent(option)}" onclick="answerLearningGame(this)">${option}</button>`).join('')}</div><div class="learning-tools">${previousButton}<button class="ghost" onclick="revealLearningHint()" data-i18n="hintButton">${tr('hintButton')}</button></div><p id="learningHint" class="learning-hint" aria-live="polite"></p><p id="learningFeedback" class="play-status" aria-live="polite"></p>`;
 }
 function revealLearningHint(){
   const question=$('#learningQuestion'),feedback=$('#learningHint');

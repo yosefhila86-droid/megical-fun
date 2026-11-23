@@ -1,19 +1,25 @@
 'use strict';
 
-const CACHE_NAME='magical-fun-shell-v49-stage-navigation-remember-me';
+const CACHE_NAME='magical-fun-shell-v52-question-banks';
 const APP_ROOT=new URL('./',self.registration.scope);
 const APP_SHELL=[
   APP_ROOT.href,
   new URL('index.html',APP_ROOT).href,
   new URL('question-banks/math.js',APP_ROOT).href,
   new URL('question-banks/story-math.js',APP_ROOT).href,
-  new URL('question-banks/riddles-6-7.js',APP_ROOT).href,
-  new URL('question-banks/riddles-8-9.js',APP_ROOT).href,
-  new URL('question-banks/riddles-10-11.js',APP_ROOT).href,
+  new URL('question-banks/riddle_en_all.js',APP_ROOT).href,
+  new URL('question-banks/Riddle_RU_all.js',APP_ROOT).href,
+  new URL('question-banks/riddles_he_all.js',APP_ROOT).href,
   new URL('question-banks/escape-room-6-7.js',APP_ROOT).href,
   new URL('question-banks/escape-room-8-9.js',APP_ROOT).href,
   new URL('question-banks/escape-room-10-11.js',APP_ROOT).href,
-  new URL('question-banks/science.js',APP_ROOT).href,
+  new URL('question-banks/science_he_6-11.js',APP_ROOT).href,
+  new URL('question-banks/science_6-7_en.js',APP_ROOT).href,
+  new URL('question-banks/science_6-7_ru.js',APP_ROOT).href,
+  new URL('question-banks/science_8-9_en.js',APP_ROOT).href,
+  new URL('question-banks/science_8-9_ru.js',APP_ROOT).href,
+  new URL('question-banks/science_10-11_en.js',APP_ROOT).href,
+  new URL('question-banks/science_10-11_ru.js',APP_ROOT).href,
   new URL('images/magical-fun-background.png',APP_ROOT).href,
   new URL('manifest.json',APP_ROOT).href,
   new URL('fonts/GveretLevin-Regular.ttf',APP_ROOT).href,
