@@ -9,7 +9,8 @@
 <style>
 @font-face{font-family:'Gveret Levin';font-style:normal;font-weight:400;font-display:swap;src:url('./fonts/GveretLevin-Regular.ttf') format('truetype')}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{margin:0;font-family:system-ui,Arial,sans-serif;background:#fff7e6 url('./images/magical-fun-background.png') center center / cover no-repeat fixed;color:#3b2a66;height:100vh;height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{margin:0;font-family:'Gveret Levin',sans-serif;background:#fff7e6 url('./images/magical-fun-background.png') center center / cover no-repeat fixed;color:#3b2a66;height:100vh;height:100dvh;display:flex;flex-direction:column;overflow:hidden}
 button{font:inherit;cursor:pointer;border:0;border-radius:16px;padding:12px 16px;background:#7c4dff;color:#fff;font-weight:700}
 button.alt{background:#ffb703;color:#3b2a66}button.ghost{background:#ece6ff;color:#3b2a66}
 input{font:inherit;padding:12px;border-radius:12px;border:2px solid #d9ccff;width:100%;margin:6px 0}
@@ -7129,7 +7130,7 @@ function celebrate(label='⭐ +1'){
   let f=0;(function t(){
     g.clearRect(0,0,c.width,c.height);
     ps.forEach(p=>{p.vy+=.35;p.x+=p.vx;p.y+=p.vy;p.a+=.2;g.fillStyle=p.c;g.save();g.translate(p.x,p.y);g.rotate(p.a);g.fillRect(-p.r,-p.r/2,p.r*2,p.r);g.restore()});
-    g.font='bold 40px sans-serif';g.textAlign='center';g.globalAlpha=Math.max(0,1-f/90);g.fillText(label,c.width/2,c.height*.4-f*.8);g.globalAlpha=1;
+    g.font='bold 40px "Gveret Levin",sans-serif';g.textAlign='center';g.globalAlpha=Math.max(0,1-f/90);g.fillText(label,c.width/2,c.height*.4-f*.8);g.globalAlpha=1;
     if(++f<100)requestAnimationFrame(t);else c.remove();
   })();
   if(S.music===false)return;
