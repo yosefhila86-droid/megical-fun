@@ -1,6 +1,7 @@
 // Путешествие загадок — все вопросы и ответы
 // Всего вопросов: 360 (6–7 лет: 120, 8–9 лет: 120, 10–11 лет: 120). Каждое из 12 занятий включает 10 вопросов.
 
+(()=>{
 const riddleJourneyData = {
   "title": "Путешествие загадок — все вопросы и ответы",
   "summary": "Всего вопросов: 360 (6–7 лет: 120, 8–9 лет: 120, 10–11 лет: 120). Каждое из 12 занятий включает 10 вопросов.",
@@ -3839,6 +3840,5 @@ const riddleJourneyData = {
   ]
 };
 
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = riddleJourneyData;
-}
+globalThis.RIDDLE_JOURNEY_RU = riddleJourneyData;
+})();

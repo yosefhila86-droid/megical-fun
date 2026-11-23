@@ -2,6 +2,7 @@
 // Total questions: 360 (Ages 6-7: 120, Ages 8-9: 120, Ages 10-11: 120)
 // Each of the 12 activities per age group includes 10 questions.
 
+(()=>{
 const riddleJourneyData = {
   "Ages 6-7": {
     "Activity 1: Animals and Nature": [
@@ -3683,6 +3684,5 @@ const riddleJourneyData = {
   }
 };
 
-if (typeof module !== "undefined" && module.exports) {
-  module.exports = riddleJourneyData;
-}
+globalThis.RIDDLE_JOURNEY_EN = riddleJourneyData;
+})();

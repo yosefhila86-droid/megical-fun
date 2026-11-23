@@ -4186,4 +4186,4 @@ export const riddlesData = {
   ]
 };
 
-export default riddlesData;
+globalThis.RIDDLE_JOURNEY_HE = riddlesData;
