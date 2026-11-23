@@ -10,6 +10,7 @@ const APP_SHELL=[
   new URL('question-banks/riddle_en_all.js',APP_ROOT).href,
   new URL('question-banks/Riddle_RU_all.js',APP_ROOT).href,
   new URL('question-banks/riddles_he_all.js',APP_ROOT).href,
+  new URL('question-banks/riddles-adapter.js',APP_ROOT).href,
   new URL('question-banks/escape-room-6-7.js',APP_ROOT).href,
   new URL('question-banks/escape-room-8-9.js',APP_ROOT).href,
   new URL('question-banks/escape-room-10-11.js',APP_ROOT).href,
